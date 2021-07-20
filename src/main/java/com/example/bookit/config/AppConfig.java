@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 
 
 @Configuration
-public class ApiConfig {
+public class AppConfig {
 
     @Bean
     public ModelMapper modelMapper(){

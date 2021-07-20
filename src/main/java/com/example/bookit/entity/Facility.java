@@ -20,18 +20,16 @@ public class Facility {
     @GenericGenerator(name ="system-uuid", strategy="uuid")
     @Column(name="facility_id")
     private String id;
-    @NotBlank(message = "name must not be blank")
     private String name;
-    @NotBlank(message = "address must not be blank")
     private String address;
-    @NotBlank(message = "contact must not be blank")
     private String contact;
-    private BigInteger rent_price_once;
-    private BigInteger rent_price_weekly;
-    private BigInteger rent_price_monthly;
-    @NotBlank(message = "status must not be blank")
+    @Column(name="rent_price_once")
+    private BigInteger rentPriceOnce;
+    @Column(name="rent_price_weekly")
+    private BigInteger rentPriceWeekly;
+    @Column(name="rent_price_monthly")
+    private BigInteger rentPriceMonthly;
     private Boolean status;
-    @NotBlank(message = "location must not be blank")
     private String location;
     private BigInteger balance;
 
@@ -40,14 +38,13 @@ public class Facility {
     private Category category;
 
 
-    public Facility(String id, String name, String address, String contact, BigInteger rent_price_once, BigInteger rent_price_weekly, BigInteger rent_price_monthly, Boolean status, String location, BigInteger balance, Category category) {
-        this.id = id;
+    public Facility(String name, String address, String contact, BigInteger rentPriceOnce, BigInteger rentPriceWeekly, BigInteger rentPriceMonthly, Boolean status, String location, BigInteger balance, Category category) {
         this.name = name;
         this.address = address;
         this.contact = contact;
-        this.rent_price_once = rent_price_once;
-        this.rent_price_weekly = rent_price_weekly;
-        this.rent_price_monthly = rent_price_monthly;
+        this.rentPriceOnce = rentPriceOnce;
+        this.rentPriceWeekly = rentPriceWeekly;
+        this.rentPriceMonthly = rentPriceMonthly;
         this.status = status;
         this.location = location;
         this.balance = balance;

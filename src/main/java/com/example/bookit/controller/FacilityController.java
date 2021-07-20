@@ -1,4 +1,4 @@
-﻿package com.example.bookit.controller;
+package com.example.bookit.controller;
 
 
 import com.example.bookit.dto.FacilityDto;
@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping
+@RequestMapping("/facility")
 public class FacilityController {
 
     @Autowired
@@ -18,7 +18,7 @@ public class FacilityController {
 
     @PostMapping
     public void addNewFacility(@RequestBody FacilityDto facilityDto){
-        facilityService.addFacility(facilityDto);
+        facilityService.save(facilityDto);
     }
 
     @GetMapping("/{facilityId}")
@@ -32,14 +32,14 @@ public class FacilityController {
         return facilityService.getAllFacility();
     }
 
-    @GetMapping()
+    @GetMapping("/owner")
     public List<Facility> getAllFacilityForOwner(){
         return facilityService.getAllForOwner();
     }
 
     @PutMapping("/{facilityId}")
     public void updateFacility(@PathVariable("facilityId") String facilityId, @RequestBody FacilityDto facilityDto){
-        facilityService.addFacility(facilityDto);
+        facilityService.save(facilityDto);
     }
 
     @DeleteMapping("/{facilityId}")

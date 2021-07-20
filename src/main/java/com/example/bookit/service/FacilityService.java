@@ -8,7 +8,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface FacilityService {
-    public void addFacility (FacilityDto facilityDto);
+    public void save (FacilityDto facilityDto);
     public FacilityDto getFacilityById(String id);
     public List<FacilityDto> getAllFacility();
     public List<Facility> getAllForOwner();

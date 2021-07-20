@@ -24,13 +24,16 @@ public class FacilityServiceImpl implements FacilityService {
     @Autowired
     FacilityRepository facilityRepository;
 
+
+    @Autowired
+    private ModelMapper modelMapper;
+
+
     ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
     Validator validator = factory.getValidator();
 
-    private ModelMapper modelMapper = new ModelMapper();
-
     @Override
-    public void addFacility(FacilityDto facilityDto) {
+    public void save(FacilityDto facilityDto) {
         validateData(facilityDto);
     }
 
