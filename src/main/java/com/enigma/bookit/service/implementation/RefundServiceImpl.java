@@ -16,7 +16,7 @@ public class RefundServiceImpl implements RefundService {
 
     //Customer apply for refund
     @Override
-    public Refund applyRefund(Refund refund) {
+    public Refund save(Refund refund) {
         refund.setRequestRefundTime(new Date(System.currentTimeMillis()));
         return refundRepository.save(refund);
     }

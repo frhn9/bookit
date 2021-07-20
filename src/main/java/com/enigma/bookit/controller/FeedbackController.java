@@ -22,7 +22,7 @@ public class FeedbackController {
         Response<Feedback> response = new Response<>();
         String message = "Feedback is inserted";
         response.setMessage(message);
-        response.setData(feedbackService.saveFeedback(feedback));
+        response.setData(feedbackService.save(feedback));
         return ResponseEntity.status(HttpStatus.CREATED)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(response);
@@ -46,7 +46,7 @@ public class FeedbackController {
         Response<Feedback> response = new Response<>();
         String message = "a response was deleted";
         response.setMessage(message);
-        feedbackService.deleteFeedback(id);
+        feedbackService.deleteById(id);
         return ResponseEntity.status(HttpStatus.OK)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(response);

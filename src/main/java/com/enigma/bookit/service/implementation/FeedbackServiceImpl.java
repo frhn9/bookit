@@ -15,25 +15,25 @@ public class FeedbackServiceImpl implements FeedbackService {
 
     //Customer send a feedback of a facility
     @Override
-    public Feedback saveFeedback(Feedback feedback) {
+    public Feedback save(Feedback feedback) {
         return feedbackRepository.save(feedback);
     }
 
     //Owner respond customer's feedback
     public Feedback respondFeedback (String id, String response){
-        Feedback feedback = getFeedbackById(id);
+        Feedback feedback = getById(id);
         feedback.setResponse(response);
         return feedbackRepository.save(feedback);
     }
 
     @Override
-    public Feedback getFeedbackById(String id) {
+    public Feedback getById(String id) {
         validatePresent(id);
         return feedbackRepository.findById(id).get();
     }
 
     @Override
-    public void deleteFeedback(String id) {
+    public void deleteById(String id) {
         validatePresent(id);
         feedbackRepository.deleteById(id);
     }
