@@ -20,7 +20,7 @@ public class Payment {
     @Column(name = "payment_id")
     private String id;
     @ManyToOne
-    @JoinColumn(name = "book_id")
+    @JoinColumn(name = "customer_id")
     @JsonIgnoreProperties("payment")
     private Customer customer;
     @ManyToOne
