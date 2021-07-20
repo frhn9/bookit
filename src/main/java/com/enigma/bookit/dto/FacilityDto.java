@@ -15,9 +15,9 @@ public class FacilityDto {
     private String address;
     @NotBlank(message = "contact must not be blank")
     private String contact;
-    private Integer rent_price_once;
-    private Integer rent_price_weekly;
-    private Integer rent_price_monthly;
+    private Integer rentPriceOnce;
+    private Integer rentPriceWeekly;
+    private Integer rentPriceMonthly;
     private Boolean status;
     @NotBlank(message = "location must not be blank")
     private String location;

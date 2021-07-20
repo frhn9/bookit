@@ -8,15 +8,15 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface FacilityService {
-    public void save (FacilityDto facilityDto);
-    public FacilityDto getFacilityById(String id);
-    public List<FacilityDto> getAllFacility();
-    public List<Facility> getAllForOwner();
-    public void deleteFacility(String id);
+    void save (Facility facility);
+    FacilityDto getFacilityById(String id);
+    List<FacilityDto> getAllFacility();
+    List<Facility> getAllForOwner();
+    void deleteFacility(String id);
     void updateFacility(String id, Facility facility);
-    public Page<Facility> getFacilityPerPage(Pageable pageable);
-    public Facility validateData(FacilityDto facilityDto);
-    public FacilityDto convertToDto(Facility facility);
-    public Facility convertToEntity(FacilityDto facilityDto);
+    Page<Facility> getFacilityPerPage(Pageable pageable);
+    Facility validateData(FacilityDto facilityDto);
+    FacilityDto convertToDto(Facility facility);
+    Facility convertToEntity(FacilityDto facilityDto);
 
 }

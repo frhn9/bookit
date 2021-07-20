@@ -1,6 +1,7 @@
 package com.enigma.bookit.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,7 +24,7 @@ public class Category {
     private String name;
 
     @OneToMany(mappedBy = "category")
-    @JsonIgnoreProperties("category")
+    @JsonIgnore
     private List <Facility> facility = new ArrayList<>();
 
     public Category(String id, String name) {

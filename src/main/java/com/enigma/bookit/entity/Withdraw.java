@@ -30,17 +30,16 @@ public class Withdraw {
     @Column(name="withdraw_target")
     private String withdrawTarget;
 
-    @OneToMany
-    @JoinColumn(name="facility_id")
-    @JsonIgnoreProperties("facility")
-    private List<Facility> facilities = new ArrayList<>();
+//    @OneToMany
+//    @JoinColumn(name="facility_id")
+//    @JsonIgnoreProperties("facility")
+//    private List<Facility> facilities = new ArrayList<>();
 
-    public Withdraw(String id, BigInteger withdrawAmount, Date withdrawTime, String withdrawMethod, String withdrawTarget, List<Facility> facilities) {
+    public Withdraw(String id, BigInteger withdrawAmount, Date withdrawTime, String withdrawMethod, String withdrawTarget) {
         this.id = id;
         this.withdrawAmount = withdrawAmount;
         this.withdrawTime = withdrawTime;
         this.withdrawMethod = withdrawMethod;
         this.withdrawTarget = withdrawTarget;
-        this.facilities = facilities;
     }
 }

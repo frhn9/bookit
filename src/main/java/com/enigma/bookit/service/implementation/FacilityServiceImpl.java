@@ -33,8 +33,8 @@ public class FacilityServiceImpl implements FacilityService {
     Validator validator = factory.getValidator();
 
     @Override
-    public void save(FacilityDto facilityDto) {
-        validateData(facilityDto);
+    public void save(Facility facility) {
+       facilityRepository.save(facility);
     }
 
     @Override
@@ -79,8 +79,8 @@ public class FacilityServiceImpl implements FacilityService {
     @Override
     public Facility validateData(FacilityDto facilityDto){
         Set<ConstraintViolation<FacilityDto>> violations = validator.validate(facilityDto);
-        if(violations.size()  == 0){
-            Facility facility =convertToEntity(facilityDto);
+        if(violations.size() == 0){
+            Facility facility= convertToEntity(facilityDto);
             return facilityRepository.save(facility);
         }
         return null;

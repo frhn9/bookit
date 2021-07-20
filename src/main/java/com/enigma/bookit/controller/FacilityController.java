@@ -17,8 +17,8 @@ public class FacilityController {
     FacilityService facilityService;
 
     @PostMapping
-    public void createFacility(@RequestBody FacilityDto facilityDto){
-        facilityService.save(facilityDto);
+    public void createFacility(@RequestBody Facility facility){
+        facilityService.save(facility);
     }
 
     @GetMapping("/{facilityId}")
@@ -38,8 +38,8 @@ public class FacilityController {
     }
 
     @PutMapping("/{facilityId}")
-    public void updateFacility(@PathVariable("facilityId") String facilityId, @RequestBody FacilityDto facilityDto){
-        facilityService.save(facilityDto);
+    public void updateFacility(@PathVariable("facilityId") String facilityId, @RequestBody Facility facility){
+        facilityService.save(facility);
     }
 
     @DeleteMapping("/{facilityId}")
