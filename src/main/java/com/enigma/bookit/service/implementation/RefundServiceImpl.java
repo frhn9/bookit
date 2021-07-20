@@ -20,4 +20,14 @@ public class RefundServiceImpl implements RefundService {
         refund.setRequestRefundTime(new Date(System.currentTimeMillis()));
         return refundRepository.save(refund);
     }
+
+    @Override
+    public Refund getById(String id) {
+        return refundRepository.getById(id);
+    }
+
+    @Override
+    public void deleteById(String id) {
+        refundRepository.deleteById(id);
+    }
 }
