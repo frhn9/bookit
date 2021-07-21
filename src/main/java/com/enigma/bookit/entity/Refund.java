@@ -31,7 +31,5 @@ public class Refund {
     public Refund(String id, Book book) {
         this.id = id;
         this.book = book;
-
-        requestRefundTime =
     }
 }

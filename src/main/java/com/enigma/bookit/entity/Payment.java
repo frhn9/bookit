@@ -11,7 +11,7 @@ import java.math.BigInteger;
 import java.util.Date;
 
 @Entity
-@Table(name = "trx_transaction")
+@Table(name = "trx_payment")
 @Getter @Setter @NoArgsConstructor
 public class Payment {
     @Id
