@@ -28,14 +28,13 @@ public class Facility {
     private Integer rentPriceMonthly;
     private Boolean status;
     private String location;
-    private Integer balance;
+    private Integer capacity;
 
     @ManyToOne
     @JoinColumn(name ="category_id")
     private Category category;
 
-
-    public Facility(String id, String name, String address, String contact, Integer rentPriceOnce, Integer rentPriceWeekly, Integer rentPriceMonthly, Boolean status, String location, Integer balance, Category category) {
+    public Facility(String id, String name, String address, String contact, Integer rentPriceOnce, Integer rentPriceWeekly, Integer rentPriceMonthly, Boolean status, String location, Integer capacity, Category category) {
         this.id = id;
         this.name = name;
         this.address = address;
@@ -45,7 +44,8 @@ public class Facility {
         this.rentPriceMonthly = rentPriceMonthly;
         this.status = status;
         this.location = location;
-        this.balance = balance;
+        this.capacity = capacity;
         this.category = category;
     }
 }
+

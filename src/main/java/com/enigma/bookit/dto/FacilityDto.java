@@ -21,5 +21,6 @@ public class FacilityDto {
     private Boolean status;
     @NotBlank(message = "location must not be blank")
     private String location;
+    private Integer capacity;
     private Category category;
 }
