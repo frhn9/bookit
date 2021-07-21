@@ -20,9 +20,9 @@ public class Book {
     @GenericGenerator(name ="system-uuid", strategy="uuid")
     @Column(name="book_id")
     private String id;
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private Date active_from;
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private Date active_until;
 
     @OneToOne
