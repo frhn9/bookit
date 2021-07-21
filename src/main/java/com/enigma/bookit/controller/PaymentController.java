@@ -52,14 +52,14 @@ public class PaymentController {
         paymentService.deleteById(id);
     }
 
-//    @GetMapping()
-//    public Page<Payment> getPaymentByPage(
-//            @RequestParam(name="page", defaultValue="0") Integer page,
-//            @RequestParam(name="size", defaultValue="3") Integer size,
-//            @RequestParam(name="sortby", defaultValue="id") String sortBy,
-//            @RequestParam(name="direction", defaultValue="ASC") String direction){
-//        Sort sort = Sort.by(Sort.Direction.fromString(direction), sortBy);
-//        Pageable pageable = PageRequest.of(page, size, sort);
-//        return paymentService.getAllPerPage(pageable);
-//    }
+    @GetMapping()
+    public Page<Payment> getPaymentByPage(
+            @RequestParam(name="page", defaultValue="0") Integer page,
+            @RequestParam(name="size", defaultValue="3") Integer size,
+            @RequestParam(name="sortby", defaultValue="id") String sortBy,
+            @RequestParam(name="direction", defaultValue="ASC") String direction){
+        Sort sort = Sort.by(Sort.Direction.fromString(direction), sortBy);
+        Pageable pageable = PageRequest.of(page, size, sort);
+        return paymentService.getAllPerPage(pageable);
+    }
 }

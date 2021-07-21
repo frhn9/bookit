@@ -1,6 +1,5 @@
 package com.enigma.bookit.service.implementation;
 
-import com.enigma.bookit.dto.FacilityDto;
 import com.enigma.bookit.entity.Book;
 import com.enigma.bookit.entity.Facility;
 import com.enigma.bookit.entity.Payment;
@@ -34,7 +33,7 @@ public class PaymentServiceImpl implements PaymentService {
         payment.setDueTime(new Date(System.currentTimeMillis() + 3600000));
         //get facility
         String facilityId = payment.getFacility().getId();
-        FacilityDto facility = facilityService.getFacilityById(facilityId);
+        Facility facility = facilityService.getFacilityById(facilityId);
         switch(payment.getPackageChosen()){
             //once rent, the price determined by the duration
             case ONCE:
