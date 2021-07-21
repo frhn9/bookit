@@ -1,6 +1,5 @@
-package com.enigma.bookit.entity;
+package com.enigma.bookit.entity.user;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,25 +8,22 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 
-@Entity
+@MappedSuperclass
 @Getter @Setter @NoArgsConstructor
-@Table (name = "mst_customer")
-public class Customer {
+public class User {
     @Id
-    @GeneratedValue(generator = "system-uuid")
-    @GenericGenerator(name = "system-uuid", strategy = "uuid")
-    @Column(name = "customer_id")
-    private String id;
-    private String fullName;
-    private String address;
-    private String contact;
-    private String email;
-    private String gender;
     private String userName;
+    @NotBlank(message = "Full Name must not be blank")
+    private String fullName;
+    @NotBlank (message = "Email must not be blank")
+    @Email(message = "Wrong email input")
+    private String email;
+    @NotBlank (message = "Password must not be blank")
     private String password;
-    private String job;
     @CreationTimestamp
     @Column(columnDefinition = "TIMESTAMP")
     private LocalDateTime createdAt;
@@ -38,17 +34,12 @@ public class Customer {
     @Column(columnDefinition = "TIMESTAMP")
     private LocalDateTime deletedAt;
 
-    public Customer(String id, String fullName, String address, String contact, String email, String gender, String userName,
-                    String password, String job, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
-        this.id = id;
-        this.fullName = fullName;
-        this.address = address;
-        this.contact = contact;
-        this.email = email;
-        this.gender = gender;
+    public User(String userName, String fullName, String email, String password,
+                LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
         this.userName = userName;
+        this.fullName = fullName;
+        this.email = email;
         this.password = password;
-        this.job = job;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.deletedAt = deletedAt;

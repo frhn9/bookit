@@ -1,7 +1,7 @@
 package com.enigma.bookit.service.implementation;
 
 import com.enigma.bookit.dto.OwnerDto;
-import com.enigma.bookit.entity.Owner;
+import com.enigma.bookit.entity.user.Owner;
 import com.enigma.bookit.repository.OwnerRepository;
 import com.enigma.bookit.service.OwnerService;
 import org.modelmapper.ModelMapper;
@@ -72,4 +72,5 @@ public class OwnerServiceImpl implements OwnerService {
         Owner owner = modelMapper.map(ownerDto, Owner.class);
         return owner;
     }
+
 }

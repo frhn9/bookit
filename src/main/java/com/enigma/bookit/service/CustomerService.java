@@ -1,16 +1,20 @@
 package com.enigma.bookit.service;
 
 import com.enigma.bookit.dto.CustomerDto;
-import com.enigma.bookit.entity.Customer;
+import com.enigma.bookit.entity.user.Customer;
+import com.enigma.bookit.entity.user.User;
 
 import java.util.List;
 
 public interface CustomerService {
-    void save(CustomerDto customerDto);
-    CustomerDto getById(String id);
+    Customer registerUser(User user);
+    Customer changePassword(User user);
+    CustomerDto update(String userName, CustomerDto customerDto);
+    CustomerDto getCustomer(String fullName);
     List<CustomerDto> getAll();
     void deleteById(String id);
-    Customer validateData(CustomerDto customerDto);
+    Boolean validateUserData(User user);
     CustomerDto convertToDto(Customer customer);
     Customer convertToEntity(CustomerDto customerDto);
-}
+    Customer convertUserToEntity(User user);
+    void validateUpdateData(Customer customer, CustomerDto customerDto);

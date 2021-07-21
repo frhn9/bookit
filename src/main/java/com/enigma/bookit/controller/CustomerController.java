@@ -2,9 +2,9 @@ package com.enigma.bookit.controller;
 
 import com.enigma.bookit.constant.ApiUrlConstant;
 import com.enigma.bookit.dto.CustomerDto;
-import com.enigma.bookit.entity.Customer;
+import com.enigma.bookit.entity.user.Customer;
+import com.enigma.bookit.entity.user.User;
 import com.enigma.bookit.service.CustomerService;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,13 +18,23 @@ public class CustomerController {
     CustomerService customerService;
 
     @PostMapping
-    public void createCustomer(@RequestBody CustomerDto customerDto) {
-        customerService.save(customerDto);
+    public void registerCustomer(@RequestBody User user){
+        customerService.registerUser(user);
     }
 
-    @GetMapping("/{customerId}")
-    public CustomerDto getCustomerById(@PathVariable String customerId){
-        return customerService.getById(customerId);
+    @GetMapping("/{userName}")
+    public CustomerDto getCustomerById(@PathVariable String userName){
+        return customerService.getCustomer(userName);
+    }
+
+    @PutMapping("/{userName}")
+    public CustomerDto updateCustomerDto(@PathVariable String userName, @RequestBody CustomerDto customerDto){
+        return customerService.update(userName, customerDto);
+    }
+
+    @PutMapping("/update")
+    public User changePassword(@RequestParam String userName, @RequestBody User user){
+        return customerService.changePassword(user);
     }
 
     @GetMapping

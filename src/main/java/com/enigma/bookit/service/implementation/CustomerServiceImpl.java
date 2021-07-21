@@ -1,7 +1,8 @@
 package com.enigma.bookit.service.implementation;
 
 import com.enigma.bookit.dto.CustomerDto;
-import com.enigma.bookit.entity.Customer;
+import com.enigma.bookit.entity.user.Customer;
+import com.enigma.bookit.entity.user.User;
 import com.enigma.bookit.repository.CustomerRepository;
 import com.enigma.bookit.service.CustomerService;
 import org.modelmapper.ModelMapper;
@@ -29,13 +30,31 @@ public class CustomerServiceImpl implements CustomerService {
     Validator validator = factory.getValidator();
 
     @Override
-    public void save(CustomerDto customerDto) {
-        validateData(customerDto);
+    public Customer registerUser(User user) {
+        Boolean validateCheck = validateUserData(user);
+        if (validateCheck) {
+            Customer customer = convertUserToEntity(user);
+            return customerRepository.save(customer);
+        }
+        return null;
     }
 
     @Override
-    public CustomerDto getById(String id) {
-        CustomerDto customerDto = convertToDto(customerRepository.findById(id).get());
+    public Customer changePassword(User user) {
+        return null;
+    }
+
+    @Override // UPDATENYA ERROR, FIXIN BUAT BESOK
+    public CustomerDto update(String userName, CustomerDto customerDto) {
+        Customer customer = customerRepository.findById(userName).get();
+        validateUpdateData(customer, customerDto);
+        customerRepository.save(customer);
+        return customerDto;
+    }
+
+    @Override
+    public CustomerDto getCustomer(String userName) {
+        CustomerDto customerDto = convertToDto(customerRepository.findById(userName).get());
         return customerDto;
     }
 
@@ -52,13 +71,26 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public Customer validateData(CustomerDto customerDto) {
-        Set<ConstraintViolation<CustomerDto>> violations = validator.validate(customerDto);
-        if (violations.size() == 0){
-            Customer customer = convertToEntity(customerDto);
-            return customerRepository.save(customer);
+    public Boolean validateUserData(User user) {
+        Set<ConstraintViolation<User>> violations = validator.validate(user);
+        return violations.isEmpty();
+    }
+
+    @Override
+    public void validateUpdateData(Customer customer, CustomerDto customerDto) {
+        if(customerDto.getFullName() != null){
+            customer.setFullName(customerDto.getFullName());
+        } if (customerDto.getAddress() != null){
+            customer.setAddress(customerDto.getAddress());
+        } if (customerDto.getContact() != null){
+            customer.setContact(customerDto.getContact());
+        } if (customerDto.getEmail() != null){
+            customer.setContact(customerDto.getEmail());
+        } if (customerDto.getGender() != null){
+            customer.setGender(customerDto.getGender());
+        } if (customerDto.getJob() != null){
+            customer.setJob(customerDto.getJob());
         }
-        return null;
     }
 
     @Override
@@ -70,6 +102,12 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public Customer convertToEntity(CustomerDto customerDto) {
         Customer customer = modelMapper.map(customerDto, Customer.class);
+        return customer;
+    }
+
+    @Override
+    public Customer convertUserToEntity(User user) {
+        Customer customer = modelMapper.map(user, Customer.class);
         return customer;
     }
 
