@@ -31,25 +31,35 @@ public class PaymentController {
                 .body(response);
     }
 
-    @PutMapping("/pay{paymentId}")
-    public ResponseEntity<Response<Payment>> payPayment(@PathVariable String paymentId){
+    @PutMapping("/pay/{id}")
+    public ResponseEntity<Response<Payment>> payPayment(@PathVariable String id){
         Response<Payment> response = new Response<>();
-        String message = "Payment is inserted";
+        String message = "Payment is updated";
         response.setMessage(message);
-        response.setData(paymentService.pay(paymentId));
+        response.setData(paymentService.pay(id));
         return ResponseEntity.status(HttpStatus.OK)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(response);
     }
 
-    @GetMapping()
-    public Page<Payment> getPaymentByPage(
-            @RequestParam(name="page", defaultValue="0") Integer page,
-            @RequestParam(name="size", defaultValue="3") Integer size,
-            @RequestParam(name="sortby", defaultValue="id") String sortBy,
-            @RequestParam(name="direction", defaultValue="ASC") String direction){
-        Sort sort = Sort.by(Sort.Direction.fromString(direction), sortBy);
-        Pageable pageable = PageRequest.of(page, size, sort);
-        return paymentService.getAllPerPage(pageable);
+    @GetMapping("/{id}")
+    public Payment getById(@PathVariable String id){
+        return paymentService.getById(id);
     }
+
+    @DeleteMapping("/{id}")
+    public void deleteById(@PathVariable String id){
+        paymentService.deleteById(id);
+    }
+
+//    @GetMapping()
+//    public Page<Payment> getPaymentByPage(
+//            @RequestParam(name="page", defaultValue="0") Integer page,
+//            @RequestParam(name="size", defaultValue="3") Integer size,
+//            @RequestParam(name="sortby", defaultValue="id") String sortBy,
+//            @RequestParam(name="direction", defaultValue="ASC") String direction){
+//        Sort sort = Sort.by(Sort.Direction.fromString(direction), sortBy);
+//        Pageable pageable = PageRequest.of(page, size, sort);
+//        return paymentService.getAllPerPage(pageable);
+//    }
 }

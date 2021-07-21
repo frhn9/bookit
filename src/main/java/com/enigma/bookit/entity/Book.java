@@ -8,8 +8,8 @@ import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import java.sql.Date;
-import java.sql.Timestamp;
+import java.util.Date;
+
 
 @Entity
 @Getter @Setter @NoArgsConstructor
