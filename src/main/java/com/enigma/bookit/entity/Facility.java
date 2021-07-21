@@ -7,6 +7,7 @@ import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 
 @Entity
 @Getter @Setter @NoArgsConstructor
@@ -17,8 +18,11 @@ public class Facility {
     @GenericGenerator(name ="system-uuid", strategy="uuid")
     @Column(name="facility_id")
     private String id;
+    @NotBlank(message = "name must not be blank")
     private String name;
+    @NotBlank(message = "address must not be blank")
     private String address;
+    @NotBlank(message = "contact must not be blank")
     private String contact;
     @Column(name="rent_price_once")
     private Integer rentPriceOnce;
