@@ -1,5 +1,6 @@
 package com.enigma.bookit.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,10 +28,18 @@ public class Payment {
     @JoinColumn(name = "facility_id")
     @JsonIgnoreProperties("payment")
     private Facility facility;
+    @Enumerated(EnumType.STRING)
+    private PackageChosen packageChosen;
     private BigInteger amount;
-    private String paymentMethod;
-    private Date bookingDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm")
+    private Date bookingStart;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm")
+    private Date bookingEnd;
     private boolean paymentStatus;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm")
     private Date dueTime;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm")
     private Date paymentDate;
+
+
 }
