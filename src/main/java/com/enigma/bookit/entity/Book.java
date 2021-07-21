@@ -1,6 +1,7 @@
 package com.enigma.bookit.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,8 +9,7 @@ import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import java.sql.Date;
-import java.sql.Timestamp;
+import java.util.Date;
 
 @Entity
 @Getter @Setter @NoArgsConstructor
@@ -20,7 +20,9 @@ public class Book {
     @GenericGenerator(name ="system-uuid", strategy="uuid")
     @Column(name="book_id")
     private String id;
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date active_from;
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date active_until;
 
     @OneToOne
