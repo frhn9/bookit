@@ -8,6 +8,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import java.math.BigDecimal;
 
 @Entity
 @Getter @Setter @NoArgsConstructor
@@ -25,11 +26,11 @@ public class Facility {
     @NotBlank(message = "contact must not be blank")
     private String contact;
     @Column(name="rent_price_once")
-    private Integer rentPriceOnce;
+    private BigDecimal rentPriceOnce;
     @Column(name="rent_price_weekly")
-    private Integer rentPriceWeekly;
+    private BigDecimal rentPriceWeekly;
     @Column(name="rent_price_monthly")
-    private Integer rentPriceMonthly;
+    private BigDecimal rentPriceMonthly;
     private Boolean status;
     private String location;
     private Integer capacity;
@@ -38,7 +39,7 @@ public class Facility {
     @JoinColumn(name ="category_id")
     private Category category;
 
-    public Facility(String id, String name, String address, String contact, Integer rentPriceOnce, Integer rentPriceWeekly, Integer rentPriceMonthly, Boolean status, String location, Integer capacity, Category category) {
+    public Facility(String id, String name, String address, String contact, BigDecimal rentPriceOnce, BigDecimal rentPriceWeekly, BigDecimal rentPriceMonthly, Boolean status, String location, Integer capacity, Category category) {
         this.id = id;
         this.name = name;
         this.address = address;
