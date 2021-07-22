@@ -1,5 +1,6 @@
 package com.enigma.bookit.controller;
 
+import com.enigma.bookit.constant.ApiUrlConstant;
 import com.enigma.bookit.entity.Book;
 import com.enigma.bookit.entity.Category;
 import com.enigma.bookit.service.BookService;
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/book")
+@RequestMapping(ApiUrlConstant.BOOK)
 public class BookController {
 
         @Autowired

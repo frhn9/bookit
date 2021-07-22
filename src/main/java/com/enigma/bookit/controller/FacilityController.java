@@ -1,7 +1,8 @@
 package com.enigma.bookit.controller;
 
 
-import com.enigma.bookit.entity.Category;
+import com.enigma.bookit.constant.ApiUrlConstant;
+import com.enigma.bookit.constant.ResponseMessage;
 import com.enigma.bookit.service.FacilityService;
 import com.enigma.bookit.entity.Facility;
 import com.enigma.bookit.utils.Response;
@@ -10,11 +11,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/facility")
+@RequestMapping(ApiUrlConstant.FACILITY)
 public class FacilityController {
 
     @Autowired
@@ -23,7 +25,7 @@ public class FacilityController {
     @PostMapping
     public ResponseEntity<Response<Facility>> addNewFacility(@RequestBody Facility facility){
         Response<Facility> response = new Response<>();
-        String message = String.format("NEW FACILITY INSERTED");
+        String message = String.format(ResponseMessage.INSERT_SUCCESS, "facility's");
         response.setMessage(message);
         response.setData(facilityService.save(facility));
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -34,7 +36,7 @@ public class FacilityController {
     @GetMapping("/{facilityId}")
     public ResponseEntity<Response<Facility>> getFacilityById(@PathVariable String facilityId){
         Response<Facility> response = new Response<>();
-        String message = String.format("Get Data");
+        String message = String.format(ResponseMessage.GET_SUCCESS,"facility");
         response.setMessage(message);
         response.setData(facilityService.getFacilityById(facilityId));
         return ResponseEntity.status(HttpStatus.OK)
