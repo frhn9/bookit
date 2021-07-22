@@ -1,8 +1,7 @@
 package com.enigma.bookit.entity.user;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -10,19 +9,27 @@ import org.hibernate.annotations.UpdateTimestamp;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @MappedSuperclass
-@Getter @Setter @NoArgsConstructor
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class User {
     @Id
+    @GeneratedValue(generator = "system-uuid")
+    @GenericGenerator(name = "system-uuid", strategy = "uuid")
+    private String id = null;
+    @NotBlank(message = "Username must not be blank")
     private String userName;
-    @NotBlank(message = "Full Name must not be blank")
+    @NotBlank(message = "Full name cannot be empty")
     private String fullName;
-    @NotBlank (message = "Email must not be blank")
+    @NotBlank(message = "Email must not be blank")
     @Email(message = "Wrong email input")
     private String email;
-    @NotBlank (message = "Password must not be blank")
+    @NotBlank(message = "Password must not be blank")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
     @CreationTimestamp
     @Column(columnDefinition = "TIMESTAMP")
@@ -30,18 +37,7 @@ public class User {
     @UpdateTimestamp
     @Column(columnDefinition = "TIMESTAMP")
     private LocalDateTime updatedAt;
-    @UpdateTimestamp
     @Column(columnDefinition = "TIMESTAMP")
     private LocalDateTime deletedAt;
 
-    public User(String userName, String fullName, String email, String password,
-                LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
-        this.userName = userName;
-        this.fullName = fullName;
-        this.email = email;
-        this.password = password;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        this.deletedAt = deletedAt;
-    }
 }

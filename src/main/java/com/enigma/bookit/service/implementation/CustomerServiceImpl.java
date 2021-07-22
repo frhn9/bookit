@@ -1,42 +1,33 @@
 package com.enigma.bookit.service.implementation;
 
 import com.enigma.bookit.dto.CustomerDto;
+import com.enigma.bookit.dto.UserDto;
 import com.enigma.bookit.entity.user.Customer;
 import com.enigma.bookit.entity.user.User;
 import com.enigma.bookit.repository.CustomerRepository;
+import com.enigma.bookit.service.converter.UserConverter;
 import com.enigma.bookit.service.CustomerService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-public class CustomerServiceImpl implements CustomerService {
+public class CustomerServiceImpl implements CustomerService, UserConverter {
 
     @Autowired
     CustomerRepository customerRepository;
 
     @Autowired
-    private ModelMapper modelMapper;
-
-    ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-    Validator validator = factory.getValidator();
+    ModelMapper modelMapper;
 
     @Override
-    public Customer registerUser(User user) {
-        Boolean validateCheck = validateUserData(user);
-        if (validateCheck) {
-            Customer customer = convertUserToEntity(user);
-            return customerRepository.save(customer);
-        }
-        return null;
+    public UserDto registerUser(User user) {
+        Customer customer = convertUserToEntity(user);
+        customerRepository.save(customer);
+        return convertUserToUserDto(user);
     }
 
     @Override
@@ -44,25 +35,23 @@ public class CustomerServiceImpl implements CustomerService {
         return null;
     }
 
-    @Override // UPDATENYA ERROR, FIXIN BUAT BESOK
-    public CustomerDto update(String userName, CustomerDto customerDto) {
-        Customer customer = customerRepository.findById(userName).get();
+    @Override
+    public CustomerDto update(String id, CustomerDto customerDto) {
+        Customer customer = customerRepository.findById(id).get();
         validateUpdateData(customer, customerDto);
         customerRepository.save(customer);
         return customerDto;
     }
 
     @Override
-    public CustomerDto getCustomer(String userName) {
-        CustomerDto customerDto = convertToDto(customerRepository.findById(userName).get());
-        return customerDto;
+    public CustomerDto getById(String id) {
+        return convertEntityToDto(customerRepository.findById(id).get());
     }
 
     @Override
     public List<CustomerDto> getAll() {
         List<Customer> customerList = customerRepository.findAll();
-        List<CustomerDto> customerDtoList = customerList.stream().map(this::convertToDto).collect(Collectors.toList());
-        return customerDtoList;
+        return customerList.stream().map(this::convertEntityToDto).collect(Collectors.toList());
     }
 
     @Override
@@ -71,44 +60,27 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public Boolean validateUserData(User user) {
-        Set<ConstraintViolation<User>> violations = validator.validate(user);
-        return violations.isEmpty();
-    }
-
-    @Override
     public void validateUpdateData(Customer customer, CustomerDto customerDto) {
-        if(customerDto.getFullName() != null){
-            customer.setFullName(customerDto.getFullName());
-        } if (customerDto.getAddress() != null){
-            customer.setAddress(customerDto.getAddress());
-        } if (customerDto.getContact() != null){
-            customer.setContact(customerDto.getContact());
-        } if (customerDto.getEmail() != null){
-            customer.setContact(customerDto.getEmail());
-        } if (customerDto.getGender() != null){
-            customer.setGender(customerDto.getGender());
-        } if (customerDto.getJob() != null){
-            customer.setJob(customerDto.getJob());
-        }
+        if(customerDto.getFullName() != null) customer.setFullName(customerDto.getFullName());
+        if (customerDto.getAddress() != null) customer.setAddress(customerDto.getAddress());
+        if (customerDto.getContact() != null) customer.setContact(customerDto.getContact());
+        if (customerDto.getEmail() != null) customer.setContact(customerDto.getEmail());
+        if (customerDto.getGender() != null) customer.setGender(customerDto.getGender());
+        if (customerDto.getJob() != null) customer.setJob(customerDto.getJob());
     }
 
     @Override
-    public CustomerDto convertToDto(Customer customer) {
-        CustomerDto customerDto = modelMapper.map(customer, CustomerDto.class);
-        return customerDto;
+    public CustomerDto convertEntityToDto(Object entity) {
+        return modelMapper.map(entity, CustomerDto.class);
     }
 
     @Override
-    public Customer convertToEntity(CustomerDto customerDto) {
-        Customer customer = modelMapper.map(customerDto, Customer.class);
-        return customer;
+    public Customer convertUserToEntity(Object user) {
+        return modelMapper.map(user, Customer.class);
     }
 
     @Override
-    public Customer convertUserToEntity(User user) {
-        Customer customer = modelMapper.map(user, Customer.class);
-        return customer;
+    public UserDto convertUserToUserDto(User user) {
+        return modelMapper.map(user, UserDto.class);
     }
-
 }

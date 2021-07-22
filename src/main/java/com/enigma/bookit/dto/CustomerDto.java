@@ -1,12 +1,13 @@
 package com.enigma.bookit.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import lombok.experimental.Accessors;
 
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
 
-@Getter @Setter
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class CustomerDto {
     private String fullName;
     private String address;
@@ -15,5 +16,4 @@ public class CustomerDto {
     private String email;
     private String gender;
     private String job;
-
 }
