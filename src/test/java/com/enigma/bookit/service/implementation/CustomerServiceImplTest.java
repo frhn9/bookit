@@ -4,215 +4,158 @@ import com.enigma.bookit.dto.CustomerDto;
 import com.enigma.bookit.entity.user.Customer;
 import com.enigma.bookit.entity.user.User;
 import com.enigma.bookit.repository.CustomerRepository;
-import com.enigma.bookit.service.CustomerService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
-
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
 class CustomerServiceImplTest {
 
-    @InjectMocks
-    CustomerServiceImpl customerServiceImpl;
+    @Autowired
+    CustomerServiceImpl customerService;
 
-    @Mock
-    CustomerService customerService;
-
-    @Mock
+    @MockBean
     CustomerRepository customerRepository;
 
-    @Autowired
-    MockMvc mockMvc;
+    @Test
+    void register_shouldSave() {
+        User user = new User();
 
-    @Mock
-    ModelMapper modelMapper;
+        user.setId("usersuccess");
+        user.setUserName("admin");
+        user.setPassword("1234");
+        user.setFullName("fadiel");
+        user.setEmail("just_fadhyl@hotmail.co.id");
+        user.setCreatedAt(LocalDateTime.now());
+        user.setUpdatedAt(LocalDateTime.now());
+        user.setDeletedAt(LocalDateTime.now());
 
-    ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-    Validator validator = factory.getValidator();
+        customerService.registerUser(user);
+        customerRepository.save(customerService.convertUserToEntity(user));
+        List<User> users = new ArrayList<>();
+        users.add(user);
 
-    private User userSuccess;
-    private User userFailed;
-    private CustomerDto customerDtoSuccess;
-    private CustomerDto customerDtoFail;
+        Customer customer = customerService.convertUserToEntity(user);
+        List<Customer> customers = new ArrayList<>();
+        customers.add(customer);
 
-    private Customer customerEntity = new Customer();
-    private CustomerDto customerDTO = new CustomerDto();
-
-    @BeforeEach
-    void setup(){
-        userSuccess = new User();
-        userFailed = new User();
-
-        userSuccess.setUserName("admin");
-        userSuccess.setPassword("1234");
-        userSuccess.setFullName("fadiel");
-        userSuccess.setEmail("just_fadhyl@hotmail.co.id");
-
-        userFailed.setEmail("asal@gmail.com");
-
-        customerDtoSuccess = new CustomerDto();
-        customerDtoFail = new CustomerDto();
-
-        customerDtoSuccess.setFullName(userSuccess.getFullName());
-        customerDtoSuccess.setAddress("Perum PU Bandung");
-        customerDtoSuccess.setContact("0821123456");
-        customerDtoSuccess.setEmail("just_fadhyl@hotmail.co.id");
-        customerDtoSuccess.setGender("Cwk");
-        customerDtoSuccess.setJob("Pengangguran");
-
-        customerDtoFail.setContact("021212121");
-        customerDtoFail.setGender("cwk");
-
+        when(customerRepository.findAll()).thenReturn(customers);
+        assertEquals(1, customerRepository.findAll().size());
     }
 
     @Test
-    void validateUserData_shouldBeSuccess(){
-//        assertTrue(customerServiceImpl.validateUserData(userSuccess));
+    void shouldUpdate() {
+        Customer customer = new Customer();
+
+        customer.setId("usersuccess");
+        customer.setUserName("admin");
+        customer.setPassword("1234");
+        customer.setFullName("fadiel");
+        customer.setEmail("fadiel@gmail.com");
+        customer.setCreatedAt(LocalDateTime.now());
+        customer.setUpdatedAt(LocalDateTime.now());
+        customer.setDeletedAt(LocalDateTime.now());
+
+        CustomerDto customerDto = new CustomerDto();
+        customerDto.setId("usersuccess");
+        customerDto.setFullName("dinny");
+        customerDto.setEmail("dinny@gmail.com");
+        customerDto.setAddress("Bandung Yahud");
+        customerDto.setContact("082112345");
+        customerDto.setGender("cwk");
+        customerDto.setJob("nganggur bos");
+
+        customerRepository.save(customer);
+        when(customerRepository.findById("usersuccess")).thenReturn(Optional.of(customer));
+        customerService.update("usersuccess", customerDto);
+
+        when(customerRepository.findById("usersuccess")).thenReturn(Optional.of(customer));
+        assertEquals("dinny", customerRepository.findById("usersuccess").get().getFullName());
+        assertEquals("Bandung Yahud", customerRepository.findById("usersuccess").get().getAddress());
+        assertEquals("nganggur bos", customerRepository.findById("usersuccess").get().getJob());
     }
 
     @Test
-    void validateUserData_shouldBeFailed(){
-//        assertFalse(customerServiceImpl.validateUserData(userFailed));
+    void shouldGetById() {
+        Customer customer = new Customer();
+
+        customer.setId("usersuccess");
+        customer.setUserName("admin");
+        customer.setPassword("1234");
+        customer.setFullName("fadiel");
+        customer.setEmail("fadiel@gmail.com");
+        customer.setCreatedAt(LocalDateTime.now());
+        customer.setUpdatedAt(LocalDateTime.now());
+        customer.setDeletedAt(LocalDateTime.now());
+
+        CustomerDto customerDto = new CustomerDto();
+
+        customerRepository.save(customer);
+        when(customerRepository.findById(customer.getId())).thenReturn(Optional.of(customer));
+        customerDto.setId(customerService.getById("usersuccess").getId());
+        customerDto.setFullName(customerService.getById("usersuccess").getFullName());
+        customerDto.setEmail(customerService.getById("usersuccess").getEmail());
+
+        assertEquals(customer.getId(), customerDto.getId());
+        assertEquals(customer.getFullName(), customerDto.getFullName());
+        assertEquals(customer.getEmail(), customerDto.getEmail());
     }
 
     @Test
-    void validateUserData_shouldBeFailed_whenEmailIsNotRight(){
-        userFailed.setUserName("admin");
-        userFailed.setPassword("asal");
-        userFailed.setEmail("gak bener ini");
-        userFailed.setFullName("dieL");
+    void shouldGetAll() {
+        Customer customer = new Customer();
 
-//        assertFalse(customerServiceImpl.validateUserData(userFailed));
+        customer.setId("usersuccess");
+        customer.setUserName("admin");
+        customer.setPassword("1234");
+        customer.setFullName("fadiel");
+        customer.setEmail("fadiel@gmail.com");
+        customer.setCreatedAt(LocalDateTime.now());
+        customer.setUpdatedAt(LocalDateTime.now());
+        customer.setDeletedAt(LocalDateTime.now());
+
+        customerRepository.save(customer);
+
+        CustomerDto customerDto = new CustomerDto();
+        customerDto.setId(customer.getId());
+        customerDto.setFullName(customer.getFullName());
+        customerDto.setEmail(customer.getEmail());
+
+        List<Customer> customers = new ArrayList<>();
+        customers.add(customer);
+
+        when(customerRepository.findAll()).thenReturn(customers);
+        List<CustomerDto> customersDto = customerService.getAll();
+
+        assertEquals(1, customersDto.size());
     }
 
     @Test
-    void register_shouldBeSuccess(){
-//        Boolean validateCheck = customerServiceImpl.validateUserData(userSuccess);
-//        List<User> users = new ArrayList<>();
-//
-//        if (validateCheck) {
-//            User user = customerServiceImpl.registerUser(userSuccess);
-//            users.add(user);
-//        }
-//
-//        List<Customer> customer = users.stream().map(customerService::convertUserToEntity).collect(Collectors.toList());
-//        when(customerRepository.findAll()).thenReturn(customer);
-//        assertEquals(1, customerRepository.findAll().size());
+    void shouldDeleteById() {
+        Customer customer = new Customer();
+
+        customer.setId("usersuccess");
+        customer.setUserName("admin");
+        customer.setPassword("1234");
+        customer.setFullName("fadiel");
+        customer.setEmail("fadiel@gmail.com");
+        customer.setCreatedAt(LocalDateTime.now());
+        customer.setUpdatedAt(LocalDateTime.now());
+        customer.setDeletedAt(LocalDateTime.now());
+
+        customerRepository.save(customer);
+        customerService.deleteById("usersuccess");
+
+        assertEquals(0, customerRepository.findAll().size());
     }
 
-    @Test
-    void register_shouldBeFailed(){ //ntar
-//        Boolean validateCheck = customerServiceImpl.validateUserData(userFailed);
-//        List<Customer> customers = new ArrayList<>();
-//
-//        if (validateCheck) {
-//            Customer customer = customerServiceImpl.registerUser(userFailed);
-//            customers.add(customer);
-//        }
-//
-//        when(customerRepository.findAll()).thenReturn(customers);
-//        assertNotEquals(1, customerRepository.findAll().size());
-    }
-
-    @Test
-    void getByUsername_exist(){ //should getById
-//        customerRepository.save(customerService.registerUser(userSuccess));
-//        System.out.println(modelMapper.map(userSuccess, Customer.class));
-//        Optional<Customer> customerList = Optional.of(modelMapper.map(userSuccess, Customer.class));
-//        given(customerRepository.findById("admin")).willReturn(customerList);
-//        CustomerDto returned = customerService.getCustomer("admin");
-//        verify(customerRepository).findById("admin");
-//
-//        assertNotNull(returned);
-        customerDTO.setFullName("fadiel");
-        when(modelMapper.map(any(), any())).thenReturn(customerDTO);
-        when(customerRepository.findById(anyString())).thenReturn(Optional.of(customerEntity));
-        CustomerDto result = customerServiceImpl.getById("fadiel");
-
-        assertEquals("fadiel", result.getFullName());
-        assertNotNull(result);
-    }
-
-    @Test
-    void getByUsername_notExist(){ //should getById
-//        customerRepository.save(customerService.registerUser(userSuccess));
-//        System.out.println(modelMapper.map(userSuccess, Customer.class));
-//        Optional<Customer> customerList = Optional.of(modelMapper.map(userSuccess, Customer.class));
-//        given(customerRepository.findById("admin")).willReturn(customerList);
-//        CustomerDto returned = customerService.getCustomer("admin");
-//        verify(customerRepository).findById("admin");
-//
-//        assertNotNull(returned);
-        customerDTO.setFullName("fadil");
-        when(modelMapper.map(any(), any())).thenReturn(customerDTO);
-        when(customerRepository.findById(anyString())).thenReturn(Optional.of(customerEntity));
-        CustomerDto result = customerServiceImpl.getById("fadiel");
-
-        assertNotEquals("fadiel", result.getFullName());
-        assertNotNull(result);
-    }
-
-    @Test
-    void getAll() { //ntar
-//        Customer customer = customerServiceImpl.registerUser(userSuccess);
-//        customerDTO = modelMapper.map(customer, CustomerDto.class);
-//        List<CustomerDto> customerDtoList = new ArrayList<>();
-//        customerDtoList.add(customerDTO);
-//
-//        when(customerServiceImpl.getAll()).thenReturn(customerDtoList);
-//        assertEquals(1, customerRepository.findAll().size());
-    }
-
-    @Test
-    void update_shouldSuccess(){
-//        customerEntity = modelMapper.map(customerDtoSuccess, Customer.class);
-//        customerEntity.setUserName("fadiel");
-//        customerRepository.save(customerEntity);
-//        customerDtoSuccess.setAddress("Bandung Yahud");
-//        Customer updated = customerService.update(customerEntity.getUserName(), customerDtoSuccess);
-//
-//        Optional<Customer> customerList = Optional.of((updated));
-//        given(customerRepository.findById("fadiel")).willReturn(customerList);
-//
-//        assertEquals("Bandung Yahud", customerList.get().getAddress());
-//        customerDtoSuccess.setAddress("Bandung Yahud");
-        customerRepository.save(modelMapper.map(userSuccess, Customer.class));
-//        System.out.println(customerRepository.findById("admin").get().getEmail());
-
-//        when(customerService.update(customerEntity.getUserName(), customerDtoSuccess)).thenReturn(customerDtoSuccess);
-//        customerDTO.setFullName("admin");
-        Customer customerSuccess = new Customer();
-        customerSuccess.setUserName("admin");
-//        when(modelMapper.map(any(), any())).thenReturn(customerDtoSuccess);
-        CustomerDto customer = customerService.update(customerSuccess.getUserName(), customerDtoSuccess);
-//        when(customerServiceImpl.update("admin", customerDtoSuccess)).thenReturn(customerDtoSuccess);
-//        System.out.println(customer.getAddress());
-//        Optional<Customer> customerList = Optional.of((modelMapper.map(customer, Customer.class)));
-//        given(customerRepository.findById("fadiel")).willReturn(customerList);
-//
-//        assertEquals("Bandung Yahud", customerList.get().getAddress());
-    }
-
-    void deleteById() {
-    }
 }

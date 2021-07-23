@@ -7,6 +7,7 @@ import com.enigma.bookit.dto.CustomerDto;
 import com.enigma.bookit.dto.UserDto;
 import com.enigma.bookit.entity.user.User;
 import com.enigma.bookit.service.CustomerService;
+import com.enigma.bookit.service.converter.UserConverter;
 import com.enigma.bookit.utils.DeleteResponse;
 import com.enigma.bookit.utils.Response;
 import org.springframework.beans.factory.annotation.Autowired;

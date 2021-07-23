@@ -1,7 +1,6 @@
 package com.enigma.bookit.dto;
 
 import lombok.*;
-import lombok.experimental.Accessors;
 
 import javax.validation.constraints.Email;
 
@@ -9,6 +8,7 @@ import javax.validation.constraints.Email;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CustomerDto {
+    private String id;
     private String fullName;
     private String address;
     private String contact;
