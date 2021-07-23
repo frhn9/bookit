@@ -1,23 +1,21 @@
 package com.enigma.bookit.service.implementation;
 
 import com.enigma.bookit.dto.OwnerDto;
+import com.enigma.bookit.dto.UserDto;
 import com.enigma.bookit.entity.user.Owner;
+import com.enigma.bookit.entity.user.User;
 import com.enigma.bookit.repository.OwnerRepository;
 import com.enigma.bookit.service.OwnerService;
+import com.enigma.bookit.service.converter.UserConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-public class OwnerServiceImpl implements OwnerService {
+public class OwnerServiceImpl implements OwnerService, UserConverter {
 
     @Autowired
     OwnerRepository ownerRepository;
@@ -25,25 +23,35 @@ public class OwnerServiceImpl implements OwnerService {
     @Autowired
     private ModelMapper modelMapper;
 
-    ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-    Validator validator = factory.getValidator();
+    @Override
+    public UserDto registerUser(User user) {
+        Owner owner = convertUserToEntity(user);
+        ownerRepository.save(owner);
+        return convertUserToUserDto(user);
+    }
 
     @Override
-    public void save(OwnerDto ownerDto) {
-        validateData(ownerDto);
+    public Owner changePassword(User user) {
+        return null;
+    }
+
+    @Override
+    public OwnerDto update(String id, OwnerDto ownerDto) {
+        Owner owner = ownerRepository.findById(id).get();
+        validateUpdateData(owner, ownerDto);
+        ownerRepository.save(owner);
+        return ownerDto;
     }
 
     @Override
     public OwnerDto getById(String id) {
-        OwnerDto ownerDto = convertToDto(ownerRepository.findById(id).get());
-        return ownerDto;
+        return convertEntityToDto(ownerRepository.findById(id).get());
     }
 
     @Override
     public List<OwnerDto> getAll() {
         List<Owner> ownerList = ownerRepository.findAll();
-        List<OwnerDto> ownerDtoList = ownerList.stream().map(this::convertToDto).collect(Collectors.toList());
-        return ownerDtoList;
+        return ownerList.stream().map(this::convertEntityToDto).collect(Collectors.toList());
     }
 
     @Override
@@ -52,25 +60,27 @@ public class OwnerServiceImpl implements OwnerService {
     }
 
     @Override
-    public Owner validateData(OwnerDto ownerDto) {
-        Set<ConstraintViolation<OwnerDto>> violations = validator.validate(ownerDto);
-        if (violations.size() == 0){
-            Owner owner = convertToEntity(ownerDto);
-            return ownerRepository.save(owner);
-        }
-        return null;
+    public void validateUpdateData(Owner owner, OwnerDto ownerDto) {
+        if(ownerDto.getFullName() != null) owner.setFullName(ownerDto.getFullName());
+        if (ownerDto.getAddress() != null) owner.setAddress(ownerDto.getAddress());
+        if (ownerDto.getContact() != null) owner.setContact(ownerDto.getContact());
+        if (ownerDto.getEmail() != null) owner.setContact(ownerDto.getEmail());
+        if (ownerDto.getGender() != null) owner.setGender(ownerDto.getGender());
     }
 
     @Override
-    public OwnerDto convertToDto(Owner owner) {
-        OwnerDto ownerDto = modelMapper.map(owner, OwnerDto.class);
-        return ownerDto;
+    public OwnerDto convertEntityToDto(Object entity) {
+        return modelMapper.map(entity, OwnerDto.class);
     }
 
     @Override
-    public Owner convertToEntity(OwnerDto ownerDto) {
-        Owner owner = modelMapper.map(ownerDto, Owner.class);
-        return owner;
+    public Owner convertUserToEntity(Object user) {
+        return modelMapper.map(user, Owner.class);
+    }
+
+    @Override
+    public UserDto convertUserToUserDto(User user) {
+        return modelMapper.map(user, UserDto.class);
     }
 
 }

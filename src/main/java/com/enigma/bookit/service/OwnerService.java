@@ -1,12 +1,19 @@
 package com.enigma.bookit.service;
 
 import com.enigma.bookit.dto.OwnerDto;
+import com.enigma.bookit.dto.UserDto;
 import com.enigma.bookit.entity.user.Owner;
+import com.enigma.bookit.entity.user.User;
 
 import java.util.List;
 
 public interface OwnerService {
-    void save(OwnerDto ownerDto);
+
+    UserDto registerUser(User user);
+
+    Owner changePassword(User user);
+
+    OwnerDto update(String id, OwnerDto ownerDto);
 
     OwnerDto getById(String id);
 
@@ -14,9 +21,5 @@ public interface OwnerService {
 
     void deleteById(String id);
 
-    Owner validateData(OwnerDto ownerDto);
-
-    OwnerDto convertToDto(Owner owner);
-
-    Owner convertToEntity(OwnerDto ownerDto);
+    void validateUpdateData(Owner owner, OwnerDto ownerDto);
 }

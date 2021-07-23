@@ -9,7 +9,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @MappedSuperclass
@@ -20,7 +19,7 @@ public class User {
     @Id
     @GeneratedValue(generator = "system-uuid")
     @GenericGenerator(name = "system-uuid", strategy = "uuid")
-    private String id = null;
+    private String id;
     @NotBlank(message = "Username must not be blank")
     private String userName;
     @NotBlank(message = "Full name cannot be empty")

@@ -12,9 +12,9 @@ public interface CustomerService {
 
     Customer changePassword(User user);
 
-    CustomerDto update(String userName, CustomerDto customerDto);
+    CustomerDto update(String id, CustomerDto customerDto);
 
-    CustomerDto getById(String fullName);
+    CustomerDto getById(String id);
 
     List<CustomerDto> getAll();
 

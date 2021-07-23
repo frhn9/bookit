@@ -56,6 +56,20 @@ public class CustomerController {
         }
     }
 
+    @GetMapping
+    public ResponseEntity<Response<List<CustomerDto>>> getAllCustomer() {
+        try{
+            Response<List<CustomerDto>> response = new Response<>();
+            response.setCode(HttpStatus.OK.value());
+            response.setStatus(HttpStatus.OK.name());
+            response.setData(customerService.getAll());
+            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(response);
+        } catch (NoSuchElementException ex) {
+            String error = ErrorMessageConstant.GET_DATA_FAILED;
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, error);
+        }
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<Response<CustomerDto>> updateCustomerDto(@PathVariable String id, @RequestBody CustomerDto customerDto) {
         try {
@@ -73,20 +87,6 @@ public class CustomerController {
     @PutMapping("/update")
     public User changePassword(@RequestParam String id, @RequestBody User user) {
         return customerService.changePassword(user);
-    }
-
-    @GetMapping
-    public ResponseEntity<Response<List<CustomerDto>>> getAllCustomer() {
-        try{
-            Response<List<CustomerDto>> response = new Response<>();
-            response.setCode(HttpStatus.OK.value());
-            response.setStatus(HttpStatus.OK.name());
-            response.setData(customerService.getAll());
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(response);
-        } catch (NoSuchElementException ex) {
-            String error = ErrorMessageConstant.GET_DATA_FAILED;
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, error);
-        }
     }
 
     @DeleteMapping("/{id}")
