@@ -7,7 +7,6 @@ import com.enigma.bookit.dto.CustomerDto;
 import com.enigma.bookit.dto.UserDto;
 import com.enigma.bookit.entity.user.User;
 import com.enigma.bookit.service.CustomerService;
-import com.enigma.bookit.service.converter.UserConverter;
 import com.enigma.bookit.utils.DeleteResponse;
 import com.enigma.bookit.utils.Response;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,10 +84,10 @@ public class CustomerController {
         }
     }
 
-    @PutMapping("/update")
-    public User changePassword(@RequestParam String id, @RequestBody User user) {
-        return customerService.changePassword(user);
-    }
+//    @PutMapping("/update")
+//    public User changePassword(@RequestParam String id, @RequestBody User user) {
+//        return customerService.changePassword(user);
+//    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<DeleteResponse> deleteCustomer(@PathVariable String id){

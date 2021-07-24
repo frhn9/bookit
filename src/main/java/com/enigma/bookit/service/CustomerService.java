@@ -10,7 +10,7 @@ import java.util.List;
 public interface CustomerService {
     UserDto registerUser(User user);
 
-    Customer changePassword(User user);
+    UserDto changePassword(String id, String password);
 
     CustomerDto update(String id, CustomerDto customerDto);
 

@@ -11,7 +11,7 @@ public interface OwnerService {
 
     UserDto registerUser(User user);
 
-    Owner changePassword(User user);
+    UserDto changePassword(String id, String password);
 
     OwnerDto update(String id, OwnerDto ownerDto);
 

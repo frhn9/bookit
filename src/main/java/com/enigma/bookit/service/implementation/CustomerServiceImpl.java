@@ -31,8 +31,11 @@ public class CustomerServiceImpl implements CustomerService, UserConverter {
     }
 
     @Override
-    public Customer changePassword(User user) {
-        return null;
+    public UserDto changePassword(String id, String password) {
+        Customer customer = customerRepository.findById(id).get();
+        customer.setPassword(password);
+        User user = convertEntityToUser(customer);
+        return convertUserToUserDto(user);
     }
 
     @Override
@@ -77,6 +80,11 @@ public class CustomerServiceImpl implements CustomerService, UserConverter {
     @Override
     public Customer convertUserToEntity(Object user) {
         return modelMapper.map(user, Customer.class);
+    }
+
+    @Override
+    public User convertEntityToUser(Object entity) {
+        return modelMapper.map(entity, User.class);
     }
 
     @Override

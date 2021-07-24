@@ -84,10 +84,10 @@ public class OwnerController {
         }
     }
 
-    @PutMapping("/update")
-    public User changePassword(@RequestParam String id, @RequestBody User user) {
-        return ownerService.changePassword(user);
-    }
+//    @PutMapping("/update")
+//    public User changePassword(@RequestParam String id, @RequestBody User user) {
+//        return ownerService.changePassword(user);
+//    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<DeleteResponse> deleteOwner(@PathVariable String id){

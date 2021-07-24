@@ -8,6 +8,7 @@ import javax.validation.constraints.Email;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OwnerDto {
+    private String id;
     private String fullName;
     private String address;
     private String contact;

@@ -37,7 +37,6 @@ class CustomerServiceImplTest {
         user.setEmail("just_fadhyl@hotmail.co.id");
         user.setCreatedAt(LocalDateTime.now());
         user.setUpdatedAt(LocalDateTime.now());
-        user.setDeletedAt(LocalDateTime.now());
 
         customerService.registerUser(user);
         customerRepository.save(customerService.convertUserToEntity(user));
@@ -53,6 +52,26 @@ class CustomerServiceImplTest {
     }
 
     @Test
+    void changePassword() {
+        Customer customer = new Customer();
+
+        customer.setId("usersuccess");
+        customer.setUserName("admin");
+        customer.setPassword("1234");
+        customer.setFullName("fadiel");
+        customer.setEmail("fadiel@gmail.com");
+        customer.setCreatedAt(LocalDateTime.now());
+        customer.setUpdatedAt(LocalDateTime.now());
+
+        customerRepository.save(customer);
+        when(customerRepository.findById("usersuccess")).thenReturn(Optional.of(customer));
+        customerService.changePassword("usersuccess", "passwordchanged");
+
+        assertEquals("passwordchanged", customerRepository.findById("usersuccess")
+                    .get().getPassword());
+    }
+
+    @Test
     void shouldUpdate() {
         Customer customer = new Customer();
 
@@ -63,7 +82,6 @@ class CustomerServiceImplTest {
         customer.setEmail("fadiel@gmail.com");
         customer.setCreatedAt(LocalDateTime.now());
         customer.setUpdatedAt(LocalDateTime.now());
-        customer.setDeletedAt(LocalDateTime.now());
 
         CustomerDto customerDto = new CustomerDto();
         customerDto.setId("usersuccess");
@@ -95,7 +113,6 @@ class CustomerServiceImplTest {
         customer.setEmail("fadiel@gmail.com");
         customer.setCreatedAt(LocalDateTime.now());
         customer.setUpdatedAt(LocalDateTime.now());
-        customer.setDeletedAt(LocalDateTime.now());
 
         CustomerDto customerDto = new CustomerDto();
 
@@ -121,7 +138,6 @@ class CustomerServiceImplTest {
         customer.setEmail("fadiel@gmail.com");
         customer.setCreatedAt(LocalDateTime.now());
         customer.setUpdatedAt(LocalDateTime.now());
-        customer.setDeletedAt(LocalDateTime.now());
 
         customerRepository.save(customer);
 
@@ -150,7 +166,6 @@ class CustomerServiceImplTest {
         customer.setEmail("fadiel@gmail.com");
         customer.setCreatedAt(LocalDateTime.now());
         customer.setUpdatedAt(LocalDateTime.now());
-        customer.setDeletedAt(LocalDateTime.now());
 
         customerRepository.save(customer);
         customerService.deleteById("usersuccess");

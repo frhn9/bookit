@@ -31,8 +31,11 @@ public class OwnerServiceImpl implements OwnerService, UserConverter {
     }
 
     @Override
-    public Owner changePassword(User user) {
-        return null;
+    public UserDto changePassword(String id, String password) {
+        Owner owner = ownerRepository.findById(id).get();
+        owner.setPassword(password);
+        User user = convertEntityToUser(owner);
+        return convertUserToUserDto(user);
     }
 
     @Override
@@ -76,6 +79,11 @@ public class OwnerServiceImpl implements OwnerService, UserConverter {
     @Override
     public Owner convertUserToEntity(Object user) {
         return modelMapper.map(user, Owner.class);
+    }
+
+    @Override
+    public User convertEntityToUser(Object entity) {
+        return modelMapper.map(entity, User.class);
     }
 
     @Override

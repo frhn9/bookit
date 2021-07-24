@@ -8,5 +8,6 @@ import org.springframework.stereotype.Component;
 public interface UserConverter<T, S> {
     T convertEntityToDto(S entity);
     T convertUserToEntity(S user);
+    User convertEntityToUser(S entity);
     UserDto convertUserToUserDto(User user);
 }
