@@ -7,7 +7,9 @@ import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.sql.Timestamp;
 import java.util.Date;
 
 @Entity
@@ -23,13 +25,8 @@ public class Refund {
     @JoinColumn(name = "book_id")
     @JsonIgnoreProperties("refund")
     private Book book;
-    private Date requestRefundTime;
-    private Date refundDate;
+    private Timestamp requestRefundTime;
+    private Timestamp refundTime;
     private Boolean status;
-    private BigInteger refundAmount;
-
-    public Refund(String id, Book book) {
-        this.id = id;
-        this.book = book;
-    }
+    private BigDecimal refundAmount;
 }

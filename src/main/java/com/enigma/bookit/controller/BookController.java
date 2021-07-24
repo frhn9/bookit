@@ -2,14 +2,8 @@ package com.enigma.bookit.controller;
 
 import com.enigma.bookit.constant.ApiUrlConstant;
 import com.enigma.bookit.entity.Book;
-import com.enigma.bookit.entity.Category;
 import com.enigma.bookit.service.BookService;
-import com.enigma.bookit.service.CategoryService;
-import com.enigma.bookit.utils.Response;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

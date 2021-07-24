@@ -27,10 +27,11 @@ public class Feedback {
     @Column(columnDefinition="TEXT")
     private String response;
 
-    public Feedback(String id, Book book, Integer rating, String feedback) {
+    public Feedback(String id, Book book, Integer rating, String feedback, String response) {
         this.id = id;
         this.book = book;
         this.rating = rating;
         this.feedback = feedback;
+        this.response = response;
     }
 }

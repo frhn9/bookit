@@ -23,10 +23,10 @@ public class Book {
     @Column(name="book_id")
     private String id;
     @Column(name ="active_from")
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Timestamp activeFrom;
     @Column(name ="active_until")
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Timestamp activeUntil;
 
     @OneToOne

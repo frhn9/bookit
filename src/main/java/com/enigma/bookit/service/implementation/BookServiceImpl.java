@@ -8,6 +8,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -24,6 +26,14 @@ public class BookServiceImpl implements BookService {
     @Override
     public Book getBookById(String id) {
         return bookRepository.findById(id).get();
+    }
+
+    public Boolean checkActiveBook(String id){
+        Book book = bookRepository.findById(id).get();
+        if(new Timestamp(new Date().getTime()).compareTo(book.getActiveUntil()) > 0){
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -48,4 +58,11 @@ public class BookServiceImpl implements BookService {
     public Page<Book> getBookPerPage(Pageable pagable) {
         return bookRepository.findAll(pagable);
     }
+
+    @Override
+    public List<Integer> getCapacity(String id, Timestamp start, Timestamp stop) {
+        return bookRepository.countCap(id, start, stop);
+    }
+
+
 }
