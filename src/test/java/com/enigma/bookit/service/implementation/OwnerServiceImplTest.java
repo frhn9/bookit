@@ -1,8 +1,6 @@
 package com.enigma.bookit.service.implementation;
 
-import com.enigma.bookit.dto.CustomerDto;
 import com.enigma.bookit.dto.OwnerDto;
-import com.enigma.bookit.entity.user.Customer;
 import com.enigma.bookit.entity.user.Owner;
 import com.enigma.bookit.entity.user.User;
 import com.enigma.bookit.repository.OwnerRepository;
@@ -84,7 +82,6 @@ class OwnerServiceImplTest {
         owner.setEmail("fadiel@gmail.com");
         owner.setCreatedAt(LocalDateTime.now());
         owner.setUpdatedAt(LocalDateTime.now());
-//        owner.setDeletedAt(LocalDateTime.now());
 
         OwnerDto ownerDto = new OwnerDto();
         ownerDto.setId("usersuccess");
@@ -115,7 +112,6 @@ class OwnerServiceImplTest {
         owner.setEmail("fadiel@gmail.com");
         owner.setCreatedAt(LocalDateTime.now());
         owner.setUpdatedAt(LocalDateTime.now());
-//        owner.setDeletedAt(LocalDateTime.now());
 
         OwnerDto ownerDto = new OwnerDto();
 

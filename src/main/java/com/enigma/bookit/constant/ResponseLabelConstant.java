@@ -1,6 +1,6 @@
 package com.enigma.bookit.constant;
 
-public class ValidationConstant {
+public class ResponseLabelConstant {
     public static final String LABEL_STATUS = "status";
     public static final String LABEL_CODE = "code";
     public static final String LABEL_MESSAGE = "message";

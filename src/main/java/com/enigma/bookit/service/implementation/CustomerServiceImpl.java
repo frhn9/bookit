@@ -34,6 +34,7 @@ public class CustomerServiceImpl implements CustomerService, UserConverter {
     public UserDto changePassword(String id, String password) {
         Customer customer = customerRepository.findById(id).get();
         customer.setPassword(password);
+        customerRepository.save(customer);
         User user = convertEntityToUser(customer);
         return convertUserToUserDto(user);
     }

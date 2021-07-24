@@ -1,7 +1,5 @@
 package com.enigma.bookit.entity.user;
 
-import com.enigma.bookit.dto.CustomerDto;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;

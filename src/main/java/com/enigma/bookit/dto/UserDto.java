@@ -1,16 +1,11 @@
 package com.enigma.bookit.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserDto {
-    private String id;
     private String userName;
     private String fullName;
     private String email;
