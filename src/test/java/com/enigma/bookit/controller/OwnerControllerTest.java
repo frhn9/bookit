@@ -3,17 +3,15 @@ package com.enigma.bookit.controller;
 import com.enigma.bookit.constant.ApiUrlConstant;
 import com.enigma.bookit.constant.ErrorMessageConstant;
 import com.enigma.bookit.constant.SuccessMessageConstant;
-import com.enigma.bookit.dto.CustomerDto;
+import com.enigma.bookit.dto.OwnerDto;
 import com.enigma.bookit.dto.UserDto;
 import com.enigma.bookit.entity.user.User;
-import com.enigma.bookit.repository.CustomerRepository;
-import com.enigma.bookit.service.CustomerService;
+import com.enigma.bookit.service.OwnerService;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -26,25 +24,26 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
-@WebMvcTest(controllers = CustomerController.class)
-@Import(CustomerController.class)
-class CustomerControllerTest {
+@WebMvcTest(controllers = OwnerController.class)
+@Import(OwnerController.class)
+class OwnerControllerTest {
 
     @MockBean
-    CustomerService customerService;
+    OwnerService ownerService;
 
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
-    CustomerController customerController;
-
+    OwnerController ownerController;
 
     public static String asJsonString(final Object obj) {
         try {
@@ -56,7 +55,7 @@ class CustomerControllerTest {
 
     @SneakyThrows
     @Test
-    void registerCustomer_shouldSendSuccessResponse() {
+    void registerOwner_shouldSendSuccessResponse() {
         User user = new User();
 
         user.setId("usersuccess");
@@ -70,9 +69,9 @@ class CustomerControllerTest {
         userDto.setFullName(user.getFullName());
         userDto.setEmail(user.getEmail());
 
-        when(customerService.registerUser(ArgumentMatchers.any())).thenReturn(userDto);
+        when(ownerService.registerUser(ArgumentMatchers.any())).thenReturn(userDto);
 
-        mockMvc.perform(post(ApiUrlConstant.CUSTOMER)
+        mockMvc.perform(post(ApiUrlConstant.OWNER)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(asJsonString(user)).accept(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.code",is(HttpStatus.CREATED.value())))
@@ -83,7 +82,7 @@ class CustomerControllerTest {
 
     @SneakyThrows
     @Test
-    void registerCustomer_shouldSendFailedResponse() {
+    void registerOwner_shouldSendFailedResponse() {
         User user = new User();
 
         user.setId("usersuccess");
@@ -94,9 +93,9 @@ class CustomerControllerTest {
         userDto.setFullName(user.getFullName());
         userDto.setEmail(user.getEmail());
 
-        when(customerService.registerUser(ArgumentMatchers.any())).thenReturn(userDto);
+        when(ownerService.registerUser(ArgumentMatchers.any())).thenReturn(userDto);
 
-        mockMvc.perform(post(ApiUrlConstant.CUSTOMER)
+        mockMvc.perform(post(ApiUrlConstant.OWNER)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(asJsonString(user)).accept(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.code",is(HttpStatus.BAD_REQUEST.value())))
@@ -105,7 +104,7 @@ class CustomerControllerTest {
 
     @SneakyThrows
     @Test
-    void getCustomerById_shouldSendSuccessResponse() {
+    void getOwnerById_shouldSendSuccessResponse() {
         User user = new User();
         user.setId("usersuccess");
         user.setUserName("admin");
@@ -113,31 +112,29 @@ class CustomerControllerTest {
         user.setFullName("fadiel");
         user.setEmail("just_fadhyl@hotmail.co.id");
 
-        CustomerDto customerDto = new CustomerDto();
-        customerDto.setId(user.getId());
-        customerDto.setFullName(user.getFullName());
-        customerDto.setEmail(user.getEmail());
-        customerDto.setJob("pengangguran");
+        OwnerDto ownerDto = new OwnerDto();
+        ownerDto.setId(user.getId());
+        ownerDto.setFullName(user.getFullName());
+        ownerDto.setEmail(user.getEmail());
 
-        customerService.registerUser(user);
-        when(customerService.getById(ArgumentMatchers.any())).thenReturn(customerDto);
+        ownerService.registerUser(user);
+        when(ownerService.getById(ArgumentMatchers.any())).thenReturn(ownerDto);
 
-        mockMvc.perform(get(ApiUrlConstant.CUSTOMER+"/"+customerDto.getId()))
+        mockMvc.perform(get(ApiUrlConstant.OWNER+"/"+ownerDto.getId()))
                 .andExpect(jsonPath("$.code",is(HttpStatus.OK.value())))
                 .andExpect(jsonPath("$.status", is(HttpStatus.OK.name())))
                 .andExpect(jsonPath("$.message", is(SuccessMessageConstant.GET_DATA_SUCCESSFUL)))
-                .andExpect(jsonPath("$.data.id", is(customerDto.getId())))
-                .andExpect(jsonPath("$.data.fullName", is(customerDto.getFullName())))
-                .andExpect(jsonPath("$.data.email", is(customerDto.getEmail())))
-                .andExpect(jsonPath("$.data.job", is(customerDto.getJob())));
+                .andExpect(jsonPath("$.data.id", is(ownerDto.getId())))
+                .andExpect(jsonPath("$.data.fullName", is(ownerDto.getFullName())))
+                .andExpect(jsonPath("$.data.email", is(ownerDto.getEmail())));
     }
 
     @SneakyThrows
     @Test
-    void getCustomerById_shouldSendFailedResponse()  {
-        when(customerService.getById(ArgumentMatchers.any())).thenThrow(new NoSuchElementException());
+    void getOwnerById_shouldSendFailedResponse() {
+        when(ownerService.getById(ArgumentMatchers.any())).thenThrow(new NoSuchElementException());
 
-        mockMvc.perform(get(ApiUrlConstant.CUSTOMER+"/asalaja"))
+        mockMvc.perform(get(ApiUrlConstant.OWNER+"/asalaja"))
                 .andExpect(jsonPath("$.code",is(HttpStatus.NOT_FOUND.value())))
                 .andExpect(jsonPath("$.status",is(HttpStatus.NOT_FOUND.name())))
                 .andExpect(jsonPath("$.message", is(ErrorMessageConstant.GET_OR_UPDATE_DATA_FAILED)));
@@ -145,34 +142,32 @@ class CustomerControllerTest {
 
     @SneakyThrows
     @Test
-    void getAllCustomer_shouldSendSuccessResponse() {
-        CustomerDto customerDto = new CustomerDto();
-        customerDto.setId("usersuccess");
-        customerDto.setFullName("fadiel");
-        customerDto.setEmail("dinny@gmail.com");
-        customerDto.setJob("pengangguran");
+    void getAllOwner_shouldSendSuccessResponse() {
+        OwnerDto ownerDto = new OwnerDto();
+        ownerDto.setId("usersuccess");
+        ownerDto.setFullName("fadiel");
+        ownerDto.setEmail("dinny@gmail.com");
 
-        List<CustomerDto> customerDtos = new ArrayList<>();
-        customerDtos.add(customerDto);
+        List<OwnerDto> ownerDtos = new ArrayList<>();
+        ownerDtos.add(ownerDto);
 
-        when(customerService.getAll()).thenReturn(customerDtos);
+        when(ownerService.getAll()).thenReturn(ownerDtos);
 
-        mockMvc.perform(get(ApiUrlConstant.CUSTOMER))
+        mockMvc.perform(get(ApiUrlConstant.OWNER))
                 .andExpect(jsonPath("$.code",is(HttpStatus.OK.value())))
                 .andExpect(jsonPath("$.status",is(HttpStatus.OK.name())))
                 .andExpect(jsonPath("$.message",is(SuccessMessageConstant.GET_DATA_SUCCESSFUL)))
-                .andExpect(jsonPath("$.data[0].id", is(customerDto.getId())))
-                .andExpect(jsonPath("$.data[0].fullName", is(customerDto.getFullName())))
-                .andExpect(jsonPath("$.data[0].email", is(customerDto.getEmail())))
-                .andExpect(jsonPath("$.data[0].job", is(customerDto.getJob())));
+                .andExpect(jsonPath("$.data[0].id", is(ownerDto.getId())))
+                .andExpect(jsonPath("$.data[0].fullName", is(ownerDto.getFullName())))
+                .andExpect(jsonPath("$.data[0].email", is(ownerDto.getEmail())));
     }
 
     @SneakyThrows
     @Test
-    void getAllCustomer_shouldSendFailedResponse()  {
-        when(customerService.getAll()).thenThrow(new NoSuchElementException());
+    void getAllOwner_shouldSendFailedResponse() {
+        when(ownerService.getAll()).thenThrow(new NoSuchElementException());
 
-        mockMvc.perform(get(ApiUrlConstant.CUSTOMER))
+        mockMvc.perform(get(ApiUrlConstant.OWNER))
                 .andExpect(jsonPath("$.code",is(HttpStatus.NOT_FOUND.value())))
                 .andExpect(jsonPath("$.status",is(HttpStatus.NOT_FOUND.name())))
                 .andExpect(jsonPath("$.message", is(ErrorMessageConstant.GET_OR_UPDATE_DATA_FAILED)));
@@ -180,37 +175,35 @@ class CustomerControllerTest {
 
     @SneakyThrows
     @Test
-    void updateCustomerDto_shouldSendSuccessResponse() {
-        CustomerDto customerDto = new CustomerDto();
-        customerDto.setId("usersuccess");
-        customerDto.setFullName("fadiel");
-        customerDto.setEmail("dinny@gmail.com");
-        customerDto.setJob("pengangguran");
+    void updateOwnerDto_shouldSendSuccessResponse() {
+        OwnerDto ownerDto = new OwnerDto();
+        ownerDto.setId("usersuccess");
+        ownerDto.setFullName("fadiel");
+        ownerDto.setEmail("dinny@gmail.com");
 
-        when(customerService.update(customerDto.getId(), customerDto)).thenReturn(customerDto);
-        mockMvc.perform(put(ApiUrlConstant.CUSTOMER+"/"+customerDto.getId())
+        when(ownerService.update(ownerDto.getId(), ownerDto)).thenReturn(ownerDto);
+        mockMvc.perform(put(ApiUrlConstant.OWNER+"/"+ownerDto.getId())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(asJsonString(customerDto)).accept(MediaType.APPLICATION_JSON))
+                .content(asJsonString(ownerDto)).accept(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.code",is(HttpStatus.OK.value())))
                 .andExpect(jsonPath("$.status", is(HttpStatus.OK.name())))
                 .andExpect(jsonPath("$.message", is(SuccessMessageConstant.UPDATE_DATA_SUCCESSFUL)))
-                .andExpect(jsonPath("$.data.id", is(customerDto.getId())))
-                .andExpect(jsonPath("$.data.email", is(customerDto.getEmail())))
-                .andExpect(jsonPath("$.data.fullName", is(customerDto.getFullName())))
-                .andExpect(jsonPath("$.data.job", is(customerDto.getJob())));
+                .andExpect(jsonPath("$.data.id", is(ownerDto.getId())))
+                .andExpect(jsonPath("$.data.email", is(ownerDto.getEmail())))
+                .andExpect(jsonPath("$.data.fullName", is(ownerDto.getFullName())));
     }
 
     @SneakyThrows
     @Test
-    void updateCustomerDto_shouldSendFailedResponse() {
-        CustomerDto customerDto = new CustomerDto();
-        customerDto.setId("usersuccess");
-        customerDto.setFullName("fadiel");
-        when(customerService.update(anyString(), ArgumentMatchers.any())).thenThrow(new NoSuchElementException());
+    void updateOwnerDto_shouldSendFailedResponse() {
+        OwnerDto ownerDto = new OwnerDto();
+        ownerDto.setId("usersuccess");
+        ownerDto.setFullName("fadiel");
+        when(ownerService.update(anyString(), ArgumentMatchers.any())).thenThrow(new NoSuchElementException());
 
-        mockMvc.perform(put(ApiUrlConstant.CUSTOMER+"/asalaja")
+        mockMvc.perform(put(ApiUrlConstant.OWNER+"/asalaja")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(asJsonString(customerDto)).accept(MediaType.APPLICATION_JSON))
+                .content(asJsonString(ownerDto)).accept(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.code",is(HttpStatus.NOT_FOUND.value())))
                 .andExpect(jsonPath("$.status",is(HttpStatus.NOT_FOUND.name())))
                 .andExpect(jsonPath("$.message", is(ErrorMessageConstant.GET_OR_UPDATE_DATA_FAILED)));
@@ -218,7 +211,7 @@ class CustomerControllerTest {
 
     @SneakyThrows
     @Test
-    void changePassword_shouldSendSuccessMessage() {
+    void changePassword_shouldSendSuccessResponse() {
         User user = new User();
         user.setId("ngehe");
         user.setUserName("fadiel");
@@ -231,9 +224,9 @@ class CustomerControllerTest {
         userDto.setFullName(user.getFullName());
         userDto.setEmail(user.getEmail());
 
-        when(customerService.changePassword(user.getId(), "jajaja")).thenReturn(userDto);
+        when(ownerService.changePassword(user.getId(), "jajaja")).thenReturn(userDto);
 
-        mockMvc.perform(put(ApiUrlConstant.CUSTOMER+"?id=ngehe")
+        mockMvc.perform(put(ApiUrlConstant.OWNER+"?id=ngehe")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(user.getPassword()).accept(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
@@ -244,7 +237,7 @@ class CustomerControllerTest {
 
     @SneakyThrows
     @Test
-    void changePassword_shouldSendFailedMessage(){
+    void changePassword_shouldSendFailedResponse(){
         User user = new User();
         user.setId("ngehe");
         user.setUserName("fadiel");
@@ -252,9 +245,9 @@ class CustomerControllerTest {
         user.setPassword("ngehe");
         user.setEmail("hehe@gmail.com");
 
-        when(customerService.changePassword(anyString(), anyString())).thenThrow(new NoSuchElementException());
+        when(ownerService.changePassword(anyString(), anyString())).thenThrow(new NoSuchElementException());
 
-        mockMvc.perform(put(ApiUrlConstant.CUSTOMER+"?id=ngehe")
+        mockMvc.perform(put(ApiUrlConstant.OWNER+"?id=ngehe")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(user.getPassword()).accept(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
@@ -265,15 +258,15 @@ class CustomerControllerTest {
 
     @SneakyThrows
     @Test
-    void deleteCustomer_shouldSendSuccessMessage(){
+    void deleteOwner_shouldSendSuccessMessage() {
         User user = new User();
         user.setId("delete01");
 
-        customerService.registerUser(user);
+        ownerService.registerUser(user);
 
-        doNothing().when(customerService).deleteById(user.getId());
+        doNothing().when(ownerService).deleteById(user.getId());
 
-        mockMvc.perform(delete(ApiUrlConstant.CUSTOMER+"/id=delete01")
+        mockMvc.perform(delete(ApiUrlConstant.OWNER+"/id=delete01")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.code",is(HttpStatus.GONE.value())))
                 .andExpect(jsonPath("$.status", is(HttpStatus.GONE.name())))

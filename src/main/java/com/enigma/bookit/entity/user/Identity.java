@@ -2,10 +2,8 @@ package com.enigma.bookit.entity.user;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
-import lombok.experimental.Accessors;
 
 import javax.persistence.MappedSuperclass;
-import java.time.LocalDateTime;
 import java.util.Date;
 
 @EqualsAndHashCode(callSuper = true)
