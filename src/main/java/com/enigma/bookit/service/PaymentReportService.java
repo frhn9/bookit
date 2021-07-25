@@ -28,10 +28,10 @@ public class PaymentReportService {
             parameters.put("createdBy", "Our sadness and sorrow");
             JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, jrBeanCollectionDataSource);
             JasperExportManager.exportReportToPdfFile(jasperPrint, reportPath + "\\payment.pdf");
-            return"SO FKIN DONE";
+            return"Report generated at " + reportPath;
         }catch(Exception e){
             e.printStackTrace();
-            return "WHYYYYYYYYYYYYY";
+            return "Failed to generate report, error " + e;
         }
     }
 }

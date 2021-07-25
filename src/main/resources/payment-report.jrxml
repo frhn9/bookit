@@ -32,14 +32,14 @@
                     <textElement>
                         <font size="34" isBold="true"/>
                     </textElement>
-                    <text><![CDATA[BOOKIT]]></text>
+                    <text><![CDATA[book.it]]></text>
                 </staticText>
                 <staticText>
                     <reportElement x="820" y="43" width="290" height="20" forecolor="#FFFFFF"/>
                     <textElement textAlignment="Right">
                         <font size="14" isBold="false"/>
                     </textElement>
-                    <text><![CDATA[Employee Reports]]></text>
+                    <text><![CDATA[Payment Reports]]></text>
                 </staticText>
             </frame>
         </band>
