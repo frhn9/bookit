@@ -281,8 +281,7 @@ class OwnerControllerTest {
 
         when(ownerService.deleteById(user.getId())).thenReturn(false);
 
-        mockMvc.perform(delete(ApiUrlConstant.OWNER+"/id=delete01")
-                .accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(delete(ApiUrlConstant.OWNER+"/id=delete01"))
                 .andExpect(jsonPath("$.code",is(HttpStatus.GONE.value())))
                 .andExpect(jsonPath("$.status", is(HttpStatus.GONE.name())))
                 .andExpect(jsonPath("$.message",is(SuccessMessageConstant.DELETE_DATA_SUCCESSFUL)));

@@ -5,6 +5,7 @@ import com.enigma.bookit.constant.SuccessMessageConstant;
 import com.enigma.bookit.dto.*;
 import com.enigma.bookit.entity.user.User;
 import com.enigma.bookit.service.OwnerService;
+import com.enigma.bookit.utils.DeleteResponse;
 import com.enigma.bookit.utils.PageResponseWrapper;
 import com.enigma.bookit.utils.Response;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,15 +85,15 @@ public class OwnerController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Response> deleteOwner(@PathVariable String id) {
-        Response response = new Response();
+    public ResponseEntity<DeleteResponse> deleteOwner(@PathVariable String id) {
+        DeleteResponse deleteResponse = new DeleteResponse();
         ownerService.deleteById(id);
 
-        response.setCode(HttpStatus.GONE.value());
-        response.setStatus(HttpStatus.GONE.name());
-        response.setMessage(SuccessMessageConstant.DELETE_DATA_SUCCESSFUL);
-        response.setTimestamp(LocalDateTime.now());
-        return ResponseEntity.status(HttpStatus.GONE).contentType(MediaType.APPLICATION_JSON).body(response);
+        deleteResponse.setCode(HttpStatus.GONE.value());
+        deleteResponse.setStatus(HttpStatus.GONE.name());
+        deleteResponse.setMessage(SuccessMessageConstant.DELETE_DATA_SUCCESSFUL);
+        deleteResponse.setTimestamp(LocalDateTime.now());
+        return ResponseEntity.status(HttpStatus.GONE).contentType(MediaType.APPLICATION_JSON).body(deleteResponse);
     }
 
     @GetMapping("/search")
