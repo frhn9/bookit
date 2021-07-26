@@ -2,6 +2,7 @@ package com.enigma.bookit.controller;
 
 import com.enigma.bookit.constant.ApiUrlConstant;
 import com.enigma.bookit.entity.Book;
+import com.enigma.bookit.entity.PackageChosen;
 import com.enigma.bookit.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -30,5 +31,13 @@ public class BookController {
         public void deleteBook(@PathVariable("bookId") String bookId){
             bookService.deleteBook(bookId);
         }
+
+        @PostMapping("/extend/{bookId}")
+        public void extendBook(@PathVariable("bookId") String bookId,
+                               @RequestBody PackageChosen packageChosen){
+            bookService.extendBook(bookId, packageChosen);
+
+        }
+
 }
 

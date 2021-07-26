@@ -1,6 +1,7 @@
 package com.enigma.bookit.service;
 
 import com.enigma.bookit.entity.Book;
+import com.enigma.bookit.entity.PackageChosen;
 import com.enigma.bookit.entity.Payment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,4 +20,6 @@ public interface BookService {
         public Page<Book> getBookPerPage(Pageable pageable);
 
         public List<Integer> getCapacity(String id, Timestamp start, Timestamp stop);
+
+        public void extendBook(String bookId, PackageChosen packageChosen);
 }

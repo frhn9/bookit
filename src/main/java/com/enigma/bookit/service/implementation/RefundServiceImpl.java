@@ -1,5 +1,6 @@
 package com.enigma.bookit.service.implementation;
 
+import com.enigma.bookit.constant.ResponseMessage;
 import com.enigma.bookit.dto.RefundSearchDTO;
 import com.enigma.bookit.entity.Book;
 import com.enigma.bookit.entity.Payment;
@@ -91,7 +92,7 @@ public class RefundServiceImpl implements RefundService {
             return refundRepository.save(refund);
         }
         else{
-            throw new BadRequestException("UWUW");
+            throw new BadRequestException("Refund has been paid already");
         }
     }
 
@@ -106,14 +107,14 @@ public class RefundServiceImpl implements RefundService {
         if(refundRepository.findById(id).isPresent()) {
             return refundRepository.getById(id);
         }
-        throw new BadRequestException("WAKWAKAW");
+        throw new DataNotFoundException(ResponseMessage.NOT_FOUND);
     }
 
     @Override
     public void deleteById(String id) {
         if (refundRepository.findById(id).isPresent()) {
             refundRepository.deleteById(id);
-        }throw new BadRequestException("wkawkkaw");
+        }throw new DataNotFoundException(ResponseMessage.NOT_FOUND);
     }
 
     @Override

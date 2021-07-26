@@ -1,8 +1,11 @@
 package com.enigma.bookit.service.implementation;
 
 import com.enigma.bookit.entity.Book;
+import com.enigma.bookit.entity.PackageChosen;
+import com.enigma.bookit.entity.Payment;
 import com.enigma.bookit.repository.BookRepository;
 import com.enigma.bookit.service.BookService;
+import com.enigma.bookit.service.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +20,9 @@ public class BookServiceImpl implements BookService {
 
     @Autowired
     BookRepository bookRepository;
+
+    @Autowired
+    PaymentService paymentService;
 
     @Override
     public Book addBook(Book book) {
@@ -62,6 +68,17 @@ public class BookServiceImpl implements BookService {
     @Override
     public List<Integer> getCapacity(String id, Timestamp start, Timestamp stop) {
         return bookRepository.countCap(id, start, stop);
+    }
+
+    @Override
+    public void extendBook(String bookId, PackageChosen packageChosen) {
+        Book book = bookRepository.getById(bookId);
+        Payment payment = paymentService.getById(book.getPayment().getId());
+        payment.setPackageChosen(packageChosen);
+        payment.setPaymentDate(null);
+        payment.setBookingStart(book.getActiveUntil());
+        payment.setPaymentStatus(false);
+        paymentService.save(payment);
     }
 
 

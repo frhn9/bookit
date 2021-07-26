@@ -173,6 +173,7 @@ class RefundServiceImplTest {
         refundRepository.save(refund);
         when(refundRepository.findById("R01")).thenReturn(java.util.Optional.ofNullable(refund));
         doNothing().when(refundRepository).deleteById("R01");
+        service.deleteById("R01");
         assertEquals(0, refundRepository.findAll().size());
     }
 

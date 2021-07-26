@@ -1,5 +1,6 @@
 package com.enigma.bookit.service.implementation;
 
+import com.enigma.bookit.constant.ResponseMessage;
 import com.enigma.bookit.dto.PaymentSearchDTO;
 import com.enigma.bookit.entity.Book;
 import com.enigma.bookit.entity.Facility;
@@ -86,7 +87,7 @@ public class PaymentServiceImpl implements PaymentService {
         }
 
         if(limit <= cap){
-            throw new BadRequestException("Cannot add payment");
+            throw new BadRequestException("Maximum facility's capacity has been reached");
         }
         return paymentRepository.save(payment);
     }
@@ -112,6 +113,10 @@ public class PaymentServiceImpl implements PaymentService {
             throw new BadRequestException("The payment has been already paid");
         }
 
+        if(new Timestamp(new Date().getTime()).compareTo(payment.getDueTime()) > 0){
+            throw new BadRequestException("Transaction already closed, please create new transaction");
+        }
+
         payment.setPaymentStatus(true);
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Timestamp payDate = Timestamp.valueOf(formatter.format((new Timestamp(System.currentTimeMillis()))));
@@ -124,6 +129,8 @@ public class PaymentServiceImpl implements PaymentService {
 
         String facilityContact = facilityService.getFacilityById(payment.getFacility().getId()).getContact();
         String customerContact = customerService.getById(payment.getCustomer().getId()).getContact();
+
+
 
         String url = "http://localhost:8081/transfer";
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
@@ -144,8 +151,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     private void validatePresent(String id){
         if(!paymentRepository.findById(id).isPresent()){
-            String message = "id not found";
-            throw new DataNotFoundException(message);
+            throw new DataNotFoundException(ResponseMessage.NOT_FOUND);
         }
     }
 
