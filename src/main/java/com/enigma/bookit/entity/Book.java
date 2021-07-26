@@ -11,6 +11,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -23,11 +24,10 @@ public class Book {
     @Column(name="book_id")
     private String id;
     @Column(name ="active_from")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Timestamp activeFrom;
+    private LocalDateTime activeFrom;
     @Column(name ="active_until")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Timestamp activeUntil;
+    private LocalDateTime activeUntil;
 
     @OneToOne
     @JoinColumn(name="payment_id")
@@ -35,7 +35,7 @@ public class Book {
     private Payment payment;
 
 
-    public Book(String id, Timestamp activeFrom, Timestamp activeUntil, Payment payment) {
+    public Book(String id, LocalDateTime activeFrom, LocalDateTime activeUntil, Payment payment) {
         this.id = id;
         this.activeFrom = activeFrom;
         this.activeUntil = activeUntil;

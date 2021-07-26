@@ -25,6 +25,7 @@ import static org.mockito.ArgumentMatchers.any;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
@@ -87,26 +88,26 @@ class RefundServiceImplTest {
         payment.setId("P01");
         payment.setPaymentStatus(false);
         payment.setPackageChosen(PackageChosen.WEEKLY);
-        payment.setPaymentDate(new Timestamp(new Date().getTime()));
+        payment.setPaymentDate(LocalDateTime.now());
         payment.setCustomer(customer);
         payment.setFacility(facility);
-        payment.setBookingStart(new Timestamp(new Date().getTime()));
-        payment.setBookingEnd(new Timestamp(new Date().getTime() + TimeUnit.DAYS.toMillis(7)));
-        payment.setDueTime(new Timestamp(new Date().getTime() + TimeUnit.HOURS.toMillis(2)));
+        payment.setBookingStart(LocalDateTime.now());
+        payment.setBookingEnd(LocalDateTime.now().plusDays(7));
+        payment.setDueTime(LocalDateTime.now().plusHours(2));
         paymentRepository.save(payment);
         when(paymentRepository.findById("P01")).thenReturn(java.util.Optional.ofNullable(payment));
 
         book.setId("B01");
-        book.setActiveUntil(new Timestamp(new Date().getTime() + TimeUnit.DAYS.toMillis(8)));
-        book.setActiveFrom(new Timestamp(new Date().getTime()));
+        book.setActiveUntil(LocalDateTime.now().plusDays(7));
+        book.setActiveFrom(LocalDateTime.now());
         book.setPayment(payment);
         bookRepository.save(book);
         when(bookRepository.findById("B01")).thenReturn(java.util.Optional.of(book));
 
         refund.setId("R01");
         refund.setBook(book);
-        refund.setRequestRefundTime(new Timestamp(System.currentTimeMillis()));
-        refund.setRefundTime(new Timestamp(System.currentTimeMillis()));
+        refund.setRequestRefundTime(LocalDateTime.now());
+        refund.setRefundTime(LocalDateTime.now());
         refund.setRefundAmount(BigDecimal.valueOf(1000.00));
         refund.setStatus(false);
         refundRepository.save(refund);
@@ -166,8 +167,8 @@ class RefundServiceImplTest {
     void deleteById() {
         refund.setId("R01");
         refund.setBook(book);
-        refund.setRequestRefundTime(new Timestamp(System.currentTimeMillis()));
-        refund.setRefundTime(new Timestamp(System.currentTimeMillis()));
+        refund.setRequestRefundTime(LocalDateTime.now());
+        refund.setRefundTime(LocalDateTime.now());
         refund.setRefundAmount(BigDecimal.valueOf(1000.00));
         refund.setStatus(false);
         refundRepository.save(refund);

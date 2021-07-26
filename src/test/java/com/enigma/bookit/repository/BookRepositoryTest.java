@@ -12,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import javax.persistence.EntityManager;
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,8 +33,8 @@ class BookRepositoryTest {
     void setup(){
         book = new Book();
         book.setId("c1");
-        book.setActiveFrom(Timestamp.valueOf("2021-07-12 10:00:00"));
-        book.setActiveUntil(Timestamp.valueOf("2021-07-12 11:00:00"));
+        book.setActiveFrom(LocalDateTime.now());
+        book.setActiveUntil(LocalDateTime.now().plusHours(5));
         book.setPayment(book.getPayment());
     }
     @Test

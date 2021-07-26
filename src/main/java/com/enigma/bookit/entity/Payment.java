@@ -11,6 +11,7 @@ import javax.persistence.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -33,15 +34,15 @@ public class Payment {
     @Enumerated(EnumType.STRING)
     private PackageChosen packageChosen;
     private BigDecimal amount;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-    private Timestamp bookingStart;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-    private Timestamp bookingEnd;
+    @Column(columnDefinition = "TIMESTAMP")
+    private LocalDateTime bookingStart;
+    @Column(columnDefinition = "TIMESTAMP")
+    private LocalDateTime bookingEnd;
     private boolean paymentStatus;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-    private Timestamp dueTime;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-    private Timestamp paymentDate;
+    @Column(columnDefinition = "TIMESTAMP")
+    private LocalDateTime dueTime;
+    @Column(columnDefinition = "TIMESTAMP")
+    private LocalDateTime paymentDate;
 
 
 }

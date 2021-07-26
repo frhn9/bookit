@@ -21,6 +21,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Service
@@ -49,7 +50,7 @@ public class RefundServiceImpl implements RefundService {
     public Refund applyRefund(Refund refund) {
         if(bookService.checkActiveBook(refund.getBook().getId())) {
 //        if(checkActiveBook(refund.getBook().getId())){
-            refund.setRequestRefundTime(new Timestamp(new Date().getTime()));
+            refund.setRequestRefundTime(LocalDateTime.now());
             refund.setStatus(false);
             return refundRepository.save(refund);
         }
@@ -72,10 +73,10 @@ public class RefundServiceImpl implements RefundService {
         Refund refund = refundRepository.findById(id).get();
         if(checkRefundStatus(refund)) {
             refund.setStatus(true);
-            refund.setRefundTime(new Timestamp(new Date().getTime()));
+            refund.setRefundTime(LocalDateTime.now());
             refund.setRefundAmount(amount);
             Book book = bookService.getBookById(refund.getBook().getId());
-            book.setActiveUntil(new Timestamp(new Date().getTime()));
+            book.setActiveUntil(LocalDateTime.now());
             Payment payment = paymentService.getById(book.getPayment().getId());
             String facilityContact = facilityService.getFacilityById(payment.getFacility().getId()).getContact();
             String customerContact = customerService.getById(payment.getCustomer().getId()).getContact();

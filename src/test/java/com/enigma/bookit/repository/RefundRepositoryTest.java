@@ -11,6 +11,7 @@ import javax.persistence.EntityManager;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -32,8 +33,8 @@ class RefundRepositoryTest {
     void setup(){
         refund.setId("R01");
         refund.setBook(new Book());
-        refund.setRequestRefundTime(new Timestamp(System.currentTimeMillis()));
-        refund.setRefundTime(new Timestamp(System.currentTimeMillis()));
+        refund.setRequestRefundTime(LocalDateTime.now());
+        refund.setRefundTime(LocalDateTime.now());
         refund.setRefundAmount(BigDecimal.valueOf(1000.00));
         refund.setStatus(false);
     }

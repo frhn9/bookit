@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
@@ -39,8 +40,8 @@ class BookServiceImplTest {
     void checkActive(){
         Book book = new Book();
         book.setId("B01");
-        book.setActiveUntil(new Timestamp(new Date().getTime() + TimeUnit.DAYS.toMillis(8)));
-        book.setActiveFrom(new Timestamp(new Date().getTime()));
+        book.setActiveUntil(LocalDateTime.now().plusDays(1));
+        book.setActiveFrom(LocalDateTime.now());
         book.setPayment(new Payment());
         bookRepository.save(book);
         when(bookRepository.findById("B01")).thenReturn(java.util.Optional.of(book));

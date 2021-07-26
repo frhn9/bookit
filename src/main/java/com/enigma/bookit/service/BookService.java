@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface BookService {
@@ -19,7 +20,7 @@ public interface BookService {
 
         public Page<Book> getBookPerPage(Pageable pageable);
 
-        public List<Integer> getCapacity(String id, Timestamp start, Timestamp stop);
+        public List<Integer> getCapacity(String id, LocalDateTime start, LocalDateTime stop);
 
         public void extendBook(String bookId, PackageChosen packageChosen);
 }

@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -36,7 +37,7 @@ public class BookServiceImpl implements BookService {
 
     public Boolean checkActiveBook(String id){
         Book book = bookRepository.findById(id).get();
-        if(new Timestamp(new Date().getTime()).compareTo(book.getActiveUntil()) > 0){
+        if(LocalDateTime.now().isAfter(book.getActiveUntil())){
             return false;
         }
         return true;
@@ -66,7 +67,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public List<Integer> getCapacity(String id, Timestamp start, Timestamp stop) {
+    public List<Integer> getCapacity(String id, LocalDateTime start, LocalDateTime stop) {
         return bookRepository.countCap(id, start, stop);
     }
 

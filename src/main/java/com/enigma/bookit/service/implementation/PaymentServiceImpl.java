@@ -27,6 +27,8 @@ import java.math.BigInteger;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -50,8 +52,8 @@ public class PaymentServiceImpl implements PaymentService {
 
         String facilityId = payment.getFacility().getId();
         Integer limit = facilityService.getFacilityById(facilityId).getCapacity();
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Timestamp due = Timestamp.valueOf(formatter.format((new Timestamp(System.currentTimeMillis() + 3600000))));
+//        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime due = LocalDateTime.now().plusHours(2);
         payment.setDueTime(due);
         //get facility
         Facility facility = facilityService.getFacilityById(facilityId);
@@ -60,35 +62,23 @@ public class PaymentServiceImpl implements PaymentService {
             case ONCE:
                 BigDecimal price = facility.getRentPriceOnce();
                 //get duration
-                BigDecimal duration = timeDiffer(payment.getBookingStart(), payment.getBookingEnd());
+                BigDecimal duration = BigDecimal.valueOf(ChronoUnit.HOURS.between(payment.getBookingStart(), payment.getBookingEnd()));
                 BigDecimal amount = duration.multiply(price);
                 payment.setAmount(amount);
                 break;
             case WEEKLY:
                 payment.setAmount(facility.getRentPriceWeekly());
-                payment.setBookingEnd(new Timestamp(payment.getBookingStart().getTime() + TimeUnit.DAYS.toMillis(7)));
+                payment.setBookingEnd(payment.getBookingStart().plusDays(7));
 //                Timestamp weekTime = Timestamp.valueOf(formatter.format(String.valueOf(payment.getBookingStart().getTime() + TimeUnit.DAYS.toMillis(7))));
                 break;
             case MONTHLY:
                 payment.setAmount(facility.getRentPriceMonthly());
-                payment.setBookingEnd(new Timestamp(payment.getBookingStart().getTime() + TimeUnit.DAYS.toMillis(30)));
+                payment.setBookingEnd(payment.getBookingStart().plusDays(30));
                 break;
         }
 
         //Check if the facility hasn't reached the max capacity
-        List<Integer> curCap = bookService.getCapacity(facilityId, payment.getBookingStart(), payment.getBookingEnd());
-        System.out.println(curCap);
-
-        Integer cap = 0;
-        if(curCap.size() == 0){
-            cap = 0;
-        }else{
-            cap = curCap.get(0);
-        }
-
-        if(limit <= cap){
-            throw new BadRequestException("Maximum facility's capacity has been reached");
-        }
+        checkFacilityCapacity(payment);
         return paymentRepository.save(payment);
     }
 
@@ -109,18 +99,19 @@ public class PaymentServiceImpl implements PaymentService {
     public Payment pay(String id) {
         Payment payment = getById(id);
 
+        checkFacilityCapacity(payment);
+
         if(payment.isPaymentStatus()){
             throw new BadRequestException("The payment has been already paid");
         }
 
-        if(new Timestamp(new Date().getTime()).compareTo(payment.getDueTime()) > 0){
+        if(payment.getDueTime().isBefore(LocalDateTime.now())){
             throw new BadRequestException("Transaction already closed, please create new transaction");
         }
 
         payment.setPaymentStatus(true);
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Timestamp payDate = Timestamp.valueOf(formatter.format((new Timestamp(System.currentTimeMillis()))));
-        payment.setPaymentDate(payDate);
+        payment.setPaymentDate(LocalDateTime.now());
         Book book = new Book();
         book.setPayment(payment);
         book.setActiveFrom(payment.getBookingStart());
@@ -155,8 +146,18 @@ public class PaymentServiceImpl implements PaymentService {
         }
     }
 
-    private BigDecimal timeDiffer(Timestamp timeStart, Timestamp timeStop){
-        BigDecimal difference = BigDecimal.valueOf(timeStop.getTime() - timeStart.getTime());
-        return (difference.divide(BigDecimal.valueOf(1000 * 3600)));
+    public void checkFacilityCapacity(Payment payment){
+        Facility facility = facilityService.getFacilityById(payment.getFacility().getId());
+        List<Integer> curCap = bookService.getCapacity(facility.getId(), payment.getBookingStart(), payment.getBookingEnd());
+        Integer cap = 0;
+        if(curCap.size() == 0){
+            cap = 0;
+        }else{
+            cap = curCap.get(0);
+        }
+
+        if(facility.getCapacity() <= cap){
+            throw new BadRequestException("Maximum facility's capacity has been reached");
+        }
     }
 }

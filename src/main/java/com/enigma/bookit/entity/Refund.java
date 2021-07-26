@@ -10,6 +10,7 @@ import javax.persistence.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -25,8 +26,10 @@ public class Refund {
     @JoinColumn(name = "book_id")
     @JsonIgnoreProperties("refund")
     private Book book;
-    private Timestamp requestRefundTime;
-    private Timestamp refundTime;
+    @Column(columnDefinition = "TIMESTAMP")
+    private LocalDateTime requestRefundTime;
+    @Column(columnDefinition = "TIMESTAMP")
+    private LocalDateTime refundTime;
     private Boolean status;
     private BigDecimal refundAmount;
 }
