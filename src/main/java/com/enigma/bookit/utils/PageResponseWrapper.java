@@ -2,19 +2,30 @@ package com.enigma.bookit.utils;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
 @Getter
 @Setter
 public class PageResponseWrapper<T> {
-    private List<T> data;
     private Integer code;
     private String status;
+    private String message;
+    private Long count;
+    private Integer totalPages;
+    private Integer page;
+    private Integer size;
+    private List<T> data;
 
-    public PageResponseWrapper(List<T> data, Integer code, String status) {
-        this.data = data;
+    public PageResponseWrapper(Integer code, String status, String message, Page<T> page) {
         this.code = code;
         this.status = status;
+        this.message = message;
+        this.count = page.getTotalElements();
+        this.totalPages = page.getTotalPages();
+        this.page = page.getNumber();
+        this.size = page.getSize();
+        this.data = page.getContent();
     }
 }

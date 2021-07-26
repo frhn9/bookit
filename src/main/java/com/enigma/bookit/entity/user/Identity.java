@@ -16,6 +16,6 @@ public class Identity extends User {
     private String contact;
     private String gender;
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private  Date dateOfBirth;
+    private Date dateOfBirth;
 
 }

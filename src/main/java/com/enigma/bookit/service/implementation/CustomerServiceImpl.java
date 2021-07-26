@@ -2,13 +2,19 @@ package com.enigma.bookit.service.implementation;
 
 import com.enigma.bookit.dto.CustomerDto;
 import com.enigma.bookit.dto.UserDto;
+import com.enigma.bookit.dto.UserPasswordDto;
+import com.enigma.bookit.dto.UserSearchDto;
 import com.enigma.bookit.entity.user.Customer;
 import com.enigma.bookit.entity.user.User;
 import com.enigma.bookit.repository.CustomerRepository;
 import com.enigma.bookit.service.converter.UserConverter;
 import com.enigma.bookit.service.CustomerService;
+import com.enigma.bookit.specification.CustomerSpecification;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,16 +31,18 @@ public class CustomerServiceImpl implements CustomerService, UserConverter {
 
     @Override
     public UserDto registerUser(User user) {
-        Customer customer = convertUserToEntity(user);
-        customerRepository.save(customer);
+        Customer customer = customerRepository.save(convertUserToEntity(user));
+        user = convertEntityToUser(customer);
+
         return convertUserToUserDto(user);
     }
 
     @Override
-    public UserDto changePassword(String id, String password) {
+    public UserDto changePassword(String id, UserPasswordDto userPassword) {
         Customer customer = customerRepository.findById(id).get();
-        customer.setPassword(password);
-        customerRepository.save(customer);
+        customer.setPassword(userPassword.getPassword());
+
+        customer = customerRepository.save(customer);
         User user = convertEntityToUser(customer);
         return convertUserToUserDto(user);
     }
@@ -43,8 +51,9 @@ public class CustomerServiceImpl implements CustomerService, UserConverter {
     public CustomerDto update(String id, CustomerDto customerDto) {
         Customer customer = customerRepository.findById(id).get();
         validateUpdateData(customer, customerDto);
-        customerRepository.save(customer);
-        return customerDto;
+
+        customer = customerRepository.save(customer);
+        return convertEntityToDto(customer);
     }
 
     @Override
@@ -59,8 +68,17 @@ public class CustomerServiceImpl implements CustomerService, UserConverter {
     }
 
     @Override
-    public void deleteById(String id) {
+    public Page<CustomerDto> getCustomerPerPage(Pageable pageable, UserSearchDto userSearchDto) {
+        Specification<Customer> customerSpecification = CustomerSpecification.getSpecification(userSearchDto);
+        Page<Customer> getCustomerData = customerRepository.findAll(customerSpecification, pageable);
+        return getCustomerData.map(this::convertEntityToDto);
+    }
+
+    @Override
+    public Boolean deleteById(String id) {
+        Boolean isFound = customerRepository.existsById(id);
         customerRepository.deleteById(id);
+        return isFound;
     }
 
     @Override

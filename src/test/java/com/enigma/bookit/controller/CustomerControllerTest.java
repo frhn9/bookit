@@ -5,6 +5,9 @@ import com.enigma.bookit.constant.ErrorMessageConstant;
 import com.enigma.bookit.constant.SuccessMessageConstant;
 import com.enigma.bookit.dto.CustomerDto;
 import com.enigma.bookit.dto.UserDto;
+import com.enigma.bookit.dto.UserPasswordDto;
+import com.enigma.bookit.dto.UserSearchDto;
+import com.enigma.bookit.entity.user.Customer;
 import com.enigma.bookit.entity.user.User;
 import com.enigma.bookit.repository.CustomerRepository;
 import com.enigma.bookit.service.CustomerService;
@@ -13,18 +16,23 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.function.Function;
 
 import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -45,6 +53,8 @@ class CustomerControllerTest {
     @Autowired
     CustomerController customerController;
 
+    @MockBean
+    CustomerRepository customerRepository;
 
     public static String asJsonString(final Object obj) {
         try {
@@ -66,6 +76,7 @@ class CustomerControllerTest {
         user.setEmail("just_fadhyl@hotmail.co.id");
 
         UserDto userDto = new UserDto();
+        userDto.setId(user.getId());
         userDto.setUserName(user.getUserName());
         userDto.setFullName(user.getFullName());
         userDto.setEmail(user.getEmail());
@@ -77,6 +88,7 @@ class CustomerControllerTest {
                 .content(asJsonString(user)).accept(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.code",is(HttpStatus.CREATED.value())))
                 .andExpect(jsonPath("$.status", is(HttpStatus.CREATED.name())))
+                .andExpect(jsonPath("$.data.id", is(userDto.getId())))
                 .andExpect(jsonPath("$.data.userName", is(userDto.getUserName())))
                 .andExpect(jsonPath("$.data.fullName", is(userDto.getFullName())));
     }
@@ -227,19 +239,25 @@ class CustomerControllerTest {
         user.setEmail("hehe@gmail.com");
 
         UserDto userDto = new UserDto();
+        userDto.setId(user.getId());
         userDto.setUserName(user.getUserName());
         userDto.setFullName(user.getFullName());
         userDto.setEmail(user.getEmail());
 
-        when(customerService.changePassword(user.getId(), "jajaja")).thenReturn(userDto);
+        UserPasswordDto userPasswordDto = new UserPasswordDto();
+        userPasswordDto.setPassword("passwordchanged");
+
+        when(customerService.changePassword(user.getId(), userPasswordDto)).thenReturn(userDto);
+        customerService.changePassword("usersuccess", userPasswordDto);
 
         mockMvc.perform(put(ApiUrlConstant.CUSTOMER+"?id=ngehe")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(user.getPassword()).accept(MediaType.APPLICATION_JSON)
+                .content(asJsonString(userPasswordDto)).accept(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.code",is(HttpStatus.OK.value())))
                 .andExpect(jsonPath("$.status", is(HttpStatus.OK.name())))
-                .andExpect(jsonPath("$.message",is(SuccessMessageConstant.CHANGE_PASSWORD_SUCCESSFUL)));
+                .andExpect(jsonPath("$.message",is(SuccessMessageConstant.CHANGE_PASSWORD_SUCCESSFUL)))
+                .andExpect(jsonPath("$.data.id",is(userDto.getId())));
     }
 
     @SneakyThrows
@@ -252,11 +270,14 @@ class CustomerControllerTest {
         user.setPassword("ngehe");
         user.setEmail("hehe@gmail.com");
 
-        when(customerService.changePassword(anyString(), anyString())).thenThrow(new NoSuchElementException());
+        UserPasswordDto userPasswordDto = new UserPasswordDto();
+        userPasswordDto.setPassword("passwordchanged");
+
+        when(customerService.changePassword(user.getId(), userPasswordDto)).thenThrow(new NoSuchElementException());
 
         mockMvc.perform(put(ApiUrlConstant.CUSTOMER+"?id=ngehe")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(user.getPassword()).accept(MediaType.APPLICATION_JSON)
+                .content(asJsonString(userPasswordDto)).accept(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.code",is(HttpStatus.NOT_FOUND.value())))
                 .andExpect(jsonPath("$.status",is(HttpStatus.NOT_FOUND.name())))
@@ -265,19 +286,161 @@ class CustomerControllerTest {
 
     @SneakyThrows
     @Test
-    void deleteCustomer_shouldSendSuccessMessage(){
+    void deleteCustomer(){
         User user = new User();
         user.setId("delete01");
 
-        customerService.registerUser(user);
+        when(customerService.deleteById(user.getId())).thenReturn(true);
 
-        doNothing().when(customerService).deleteById(user.getId());
-
-        mockMvc.perform(delete(ApiUrlConstant.CUSTOMER+"/id=delete01")
-                .accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(delete(ApiUrlConstant.CUSTOMER+"/id="+user.getId()))
                 .andExpect(jsonPath("$.code",is(HttpStatus.GONE.value())))
                 .andExpect(jsonPath("$.status", is(HttpStatus.GONE.name())))
                 .andExpect(jsonPath("$.message",is(SuccessMessageConstant.DELETE_DATA_SUCCESSFUL)));
+    }
+
+    @SneakyThrows
+    @Test
+    void getCustomerPerPage_shouldReturnSuccessMessage(){
+        Customer customer = new Customer();
+
+        customer.setId("usersuccess");
+        customer.setUserName("admin");
+        customer.setPassword("1234");
+        customer.setFullName("fadiel");
+        customer.setEmail("fadiel@gmail.com");
+        customer.setCreatedAt(LocalDateTime.now());
+        customer.setUpdatedAt(LocalDateTime.now());
+
+        UserSearchDto userSearchDto = new UserSearchDto();
+        userSearchDto.setSearchUserName(customer.getUserName());
+        userSearchDto.setSearchFullName(customer.getFullName());
+
+        CustomerDto customerDto = new CustomerDto();
+        customerDto.setId(customer.getId());
+        customerDto.setUserName(customer.getUserName());
+
+        List<CustomerDto> customerDtos = new ArrayList<>();
+        customerDtos.add(customerDto);
+
+        Page<CustomerDto> customerDtoPage = new Page<CustomerDto>() {
+            @Override
+            public int getTotalPages() {
+                return 0;
+            }
+
+            @Override
+            public long getTotalElements() {
+                return 0;
+            }
+
+            @Override
+            public <U> Page<U> map(Function<? super CustomerDto, ? extends U> function) {
+                return null;
+            }
+
+            @Override
+            public int getNumber() {
+                return 0;
+            }
+
+            @Override
+            public int getSize() {
+                return 0;
+            }
+
+            @Override
+            public int getNumberOfElements() {
+                return 0;
+            }
+
+            @Override
+            public List<CustomerDto> getContent() {
+                return customerDtos;
+            }
+
+            @Override
+            public boolean hasContent() {
+                return false;
+            }
+
+            @Override
+            public Sort getSort() {
+                return null;
+            }
+
+            @Override
+            public boolean isFirst() {
+                return false;
+            }
+
+            @Override
+            public boolean isLast() {
+                return false;
+            }
+
+            @Override
+            public boolean hasNext() {
+                return false;
+            }
+
+            @Override
+            public boolean hasPrevious() {
+                return false;
+            }
+
+            @Override
+            public Pageable nextPageable() {
+                return null;
+            }
+
+            @Override
+            public Pageable previousPageable() {
+                return null;
+            }
+
+            @Override
+            public Iterator<CustomerDto> iterator() {
+                return null;
+            }
+        };
+
+        when(customerService.getCustomerPerPage(any(), any())).thenReturn(customerDtoPage);
+
+        mockMvc.perform(get(ApiUrlConstant.CUSTOMER+"/search")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(asJsonString(userSearchDto)).accept(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.code",is(HttpStatus.OK.value())))
+                .andExpect(jsonPath("$.status",is(HttpStatus.OK.name())))
+                .andExpect(jsonPath("$.message",is(SuccessMessageConstant.GET_DATA_SUCCESSFUL)))
+                .andExpect(jsonPath("$.data[0].userName",is(userSearchDto.getSearchUserName())));
+    }
+
+    @SneakyThrows
+    @Test
+    void getCustomerPerPage_shouldReturnFailedMessage(){
+        Customer customer = new Customer();
+
+        customer.setId("usersuccess");
+        customer.setUserName("admin");
+        customer.setPassword("1234");
+        customer.setFullName("fadiel");
+        customer.setEmail("fadiel@gmail.com");
+        customer.setCreatedAt(LocalDateTime.now());
+        customer.setUpdatedAt(LocalDateTime.now());
+
+        UserSearchDto userSearchDto = new UserSearchDto();
+        userSearchDto.setSearchUserName(customer.getUserName());
+        userSearchDto.setSearchFullName(customer.getFullName());
+        when(customerService.getCustomerPerPage(any(), any())).thenThrow(new NoSuchElementException());
+
+        mockMvc.perform(get(ApiUrlConstant.CUSTOMER+"/search")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(asJsonString(userSearchDto)).accept(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.code",is(HttpStatus.NOT_FOUND.value())))
+                .andExpect(jsonPath("$.status",is(HttpStatus.NOT_FOUND.name())))
+                .andExpect(jsonPath("$.message",is(ErrorMessageConstant.GET_OR_UPDATE_DATA_FAILED)));
     }
 
 }

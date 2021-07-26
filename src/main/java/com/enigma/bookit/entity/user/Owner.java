@@ -1,7 +1,6 @@
 package com.enigma.bookit.entity.user;
 
 import lombok.*;
-import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 

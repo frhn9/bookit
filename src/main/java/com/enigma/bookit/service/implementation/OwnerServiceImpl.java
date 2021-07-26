@@ -2,13 +2,21 @@ package com.enigma.bookit.service.implementation;
 
 import com.enigma.bookit.dto.OwnerDto;
 import com.enigma.bookit.dto.UserDto;
+import com.enigma.bookit.dto.UserPasswordDto;
+import com.enigma.bookit.dto.UserSearchDto;
+import com.enigma.bookit.entity.user.Customer;
 import com.enigma.bookit.entity.user.Owner;
 import com.enigma.bookit.entity.user.User;
 import com.enigma.bookit.repository.OwnerRepository;
 import com.enigma.bookit.service.OwnerService;
 import com.enigma.bookit.service.converter.UserConverter;
+import com.enigma.bookit.specification.CustomerSpecification;
+import com.enigma.bookit.specification.OwnerSpecification;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,15 +33,18 @@ public class OwnerServiceImpl implements OwnerService, UserConverter {
 
     @Override
     public UserDto registerUser(User user) {
-        Owner owner = convertUserToEntity(user);
-        ownerRepository.save(owner);
+        Owner owner = ownerRepository.save(convertUserToEntity(user));
+
+        user = convertEntityToUser(owner);
         return convertUserToUserDto(user);
     }
 
     @Override
-    public UserDto changePassword(String id, String password) {
+    public UserDto changePassword(String id, UserPasswordDto userPassword) {
         Owner owner = ownerRepository.findById(id).get();
-        owner.setPassword(password);
+        owner.setPassword(userPassword.getPassword());
+
+        owner = ownerRepository.save(owner);
         User user = convertEntityToUser(owner);
         return convertUserToUserDto(user);
     }
@@ -42,8 +53,9 @@ public class OwnerServiceImpl implements OwnerService, UserConverter {
     public OwnerDto update(String id, OwnerDto ownerDto) {
         Owner owner = ownerRepository.findById(id).get();
         validateUpdateData(owner, ownerDto);
-        ownerRepository.save(owner);
-        return ownerDto;
+
+        owner = ownerRepository.save(owner);
+        return convertEntityToDto(owner);
     }
 
     @Override
@@ -58,8 +70,17 @@ public class OwnerServiceImpl implements OwnerService, UserConverter {
     }
 
     @Override
-    public void deleteById(String id) {
+    public Page<OwnerDto> getCustomerPerPage(Pageable pageable, UserSearchDto userSearchDto) {
+        Specification<Owner> ownerSpecification = OwnerSpecification.getSpecification(userSearchDto);
+        Page<Owner> getOwnerData = ownerRepository.findAll(ownerSpecification, pageable);
+        return getOwnerData.map(this::convertEntityToDto);
+    }
+
+    @Override
+    public Boolean deleteById(String id) {
+        Boolean isFound = ownerRepository.existsById(id);
         ownerRepository.deleteById(id);
+        return isFound;
     }
 
     @Override

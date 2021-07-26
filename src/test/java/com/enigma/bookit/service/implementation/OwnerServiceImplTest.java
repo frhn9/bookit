@@ -1,6 +1,10 @@
 package com.enigma.bookit.service.implementation;
 
 import com.enigma.bookit.dto.OwnerDto;
+import com.enigma.bookit.dto.UserDto;
+import com.enigma.bookit.dto.UserPasswordDto;
+import com.enigma.bookit.dto.UserSearchDto;
+import com.enigma.bookit.entity.user.Customer;
 import com.enigma.bookit.entity.user.Owner;
 import com.enigma.bookit.entity.user.User;
 import com.enigma.bookit.repository.OwnerRepository;
@@ -8,13 +12,21 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -28,27 +40,26 @@ class OwnerServiceImplTest {
 
     @Test
     void register_shouldSave() {
-        User user = new User();
+        Owner owner = new Owner();
 
-        user.setId("usersuccess");
-        user.setUserName("admin");
-        user.setPassword("1234");
-        user.setFullName("fadiel");
-        user.setEmail("just_fadhyl@hotmail.co.id");
-        user.setCreatedAt(LocalDateTime.now());
-        user.setUpdatedAt(LocalDateTime.now());
+        owner.setId("usersuccess");
+        owner.setUserName("admin");
+        owner.setPassword("1234");
+        owner.setFullName("fadiel");
+        owner.setEmail("just_fadhyl@hotmail.co.id");
+        owner.setCreatedAt(LocalDateTime.now());
+        owner.setUpdatedAt(LocalDateTime.now());
 
-        ownerService.registerUser(user);
-        ownerRepository.save(ownerService.convertUserToEntity(user));
-        List<User> users = new ArrayList<>();
-        users.add(user);
+        User user = ownerService.convertEntityToUser(owner);
+        when(ownerRepository.save(owner)).thenReturn(owner);
+        UserDto userDto = ownerService.registerUser(user);
 
-        Owner owner = ownerService.convertUserToEntity(user);
         List<Owner> owners = new ArrayList<>();
         owners.add(owner);
 
         when(ownerRepository.findAll()).thenReturn(owners);
         assertEquals(1, ownerRepository.findAll().size());
+        assertEquals(user.getId(), userDto.getId());
     }
 
     @Test
@@ -63,9 +74,15 @@ class OwnerServiceImplTest {
         owner.setCreatedAt(LocalDateTime.now());
         owner.setUpdatedAt(LocalDateTime.now());
 
-        ownerRepository.save(owner);
-        when(ownerRepository.findById("usersuccess")).thenReturn(Optional.of(owner));
-        ownerService.changePassword("usersuccess", "passwordchanged");
+        when(ownerRepository.findById(owner.getId())).thenReturn(Optional.of(owner));
+        UserPasswordDto userPasswordDto = new UserPasswordDto();
+        userPasswordDto.setPassword("passwordchanged");
+
+        User user = ownerService.convertEntityToUser(owner);
+        user.setPassword(userPasswordDto.getPassword());
+
+        when(ownerRepository.save(owner)).thenReturn(owner);
+        ownerService.changePassword(owner.getId(), userPasswordDto);
 
         assertEquals("passwordchanged", ownerRepository.findById("usersuccess")
                 .get().getPassword());
@@ -91,8 +108,8 @@ class OwnerServiceImplTest {
         ownerDto.setContact("082112345");
         ownerDto.setGender("cwk");
 
-        ownerRepository.save(owner);
         when(ownerRepository.findById("usersuccess")).thenReturn(Optional.of(owner));
+        when(ownerRepository.save(owner)).thenReturn(owner);
         ownerService.update("usersuccess", ownerDto);
 
         when(ownerRepository.findById("usersuccess")).thenReturn(Optional.of(owner));
@@ -171,4 +188,194 @@ class OwnerServiceImplTest {
         assertEquals(0, ownerRepository.findAll().size());
     }
 
+    @Test
+    void getOwnerPerPage(){
+        Owner owner = new Owner();
+
+        owner.setId("usersuccess");
+        owner.setUserName("admin");
+        owner.setPassword("1234");
+        owner.setFullName("fadiel");
+        owner.setEmail("fadiel@gmail.com");
+        owner.setCreatedAt(LocalDateTime.now());
+        owner.setUpdatedAt(LocalDateTime.now());
+
+        UserSearchDto userSearchDto = new UserSearchDto();
+        userSearchDto.setSearchUserName(owner.getUserName());
+        userSearchDto.setSearchFullName(owner.getFullName());
+
+        OwnerDto ownerDto = ownerService.convertEntityToDto(owner);
+        List<OwnerDto> ownerDtos = new ArrayList<>();
+        ownerDtos.add(ownerDto);
+
+        Page<OwnerDto> ownerDtoPage = new Page<OwnerDto>() {
+            @Override
+            public int getTotalPages() {
+                return 0;
+            }
+
+            @Override
+            public long getTotalElements() {
+                return 0;
+            }
+
+            @Override
+            public <U> Page<U> map(Function<? super OwnerDto, ? extends U> function) {
+                return null;
+            }
+
+            @Override
+            public int getNumber() {
+                return 0;
+            }
+
+            @Override
+            public int getSize() {
+                return 0;
+            }
+
+            @Override
+            public int getNumberOfElements() {
+                return 0;
+            }
+
+            @Override
+            public List<OwnerDto> getContent() {
+                return ownerDtos;
+            }
+
+            @Override
+            public boolean hasContent() {
+                return false;
+            }
+
+            @Override
+            public Sort getSort() {
+                return null;
+            }
+
+            @Override
+            public boolean isFirst() {
+                return false;
+            }
+
+            @Override
+            public boolean isLast() {
+                return false;
+            }
+
+            @Override
+            public boolean hasNext() {
+                return false;
+            }
+
+            @Override
+            public boolean hasPrevious() {
+                return false;
+            }
+
+            @Override
+            public Pageable nextPageable() {
+                return null;
+            }
+
+            @Override
+            public Pageable previousPageable() {
+                return null;
+            }
+
+            @Override
+            public Iterator<OwnerDto> iterator() {
+                return null;
+            }
+        };
+
+        Page<Owner> ownerPage = new Page<Owner>() {
+            @Override
+            public int getTotalPages() {
+                return 0;
+            }
+
+            @Override
+            public long getTotalElements() {
+                return 0;
+            }
+
+            @Override
+            public <U> Page<U> map(Function<? super Owner, ? extends U> function) {
+                return null;
+            }
+
+            @Override
+            public int getNumber() {
+                return 0;
+            }
+
+            @Override
+            public int getSize() {
+                return 0;
+            }
+
+            @Override
+            public int getNumberOfElements() {
+                return 0;
+            }
+
+            @Override
+            public List<Owner> getContent() {
+                return null;
+            }
+
+            @Override
+            public boolean hasContent() {
+                return false;
+            }
+
+            @Override
+            public Sort getSort() {
+                return null;
+            }
+
+            @Override
+            public boolean isFirst() {
+                return false;
+            }
+
+            @Override
+            public boolean isLast() {
+                return false;
+            }
+
+            @Override
+            public boolean hasNext() {
+                return false;
+            }
+
+            @Override
+            public boolean hasPrevious() {
+                return false;
+            }
+
+            @Override
+            public Pageable nextPageable() {
+                return null;
+            }
+
+            @Override
+            public Pageable previousPageable() {
+                return null;
+            }
+
+            @Override
+            public Iterator<Owner> iterator() {
+                return null;
+            }
+        };
+
+        when(ownerRepository.findAll((Specification<Owner>) any(), any())).thenReturn(ownerPage);
+        ownerRepository.save(owner);
+        when(ownerService.getCustomerPerPage(any(), eq(userSearchDto))).thenReturn(ownerDtoPage);
+
+        assertEquals("admin", ownerDtoPage.getContent().get(0).getUserName());
+    }
 }
