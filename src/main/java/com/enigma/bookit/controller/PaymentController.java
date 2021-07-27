@@ -89,7 +89,8 @@ public class PaymentController {
         PaymentDTO payment = new PaymentDTO();
         CustomerDto customer = new CustomerDto();
         payment = paymentService.getById(id);
-        customer = customerService.getById(payment.getCustomer().getId());
+        String customerId = payment.getCustomer().getId();
+        customer = customerService.getById(customerId);
         Xendit.apiKey = "xnd_development_ALRsQqBYU0SiqLSHTM6diYrpUwwSMZQKKBcvG7nT1LsngPawa4pv08oECrXvx";
         try {
             Map<String, Object> params = new HashMap<>();
@@ -105,10 +106,10 @@ public class PaymentController {
             PaymentDTO paymentDTO = new PaymentDTO();
             paymentDTO = paymentService.pay(payment.getId());
 
-            Response<InvoiceResponseDTO> response = new Response<>();
+            Response<PaymentDTO> response = new Response<>();
             String message = "Payment is updated";
             response.setMessage(message);
-            response.setData(invoiceResponse);
+            response.setData(paymentDTO);
 
             return ResponseEntity.status(HttpStatus.OK)
                     .contentType(MediaType.APPLICATION_JSON)

@@ -2,6 +2,7 @@ package com.enigma.bookit.controller;
 
 import com.enigma.bookit.constant.ApiUrlConstant;
 import com.enigma.bookit.constant.ResponseMessage;
+import com.enigma.bookit.dto.FeedbackDTO;
 import com.enigma.bookit.dto.FeedbackSearchDTO;
 import com.enigma.bookit.entity.Feedback;
 import com.enigma.bookit.service.FeedbackService;
@@ -26,8 +27,8 @@ public class FeedbackController {
 
     //Customer send feedback
     @PostMapping()
-    public ResponseEntity<Response<Feedback>> createFeedback(@RequestBody Feedback feedback){
-        Response<Feedback> response = new Response<>();
+    public ResponseEntity<Response<FeedbackDTO>> createFeedback(@RequestBody Feedback feedback){
+        Response<FeedbackDTO> response = new Response<>();
         String message = String.format(ResponseMessage.INSERT_SUCCESS, "feedback");
         response.setMessage(message);
         response.setData(feedbackService.save(feedback));
@@ -38,8 +39,8 @@ public class FeedbackController {
 
     //Owner response to customer's feedback
     @PutMapping("/{id}")
-    public ResponseEntity<Response<Feedback>> responseFeedback(@PathVariable String id, @RequestBody Feedback feedback){
-        Response<Feedback> response = new Response<>();
+    public ResponseEntity<Response<FeedbackDTO>> responseFeedback(@PathVariable String id, @RequestBody Feedback feedback){
+        Response<FeedbackDTO> response = new Response<>();
         String message = String.format(ResponseMessage.INSERT_SUCCESS, "response of a feedback");
         response.setMessage(message);
         response.setData(feedbackService.respondFeedback(id, feedback.getResponse()));

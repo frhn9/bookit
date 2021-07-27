@@ -1,5 +1,6 @@
 package com.enigma.bookit.controller;
 
+import com.enigma.bookit.dto.RefundDTO;
 import com.enigma.bookit.dto.RefundSearchDTO;
 import com.enigma.bookit.entity.Book;
 import com.enigma.bookit.entity.Refund;
@@ -9,6 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -37,7 +39,9 @@ class RefundControllerTest {
     @Autowired
     MockMvc mockMvc;
 
+
     private Refund refund;
+    private ModelMapper modelMapper = new ModelMapper();
 
     @BeforeEach
     void setup(){
@@ -61,7 +65,8 @@ class RefundControllerTest {
 
     @Test
     void applyRefund() throws Exception {
-        when(refundService.applyRefund(any(Refund.class))).thenReturn(refund);
+        when(refundService.applyRefund(any(Refund.class)))
+                .thenReturn(modelMapper.map(refund, RefundDTO.class));
 
         mockMvc.perform(post("/api/refund")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -72,7 +77,8 @@ class RefundControllerTest {
 
     @Test
     void acceptRefund() throws Exception {
-        when(refundService.acceptRefund(any(String.class), any(BigDecimal.class))).thenReturn(refund);
+        when(refundService.acceptRefund(any(String.class), any(BigDecimal.class)))
+                .thenReturn(modelMapper.map(refund, RefundDTO.class));
 
         mockMvc.perform(put("/api/refund/{id}", refund.getId())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

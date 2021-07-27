@@ -32,7 +32,7 @@ class FeedbackServiceImplTest {
     void save() {
         feedback = new Feedback("FB01", new Book(), 5, "Feedback", "Response");
         when(feedbackRepository.save(feedback)).thenReturn(feedback);
-        assertEquals(feedback, feedbackService.save(feedback));
+        assertEquals(feedback.getId(), feedbackService.save(feedback).getId());
     }
 
     @Test
@@ -43,7 +43,7 @@ class FeedbackServiceImplTest {
         String newResponse = "newResponse";
         feedback.setResponse(newResponse);
         when(feedbackRepository.findById("FB01")).thenReturn(java.util.Optional.ofNullable(feedback));
-        when(feedbackRepository.save(feedback)).thenReturn(feedback);
+        when(feedbackRepository.save(any(Feedback.class))).thenReturn(feedback);
         assertSame(newResponse, feedbackService.respondFeedback(id, newResponse).getResponse());
     }
 

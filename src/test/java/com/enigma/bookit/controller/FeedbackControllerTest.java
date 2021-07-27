@@ -1,5 +1,6 @@
 package com.enigma.bookit.controller;
 
+import com.enigma.bookit.dto.FeedbackDTO;
 import com.enigma.bookit.entity.Book;
 import com.enigma.bookit.entity.Feedback;
 import com.enigma.bookit.service.FeedbackService;
@@ -7,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -34,9 +36,8 @@ class FeedbackControllerTest {
     @Autowired
     MockMvc mockMvc;
 
-    @Autowired
-    ObjectMapper objectMapper;
 
+    private ModelMapper modelMapper = new ModelMapper();
     private Feedback feedback;
 
     @BeforeEach
@@ -60,7 +61,8 @@ class FeedbackControllerTest {
 
     @Test
     void createFeedback() throws Exception {
-        when(feedbackService.save(any(Feedback.class))).thenReturn(feedback);
+        when(feedbackService.save(any(Feedback.class)))
+                .thenReturn(modelMapper.map(feedback, FeedbackDTO.class));
 
         mockMvc.perform(post("/api/feedback")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -72,7 +74,8 @@ class FeedbackControllerTest {
 
     @Test
     void responseFeedback() throws Exception {
-        when(feedbackService.respondFeedback(any(String.class) ,any(String.class))).thenReturn(feedback);
+        when(feedbackService.respondFeedback(any(String.class) ,any(String.class)))
+                .thenReturn(modelMapper.map(feedback, FeedbackDTO.class));
 
         mockMvc.perform(put("/api/feedback/{id}", feedback.getId())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

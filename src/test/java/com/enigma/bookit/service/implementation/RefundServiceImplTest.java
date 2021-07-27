@@ -119,7 +119,7 @@ class RefundServiceImplTest {
 //        bookRepository.save(book);
 //        when(bookRepository.findById("B01")).thenReturn(java.util.Optional.of(book));
         when(refundRepository.save(refund)).thenReturn(refund);
-        assertEquals(refund, service.applyRefund(refund));
+        assertEquals(refund.getId(), service.applyRefund(refund).getId());
     }
 
     @Test
@@ -145,7 +145,7 @@ class RefundServiceImplTest {
                 .thenReturn(null);
         when(refundRepository.findById("R01")).thenReturn(java.util.Optional.ofNullable(refund));
         when(refundRepository.save(refund)).thenReturn(refund);
-        assertEquals(refund, service.acceptRefund(refund.getId(), BigDecimal.valueOf(100)));
+        assertEquals(refund.getId(), service.acceptRefund(refund.getId(), BigDecimal.valueOf(100)).getId());
     }
 
     @Test

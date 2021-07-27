@@ -2,6 +2,7 @@ package com.enigma.bookit.controller;
 
 import com.enigma.bookit.constant.ApiUrlConstant;
 import com.enigma.bookit.constant.ResponseMessage;
+import com.enigma.bookit.dto.RefundDTO;
 import com.enigma.bookit.dto.RefundSearchDTO;
 import com.enigma.bookit.entity.Category;
 import com.enigma.bookit.entity.Refund;
@@ -29,8 +30,8 @@ public class RefundController {
 
     //customer apply a refund of an active book
     @PostMapping
-    public ResponseEntity<Response<Refund>> applyRefund(@RequestBody Refund refund){
-        Response <Refund> response = new Response<>();
+    public ResponseEntity<Response<RefundDTO>> applyRefund(@RequestBody Refund refund){
+        Response <RefundDTO> response = new Response<>();
         String message = String.format(ResponseMessage.INSERT_SUCCESS,"refund's");
         response.setMessage(message);
         response.setData(refundService.applyRefund(refund));
@@ -40,9 +41,9 @@ public class RefundController {
     }
     //facility pay the refound to the customer
     @PutMapping("/{id}")
-    public ResponseEntity<Response<Refund>> acceptRefund (@PathVariable String id,
+    public ResponseEntity<Response<RefundDTO>> acceptRefund (@PathVariable String id,
                                                           @RequestBody Refund refund) {
-        Response<Refund> response = new Response<>();
+        Response<RefundDTO> response = new Response<>();
         String message = String.format(ResponseMessage.INSERT_SUCCESS, "refund's");
         response.setMessage(message);
         response.setData(refundService.acceptRefund(id, refund.getRefundAmount()));

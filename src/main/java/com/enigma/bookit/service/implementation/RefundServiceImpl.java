@@ -2,6 +2,7 @@ package com.enigma.bookit.service.implementation;
 
 import com.enigma.bookit.constant.ResponseMessage;
 import com.enigma.bookit.dto.PaymentDTO;
+import com.enigma.bookit.dto.RefundDTO;
 import com.enigma.bookit.dto.RefundSearchDTO;
 import com.enigma.bookit.entity.Book;
 import com.enigma.bookit.entity.Refund;
@@ -10,6 +11,7 @@ import com.enigma.bookit.exception.DataNotFoundException;
 import com.enigma.bookit.repository.RefundRepository;
 import com.enigma.bookit.service.*;
 import com.enigma.bookit.specification.RefundSpecification;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -43,14 +45,17 @@ public class RefundServiceImpl implements RefundService {
     @Autowired
     RestTemplate restTemplate;
 
+    @Autowired
+    ModelMapper modelMapper;
+
     //Customer apply for refund
     @Override
-    public Refund applyRefund(Refund refund) {
+    public RefundDTO applyRefund(Refund refund) {
         if(bookService.checkActiveBook(refund.getBook().getId())) {
 //        if(checkActiveBook(refund.getBook().getId())){
             refund.setRequestRefundTime(LocalDateTime.now());
             refund.setStatus(false);
-            return refundRepository.save(refund);
+            return convertRefundToRefundDTO(refundRepository.save(refund));
         }
         else{
             throw new BadRequestException("The book period has been already ended");
@@ -64,10 +69,8 @@ public class RefundServiceImpl implements RefundService {
 //        }
 //    }
 
-
-
     @Override
-    public Refund acceptRefund(String id, BigDecimal amount) {
+    public RefundDTO acceptRefund(String id, BigDecimal amount) {
         Refund refund = refundRepository.findById(id).get();
         if(checkRefundStatus(refund)) {
             refund.setStatus(true);
@@ -88,7 +91,7 @@ public class RefundServiceImpl implements RefundService {
 
             restTemplate.exchange(builder.toUriString(), HttpMethod.POST, null, String.class);
             bookService.addBook(book);
-            return refundRepository.save(refund);
+            return convertRefundToRefundDTO(refundRepository.save(refund));
         }
         else{
             throw new BadRequestException("Refund has been paid already");
@@ -102,9 +105,9 @@ public class RefundServiceImpl implements RefundService {
     }
 
     @Override
-    public Refund getById(String id) {
+    public RefundDTO getById(String id) {
         if(refundRepository.findById(id).isPresent()) {
-            return refundRepository.findById(id).get();
+            return convertRefundToRefundDTO(refundRepository.findById(id).get());
         }
         throw new DataNotFoundException(ResponseMessage.NOT_FOUND);
     }
@@ -120,5 +123,13 @@ public class RefundServiceImpl implements RefundService {
     public Page<Refund> getAllRefund(Pageable pageable, RefundSearchDTO refundSearchDTO) {
         Specification<Refund> refundSpecification = RefundSpecification.getSpecification(refundSearchDTO);
         return refundRepository.findAll(refundSpecification, pageable);
+    }
+
+    public RefundDTO convertRefundToRefundDTO(Refund refund){
+        return modelMapper.map(refund, RefundDTO.class);
+    }
+
+    public Refund convertRefundDTOToRefund(RefundDTO refundDTO){
+        return modelMapper.map(refundDTO, Refund.class);
     }
 }

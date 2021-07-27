@@ -1,10 +1,12 @@
 package com.enigma.bookit.controller;
 
+import com.enigma.bookit.dto.CustomerDto;
 import com.enigma.bookit.dto.PaymentDTO;
 import com.enigma.bookit.entity.Customer;
 import com.enigma.bookit.entity.Facility;
 import com.enigma.bookit.entity.PackageChosen;
 import com.enigma.bookit.entity.Payment;
+import com.enigma.bookit.service.CustomerService;
 import com.enigma.bookit.service.PaymentService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;
@@ -32,11 +34,14 @@ class PaymentControllerTest {
     @MockBean
     PaymentService paymentService;
 
+    @MockBean
+    CustomerService customerService;
+
     @Autowired
     MockMvc mockMvc;
 
     private Payment payment;
-    ModelMapper modelMapper = new ModelMapper();
+    private ModelMapper modelMapper = new ModelMapper();
 
     @BeforeEach
     void setup(){
@@ -47,6 +52,7 @@ class PaymentControllerTest {
         payment.setFacility(facility);
         Customer customer = new Customer();
         customer.setId("C01");
+        customer.setEmail("test@gmail.com");
         payment.setCustomer(customer);
         payment.setPaymentStatus(false);
 //        payment.setPaymentDate(LocalDateTime.now());
@@ -100,9 +106,31 @@ class PaymentControllerTest {
 
     @Test
     void deleteById() {
+
     }
 
     @Test
-    void getPaymentByPage() {
+    void payXendit() throws Exception {
+        payment = new Payment();
+        payment.setId("P01");
+        Facility facility = new Facility();
+        facility.setId("F01");
+        payment.setFacility(facility);
+        Customer customer = new Customer();
+        customer.setId("C01");
+        customer.setEmail("test@gmail.com");
+        payment.setCustomer(customer);
+        payment.setAmount(BigDecimal.valueOf(1000));
+        payment.setPackageChosen(PackageChosen.WEEKLY);
+        CustomerDto customerDto = new CustomerDto();
+        customerDto.setId("C01");
+        customerDto.setEmail("test@gmail.com");
+        when(paymentService.getById(any(String.class))).thenReturn(modelMapper.map(payment, PaymentDTO.class));
+        when(paymentService.pay(any(String.class))).thenReturn(modelMapper.map(payment, PaymentDTO.class));
+        when(customerService.getById(any(String.class))).thenReturn(customerDto);
+        mockMvc.perform(post("/api/payment/payXendit/{id}", payment.getId())
+                .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(jsonPath("$.data.id", Matchers.is(payment.getId())));
     }
 }
