@@ -1,9 +1,9 @@
 package com.enigma.bookit.service.implementation;
 
 import com.enigma.bookit.constant.ResponseMessage;
+import com.enigma.bookit.dto.PaymentDTO;
 import com.enigma.bookit.dto.RefundSearchDTO;
 import com.enigma.bookit.entity.Book;
-import com.enigma.bookit.entity.Payment;
 import com.enigma.bookit.entity.Refund;
 import com.enigma.bookit.exception.BadRequestException;
 import com.enigma.bookit.exception.DataNotFoundException;
@@ -20,9 +20,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Service
 public class RefundServiceImpl implements RefundService {
@@ -77,7 +75,7 @@ public class RefundServiceImpl implements RefundService {
             refund.setRefundAmount(amount);
             Book book = bookService.getBookById(refund.getBook().getId());
             book.setActiveUntil(LocalDateTime.now());
-            Payment payment = paymentService.getById(book.getPayment().getId());
+            PaymentDTO payment = paymentService.getById(book.getPayment().getId());
             String facilityContact = facilityService.getFacilityById(payment.getFacility().getId()).getContact();
             String customerContact = customerService.getById(payment.getCustomer().getId()).getContact();
 
@@ -106,14 +104,14 @@ public class RefundServiceImpl implements RefundService {
     @Override
     public Refund getById(String id) {
         if(refundRepository.findById(id).isPresent()) {
-            return refundRepository.getById(id);
+            return refundRepository.findById(id).get();
         }
         throw new DataNotFoundException(ResponseMessage.NOT_FOUND);
     }
 
     @Override
     public void deleteById(String id) {
-        if (refundRepository.findById(id).isPresent()) {
+        if(refundRepository.findById(id).isPresent()) {
             refundRepository.deleteById(id);
         }throw new DataNotFoundException(ResponseMessage.NOT_FOUND);
     }

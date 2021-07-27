@@ -1,12 +1,21 @@
 package com.enigma.bookit.controller;
 
 import com.enigma.bookit.constant.ApiUrlConstant;
+import com.enigma.bookit.dto.CustomerDto;
+import com.enigma.bookit.dto.InvoiceResponseDTO;
+import com.enigma.bookit.dto.PaymentDTO;
 import com.enigma.bookit.dto.PaymentSearchDTO;
+import com.enigma.bookit.entity.Customer;
 import com.enigma.bookit.entity.Payment;
 import com.enigma.bookit.entity.Refund;
+import com.enigma.bookit.service.CustomerService;
 import com.enigma.bookit.service.PaymentService;
 import com.enigma.bookit.utils.PageResponseWrapper;
 import com.enigma.bookit.utils.Response;
+import com.xendit.Xendit;
+import com.xendit.exception.XenditException;
+import com.xendit.model.Invoice;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,6 +26,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequestMapping(ApiUrlConstant.PAYMENT)
 public class PaymentController {
@@ -24,9 +36,12 @@ public class PaymentController {
     @Autowired
     PaymentService paymentService;
 
+    @Autowired
+    CustomerService customerService;
+
     @PostMapping()
-    public ResponseEntity<Response<Payment>> createPayment(@RequestBody Payment payment){
-        Response<Payment> response = new Response<>();
+    public ResponseEntity<Response<PaymentDTO>> createPayment(@RequestBody Payment payment){
+        Response<PaymentDTO> response = new Response<>();
         String message = "Payment is inserted";
         response.setMessage(message);
         response.setData(paymentService.save(payment));
@@ -35,8 +50,8 @@ public class PaymentController {
                 .body(response);
     }
     @PutMapping("/pay/{id}")
-    public ResponseEntity<Response<Payment>> payPayment(@PathVariable String id){
-        Response<Payment> response = new Response<>();
+    public ResponseEntity<Response<PaymentDTO>> payPayment(@PathVariable String id){
+        Response<PaymentDTO> response = new Response<>();
         String message = "Payment is updated";
         response.setMessage(message);
         response.setData(paymentService.pay(id));
@@ -46,7 +61,7 @@ public class PaymentController {
     }
 
     @GetMapping("/{id}")
-    public Payment getById(@PathVariable String id){
+    public PaymentDTO getById(@PathVariable String id){
         return paymentService.getById(id);
     }
 
@@ -56,7 +71,7 @@ public class PaymentController {
     }
 
     @GetMapping()
-    public PageResponseWrapper<Payment> getPaymentByPage(
+    public PageResponseWrapper<PaymentDTO> getPaymentByPage(
             @RequestBody PaymentSearchDTO paymentSearchDTO,
             @RequestParam(name="page", defaultValue="0") Integer page,
             @RequestParam(name="size", defaultValue="3") Integer size,
@@ -64,7 +79,44 @@ public class PaymentController {
             @RequestParam(name="direction", defaultValue="ASC") String direction){
         Sort sort = Sort.by(Sort.Direction.fromString(direction), sortBy);
         Pageable pageable = PageRequest.of(page, size, sort);
-        Page<Payment> paymentPage = paymentService.getAllPerPage(pageable, paymentSearchDTO);
-        return new PageResponseWrapper<Payment>(paymentPage);
+        Page<PaymentDTO> paymentPage = paymentService.getAllPerPage(pageable, paymentSearchDTO);
+        return new PageResponseWrapper<PaymentDTO>(paymentPage);
+    }
+
+    @PostMapping("/payXendit/{id}")
+    public ResponseEntity<Response<?>> pay (@PathVariable String id){
+        ModelMapper modelMapper = new ModelMapper();
+        PaymentDTO payment = new PaymentDTO();
+        CustomerDto customer = new CustomerDto();
+        payment = paymentService.getById(id);
+        customer = customerService.getById(payment.getCustomer().getId());
+        Xendit.apiKey = "xnd_development_ALRsQqBYU0SiqLSHTM6diYrpUwwSMZQKKBcvG7nT1LsngPawa4pv08oECrXvx";
+        try {
+            Map<String, Object> params = new HashMap<>();
+            params.put("external_id", (payment.getId()));
+            params.put("amount", payment.getAmount());
+            params.put("payer_email", customer.getEmail());
+            params.put("description", (payment.getPackageChosen()));
+
+            Invoice invoice = Invoice.create(params);
+
+            InvoiceResponseDTO invoiceResponse = modelMapper.map(invoice, InvoiceResponseDTO.class);
+
+            PaymentDTO paymentDTO = new PaymentDTO();
+            paymentDTO = paymentService.pay(payment.getId());
+
+            Response<InvoiceResponseDTO> response = new Response<>();
+            String message = "Payment is updated";
+            response.setMessage(message);
+            response.setData(invoiceResponse);
+
+            return ResponseEntity.status(HttpStatus.OK)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(response);
+        } catch (
+                XenditException e) {
+            throw new RuntimeException("Error: " + e.getMessage());
+        }
+
     }
 }

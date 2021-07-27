@@ -11,6 +11,7 @@ import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -26,7 +27,9 @@ import static org.mockito.ArgumentMatchers.any;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -39,12 +42,6 @@ class RefundServiceImplTest {
 
     @Autowired
     RefundServiceImpl service;
-
-    @Autowired
-    BookServiceImpl bookService;
-
-    @Autowired
-    PaymentServiceImpl paymentService;
 
     @Spy
     RestTemplate restTemplate;
@@ -111,8 +108,6 @@ class RefundServiceImplTest {
         refund.setRefundAmount(BigDecimal.valueOf(1000.00));
         refund.setStatus(false);
         refundRepository.save(refund);
-
-
     }
 
     @Test
@@ -155,16 +150,9 @@ class RefundServiceImplTest {
 
     @Test
     void getById() {
-        refundRepository.save(refund);
-        when(refundRepository.findById("R01")).thenReturn(java.util.Optional.ofNullable(refund));
-        Refund returned = service.getById("R01");
-//        verify(service).getById("R01");
-        assertNotNull(returned);
+        refund = new Refund();
+        Refund output = new Refund();
 
-    }
-
-    @Test
-    void deleteById() {
         refund.setId("R01");
         refund.setBook(book);
         refund.setRequestRefundTime(LocalDateTime.now());
@@ -172,14 +160,26 @@ class RefundServiceImplTest {
         refund.setRefundAmount(BigDecimal.valueOf(1000.00));
         refund.setStatus(false);
         refundRepository.save(refund);
-        when(refundRepository.findById("R01")).thenReturn(java.util.Optional.ofNullable(refund));
-        doNothing().when(refundRepository).deleteById("R01");
-        service.deleteById("R01");
-        assertEquals(0, refundRepository.findAll().size());
+
+        when(refundRepository.findById(refund.getId())).thenReturn(java.util.Optional.ofNullable(refund));
+        output.setId(service.getById("R01").getId());
+        assertEquals(refund.getId(), output.getId());
     }
 
     @Test
-    void getAllRefund() {
+    void deleteById() {
+        refund = new Refund();
+        Refund output = new Refund();
 
+        refund.setId("R01");
+        refund.setBook(book);
+        refund.setRequestRefundTime(LocalDateTime.now());
+        refund.setRefundTime(LocalDateTime.now());
+        refund.setRefundAmount(BigDecimal.valueOf(1000.00));
+        refund.setStatus(false);
+        refundRepository.save(refund);
+        when(refundRepository.findById(refund.getId())).thenReturn(java.util.Optional.ofNullable(refund));
+        service.deleteById(refund.getId());
+        assertEquals(0, refundRepository.findAll().size());
     }
 }

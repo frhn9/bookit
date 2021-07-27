@@ -1,5 +1,6 @@
 package com.enigma.bookit.repository;
 
+import com.enigma.bookit.dto.PaymentDTO;
 import com.enigma.bookit.entity.Payment;
 import com.enigma.bookit.specification.PaymentSpecification;
 import org.springframework.data.domain.Page;
@@ -12,7 +13,7 @@ import java.util.List;
 
 @Repository
 public interface PaymentRepository extends JpaRepository<Payment, String> {
-    Page<Payment> findAll (Specification<Payment> paymentSpecification, Pageable pageable);
+    Page<PaymentDTO> findAll (Specification<Payment> paymentSpecification, Pageable pageable);
 
     List<Payment> findAll(Specification<Payment> paymentSpecification);
 }

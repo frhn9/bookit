@@ -37,11 +37,11 @@ public class PaymentSpecification {
                     predicates.add(paymentStatus);
                 }
                 if (!(paymentSearchDTO.getAmountStart() == null)){
-                    Predicate amountStart = criteriaBuilder.greaterThanOrEqualTo(root.get("refundAmount"), paymentSearchDTO.getAmountStart());
+                    Predicate amountStart = criteriaBuilder.greaterThanOrEqualTo(root.get("amount"), paymentSearchDTO.getAmountStart());
                     predicates.add(amountStart);
                 }
                 if (!(paymentSearchDTO.getAmountStop() == null)) {
-                    Predicate amountStop = criteriaBuilder.lessThanOrEqualTo(root.get("refundAmount"), paymentSearchDTO.getAmountStop());
+                    Predicate amountStop = criteriaBuilder.lessThanOrEqualTo(root.get("amount"), paymentSearchDTO.getAmountStop());
                     predicates.add(amountStop);
                 }
                 if(!(paymentSearchDTO.getBookingStartFrom() == null)){

@@ -1,6 +1,7 @@
 package com.enigma.bookit.service.implementation;
 
 import com.enigma.bookit.constant.ResponseMessage;
+import com.enigma.bookit.dto.PaymentDTO;
 import com.enigma.bookit.dto.PaymentSearchDTO;
 import com.enigma.bookit.entity.Book;
 import com.enigma.bookit.entity.Facility;
@@ -13,6 +14,7 @@ import com.enigma.bookit.service.CustomerService;
 import com.enigma.bookit.service.FacilityService;
 import com.enigma.bookit.service.PaymentService;
 import com.enigma.bookit.specification.PaymentSpecification;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,7 +36,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Service
-public class PaymentServiceImpl implements PaymentService {
+public class PaymentServiceImpl implements PaymentService{
     @Autowired
     PaymentRepository paymentRepository;
     @Autowired
@@ -45,10 +47,12 @@ public class PaymentServiceImpl implements PaymentService {
     CustomerService customerService;
     @Autowired
     RestTemplate restTemplate;
+    @Autowired
+    ModelMapper modelMapper;
 
     @Override
     //harus cek jam ini udah dipesan atau belum
-    public Payment save(Payment payment) {
+    public PaymentDTO save(Payment payment) {
 
         String facilityId = payment.getFacility().getId();
         Integer limit = facilityService.getFacilityById(facilityId).getCapacity();
@@ -79,13 +83,14 @@ public class PaymentServiceImpl implements PaymentService {
 
         //Check if the facility hasn't reached the max capacity
         checkFacilityCapacity(payment);
-        return paymentRepository.save(payment);
+        paymentRepository.save(payment);
+        return convertPaymentToPaymentDTO(payment);
     }
 
     @Override
-    public Payment getById(String id) {
+    public PaymentDTO getById(String id) {
         validatePresent(id);
-        return paymentRepository.findById(id).get();
+        return convertPaymentToPaymentDTO(paymentRepository.findById(id).get());
     }
 
     @Override
@@ -96,9 +101,8 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     //harus cek jam ini udah dipesan atau belum dari tabel book
-    public Payment pay(String id) {
-        Payment payment = getById(id);
-
+    public PaymentDTO pay(String id) {
+        Payment payment = paymentRepository.findById(id).get();
         checkFacilityCapacity(payment);
 
         if(payment.isPaymentStatus()){
@@ -123,24 +127,25 @@ public class PaymentServiceImpl implements PaymentService {
 
 
 
-        String url = "http://localhost:8081/transfer";
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
-                .queryParam("sender", customerContact)
-                .queryParam("receiver", facilityContact)
-                .queryParam("amount", payment.getAmount());
-        // http://localhost:8081/debit?phoneNumber=082100000&amount=9000
-
-        restTemplate.exchange(builder.toUriString(), HttpMethod.POST, null, String.class);
-        return paymentRepository.save(payment);
+//        String url = "http://localhost:8081/transfer";
+//        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
+//                .queryParam("sender", customerContact)
+//                .queryParam("receiver", facilityContact)
+//                .queryParam("amount", payment.getAmount());
+//        // http://localhost:8081/debit?phoneNumber=082100000&amount=9000
+//
+//        restTemplate.exchange(builder.toUriString(), HttpMethod.POST, null, String.class);
+        paymentRepository.save(payment);
+        return convertPaymentToPaymentDTO(payment);
     }
 
     @Override
-    public Page<Payment> getAllPerPage(Pageable pageable, PaymentSearchDTO paymentSearchDTO) {
+    public Page<PaymentDTO> getAllPerPage(Pageable pageable, PaymentSearchDTO paymentSearchDTO) {
         Specification<Payment> paymentSpecification = PaymentSpecification.getSpecification(paymentSearchDTO);
         return paymentRepository.findAll(paymentSpecification, pageable);
     }
 
-    private void validatePresent(String id){
+    public void validatePresent(String id){
         if(!paymentRepository.findById(id).isPresent()){
             throw new DataNotFoundException(ResponseMessage.NOT_FOUND);
         }
@@ -159,5 +164,8 @@ public class PaymentServiceImpl implements PaymentService {
         if(facility.getCapacity() <= cap){
             throw new BadRequestException("Maximum facility's capacity has been reached");
         }
+    }
+    public PaymentDTO convertPaymentToPaymentDTO(Payment payment) {
+        return modelMapper.map(payment, PaymentDTO.class);
     }
 }
