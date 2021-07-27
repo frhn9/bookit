@@ -11,5 +11,5 @@ public interface FeedbackService {
     FeedbackDTO respondFeedback (String id, String response);
     FeedbackDTO getById(String id);
     void deleteById(String id);
-    Page<Feedback> getAllFeedback(Pageable pageable, FeedbackSearchDTO feedbackSearchDTO);
+    Page<FeedbackDTO> getAllFeedback(Pageable pageable, FeedbackSearchDTO feedbackSearchDTO);
 }

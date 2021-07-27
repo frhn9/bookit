@@ -1,6 +1,6 @@
 package com.enigma.bookit.service.implementation;
 
-import com.enigma.bookit.constant.ResponseMessage;
+import com.enigma.bookit.constant.ErrorMessageConstant;
 import com.enigma.bookit.dto.PaymentDTO;
 import com.enigma.bookit.dto.RefundDTO;
 import com.enigma.bookit.dto.RefundSearchDTO;
@@ -109,20 +109,21 @@ public class RefundServiceImpl implements RefundService {
         if(refundRepository.findById(id).isPresent()) {
             return convertRefundToRefundDTO(refundRepository.findById(id).get());
         }
-        throw new DataNotFoundException(ResponseMessage.NOT_FOUND);
+        throw new DataNotFoundException(String.format(ErrorMessageConstant.DATA_NOT_FOUND, "id "));
     }
 
     @Override
     public void deleteById(String id) {
         if(refundRepository.findById(id).isPresent()) {
             refundRepository.deleteById(id);
-        }throw new DataNotFoundException(ResponseMessage.NOT_FOUND);
+        }throw new DataNotFoundException(String.format(ErrorMessageConstant.DATA_NOT_FOUND, "id"));
     }
 
     @Override
-    public Page<Refund> getAllRefund(Pageable pageable, RefundSearchDTO refundSearchDTO) {
+    public Page<RefundDTO> getAllRefund(Pageable pageable, RefundSearchDTO refundSearchDTO) {
         Specification<Refund> refundSpecification = RefundSpecification.getSpecification(refundSearchDTO);
-        return refundRepository.findAll(refundSpecification, pageable);
+        Page<Refund> result = refundRepository.findAll(refundSpecification, pageable);
+        return result.map(this::convertRefundToRefundDTO);
     }
 
     public RefundDTO convertRefundToRefundDTO(Refund refund){

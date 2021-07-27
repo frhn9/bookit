@@ -1,6 +1,9 @@
 package com.enigma.bookit.service.implementation;
 
+import com.enigma.bookit.dto.RefundDTO;
+import com.enigma.bookit.dto.RefundSearchDTO;
 import com.enigma.bookit.entity.*;
+import com.enigma.bookit.entity.user.Customer;
 import com.enigma.bookit.exception.DataNotFoundException;
 import com.enigma.bookit.repository.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,7 +14,10 @@ import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -29,8 +35,10 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -181,5 +189,192 @@ class RefundServiceImplTest {
         when(refundRepository.findById(refund.getId())).thenReturn(java.util.Optional.ofNullable(refund));
         service.deleteById(refund.getId());
         assertEquals(0, refundRepository.findAll().size());
+    }
+
+    @Test
+    void getAllPerPage(){
+        refund = new Refund();
+        Refund output = new Refund();
+
+        refund.setId("R01");
+        refund.setBook(book);
+        refund.setRequestRefundTime(LocalDateTime.now());
+        refund.setRefundTime(LocalDateTime.now());
+        refund.setRefundAmount(BigDecimal.valueOf(1000.00));
+        refund.setStatus(false);
+
+        RefundSearchDTO refundSearchDTO = new RefundSearchDTO();
+        refundSearchDTO.setAmountMore(BigDecimal.valueOf(0));
+
+        RefundDTO refundDTO = service.convertRefundToRefundDTO(refund);
+        List<RefundDTO> refundDTOS = new ArrayList<>();
+        refundDTOS.add(refundDTO);
+
+        Page<RefundDTO> refundDTOPage = new Page<RefundDTO>() {
+            @Override
+            public int getTotalPages() {
+                return 0;
+            }
+
+            @Override
+            public long getTotalElements() {
+                return 0;
+            }
+
+            @Override
+            public <U> Page<U> map(Function<? super RefundDTO, ? extends U> function) {
+                return null;
+            }
+
+            @Override
+            public int getNumber() {
+                return 0;
+            }
+
+            @Override
+            public int getSize() {
+                return 0;
+            }
+
+            @Override
+            public int getNumberOfElements() {
+                return 0;
+            }
+
+            @Override
+            public List<RefundDTO> getContent() {
+                return refundDTOS;
+            }
+
+            @Override
+            public boolean hasContent() {
+                return false;
+            }
+
+            @Override
+            public Sort getSort() {
+                return null;
+            }
+
+            @Override
+            public boolean isFirst() {
+                return false;
+            }
+
+            @Override
+            public boolean isLast() {
+                return false;
+            }
+
+            @Override
+            public boolean hasNext() {
+                return false;
+            }
+
+            @Override
+            public boolean hasPrevious() {
+                return false;
+            }
+
+            @Override
+            public Pageable nextPageable() {
+                return null;
+            }
+
+            @Override
+            public Pageable previousPageable() {
+                return null;
+            }
+
+            @Override
+            public Iterator<RefundDTO> iterator() {
+                return null;
+            }
+        };
+        Page<Refund> refundPage = new Page<Refund>() {
+            @Override
+            public int getTotalPages() {
+                return 0;
+            }
+
+            @Override
+            public long getTotalElements() {
+                return 0;
+            }
+
+            @Override
+            public <U> Page<U> map(Function<? super Refund, ? extends U> function) {
+                return null;
+            }
+
+            @Override
+            public int getNumber() {
+                return 0;
+            }
+
+            @Override
+            public int getSize() {
+                return 0;
+            }
+
+            @Override
+            public int getNumberOfElements() {
+                return 0;
+            }
+
+            @Override
+            public List<Refund> getContent() {
+                return null;
+            }
+
+            @Override
+            public boolean hasContent() {
+                return false;
+            }
+
+            @Override
+            public Sort getSort() {
+                return null;
+            }
+
+            @Override
+            public boolean isFirst() {
+                return false;
+            }
+
+            @Override
+            public boolean isLast() {
+                return false;
+            }
+
+            @Override
+            public boolean hasNext() {
+                return false;
+            }
+
+            @Override
+            public boolean hasPrevious() {
+                return false;
+            }
+
+            @Override
+            public Pageable nextPageable() {
+                return null;
+            }
+
+            @Override
+            public Pageable previousPageable() {
+                return null;
+            }
+
+            @Override
+            public Iterator<Refund> iterator() {
+                return null;
+            }
+        };
+        when(refundRepository.findAll((Specification<Refund>) any(), any())).thenReturn(refundPage);
+        refundRepository.save(refund);
+        when(service.getAllRefund(any(), eq(refundSearchDTO))).thenReturn(refundDTOPage);
+        assertEquals(1, refundDTOPage.getContent().size());
     }
 }

@@ -1,5 +1,7 @@
 package com.enigma.bookit.entity;
 
+import com.enigma.bookit.entity.user.Customer;
+import com.enigma.bookit.entity.user.User;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;

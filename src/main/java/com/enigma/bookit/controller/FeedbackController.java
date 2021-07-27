@@ -1,7 +1,7 @@
 package com.enigma.bookit.controller;
 
 import com.enigma.bookit.constant.ApiUrlConstant;
-import com.enigma.bookit.constant.ResponseMessage;
+import com.enigma.bookit.constant.SuccessMessageConstant;
 import com.enigma.bookit.dto.FeedbackDTO;
 import com.enigma.bookit.dto.FeedbackSearchDTO;
 import com.enigma.bookit.entity.Feedback;
@@ -29,7 +29,7 @@ public class FeedbackController {
     @PostMapping()
     public ResponseEntity<Response<FeedbackDTO>> createFeedback(@RequestBody Feedback feedback){
         Response<FeedbackDTO> response = new Response<>();
-        String message = String.format(ResponseMessage.INSERT_SUCCESS, "feedback");
+        String message = String.format(SuccessMessageConstant.CREATE_SUCCESS, "feedback");
         response.setMessage(message);
         response.setData(feedbackService.save(feedback));
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -41,7 +41,7 @@ public class FeedbackController {
     @PutMapping("/{id}")
     public ResponseEntity<Response<FeedbackDTO>> responseFeedback(@PathVariable String id, @RequestBody Feedback feedback){
         Response<FeedbackDTO> response = new Response<>();
-        String message = String.format(ResponseMessage.INSERT_SUCCESS, "response of a feedback");
+        String message = String.format(SuccessMessageConstant.CREATE_SUCCESS, "response of a feedback");
         response.setMessage(message);
         response.setData(feedbackService.respondFeedback(id, feedback.getResponse()));
         return ResponseEntity.status(HttpStatus.OK)
@@ -63,14 +63,17 @@ public class FeedbackController {
 
     //Get All Response per Page
     @GetMapping
-    public PageResponseWrapper<Feedback> searchFeedbackPerPage(@RequestBody FeedbackSearchDTO feedbackSearchDTO,
+    public PageResponseWrapper<FeedbackDTO> searchFeedbackPerPage(@RequestBody FeedbackSearchDTO feedbackSearchDTO,
                                                                @RequestParam(name = "page", defaultValue = "0") Integer page,
                                                                @RequestParam(name = "size", defaultValue = "3") Integer sizePerPage,
                                                                @RequestParam(name = "sortBy", defaultValue = "id") String sortBy,
                                                                @RequestParam(name = "direction", defaultValue = "ASC") String direction){
         Sort sort = Sort.by(Sort.Direction.fromString(direction), sortBy);
+        Integer code = HttpStatus.OK.value();
+        String status = HttpStatus.OK.name();
+        String message = SuccessMessageConstant.GET_DATA_SUCCESSFUL;
         Pageable pageable = PageRequest.of(page, sizePerPage, sort);
-        Page<Feedback> feedbackPage = feedbackService.getAllFeedback(pageable, feedbackSearchDTO);
-        return new PageResponseWrapper<Feedback>(feedbackPage);
+        Page<FeedbackDTO> feedbackPage = feedbackService.getAllFeedback(pageable, feedbackSearchDTO);
+        return new PageResponseWrapper<FeedbackDTO>(code, status, message, feedbackPage);
     }
 }

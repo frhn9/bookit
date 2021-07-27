@@ -1,8 +1,9 @@
 package com.enigma.bookit.dto;
 
-import com.enigma.bookit.entity.Customer;
 import com.enigma.bookit.entity.Facility;
 import com.enigma.bookit.entity.PackageChosen;
+import com.enigma.bookit.entity.user.Customer;
+import com.enigma.bookit.entity.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;

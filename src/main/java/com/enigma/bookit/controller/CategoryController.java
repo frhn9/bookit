@@ -2,7 +2,7 @@ package com.enigma.bookit.controller;
 
 
 import com.enigma.bookit.constant.ApiUrlConstant;
-import com.enigma.bookit.constant.ResponseMessage;
+import com.enigma.bookit.constant.SuccessMessageConstant;
 import com.enigma.bookit.entity.Category;
 import com.enigma.bookit.service.CategoryService;
 import com.enigma.bookit.utils.Response;
@@ -24,7 +24,7 @@ public class CategoryController {
     @PostMapping
     public ResponseEntity<Response<Category>> createNewCategory(@RequestBody Category category){
         Response <Category> response = new Response<>();
-        String message = String.format(ResponseMessage.INSERT_SUCCESS,"category's");
+        String message = String.format(SuccessMessageConstant.CREATE_SUCCESS,"category's");
         response.setMessage(message);
         response.setData(categoryService.addCategory(category));
         return ResponseEntity.status(HttpStatus.CREATED)

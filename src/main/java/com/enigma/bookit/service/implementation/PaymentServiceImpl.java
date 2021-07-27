@@ -1,6 +1,6 @@
 package com.enigma.bookit.service.implementation;
 
-import com.enigma.bookit.constant.ResponseMessage;
+import com.enigma.bookit.constant.ErrorMessageConstant;
 import com.enigma.bookit.dto.PaymentDTO;
 import com.enigma.bookit.dto.PaymentSearchDTO;
 import com.enigma.bookit.entity.Book;
@@ -127,14 +127,14 @@ public class PaymentServiceImpl implements PaymentService{
 
 
 
-//        String url = "http://localhost:8081/transfer";
-//        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
-//                .queryParam("sender", customerContact)
-//                .queryParam("receiver", facilityContact)
-//                .queryParam("amount", payment.getAmount());
-//        // http://localhost:8081/debit?phoneNumber=082100000&amount=9000
-//
-//        restTemplate.exchange(builder.toUriString(), HttpMethod.POST, null, String.class);
+        String url = "http://localhost:8081/transfer";
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
+                .queryParam("sender", customerContact)
+                .queryParam("receiver", facilityContact)
+                .queryParam("amount", payment.getAmount());
+        // http://localhost:8081/debit?phoneNumber=082100000&amount=9000
+
+        restTemplate.exchange(builder.toUriString(), HttpMethod.POST, null, String.class);
         paymentRepository.save(payment);
         return convertPaymentToPaymentDTO(payment);
     }
@@ -142,12 +142,13 @@ public class PaymentServiceImpl implements PaymentService{
     @Override
     public Page<PaymentDTO> getAllPerPage(Pageable pageable, PaymentSearchDTO paymentSearchDTO) {
         Specification<Payment> paymentSpecification = PaymentSpecification.getSpecification(paymentSearchDTO);
-        return paymentRepository.findAll(paymentSpecification, pageable);
+        Page<Payment> payments = paymentRepository.findAll(paymentSpecification, pageable);
+        return payments.map(this::convertPaymentToPaymentDTO);
     }
 
     public void validatePresent(String id){
         if(!paymentRepository.findById(id).isPresent()){
-            throw new DataNotFoundException(ResponseMessage.NOT_FOUND);
+            throw new DataNotFoundException(String.format(ErrorMessageConstant.DATA_NOT_FOUND, "id"));
         }
     }
 

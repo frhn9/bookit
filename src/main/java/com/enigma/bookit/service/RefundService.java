@@ -14,5 +14,5 @@ public interface RefundService {
     RefundDTO acceptRefund(String id, BigDecimal amount);
     RefundDTO getById(String id);
     void deleteById(String id);
-    Page<Refund> getAllRefund(Pageable pageable, RefundSearchDTO refundSearchDTO);
+    Page<RefundDTO> getAllRefund(Pageable pageable, RefundSearchDTO refundSearchDTO);
 }

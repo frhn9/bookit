@@ -1,7 +1,7 @@
 package com.enigma.bookit.controller;
 
 import com.enigma.bookit.constant.ApiUrlConstant;
-import com.enigma.bookit.constant.ResponseMessage;
+import com.enigma.bookit.constant.SuccessMessageConstant;
 import com.enigma.bookit.dto.RefundDTO;
 import com.enigma.bookit.dto.RefundSearchDTO;
 import com.enigma.bookit.entity.Category;
@@ -32,7 +32,7 @@ public class RefundController {
     @PostMapping
     public ResponseEntity<Response<RefundDTO>> applyRefund(@RequestBody Refund refund){
         Response <RefundDTO> response = new Response<>();
-        String message = String.format(ResponseMessage.INSERT_SUCCESS,"refund's");
+        String message = String.format(SuccessMessageConstant.CREATE_SUCCESS,"refund's");
         response.setMessage(message);
         response.setData(refundService.applyRefund(refund));
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -44,7 +44,7 @@ public class RefundController {
     public ResponseEntity<Response<RefundDTO>> acceptRefund (@PathVariable String id,
                                                           @RequestBody Refund refund) {
         Response<RefundDTO> response = new Response<>();
-        String message = String.format(ResponseMessage.INSERT_SUCCESS, "refund's");
+        String message = String.format(SuccessMessageConstant.CREATE_SUCCESS, "refund's");
         response.setMessage(message);
         response.setData(refundService.acceptRefund(id, refund.getRefundAmount()));
         return ResponseEntity.status(HttpStatus.OK)
@@ -53,14 +53,17 @@ public class RefundController {
     }
 
     @GetMapping
-    public PageResponseWrapper<Refund> searchFeedbackPerPage(@RequestBody RefundSearchDTO refundSearchDTO,
+    public PageResponseWrapper<RefundDTO> searchFeedbackPerPage(@RequestBody RefundSearchDTO refundSearchDTO,
                                                              @RequestParam(name = "page", defaultValue = "0") Integer page,
                                                              @RequestParam(name = "size", defaultValue = "3") Integer sizePerPage,
                                                              @RequestParam(name = "sortBy", defaultValue = "id") String sortBy,
                                                              @RequestParam(name = "direction", defaultValue = "ASC") String direction){
         Sort sort = Sort.by(Sort.Direction.fromString(direction), sortBy);
         Pageable pageable = PageRequest.of(page, sizePerPage, sort);
-        Page<Refund> refundPage = refundService.getAllRefund(pageable, refundSearchDTO);
-        return new PageResponseWrapper<Refund>(refundPage);
+        Integer code = HttpStatus.OK.value();
+        String status = HttpStatus.OK.name();
+        String message = SuccessMessageConstant.GET_DATA_SUCCESSFUL;
+        Page<RefundDTO> refundPage = refundService.getAllRefund(pageable, refundSearchDTO);
+        return new PageResponseWrapper<RefundDTO>(code, status, message,refundPage);
     }
 }

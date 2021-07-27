@@ -52,9 +52,10 @@ public class FeedbackServiceImpl implements FeedbackService {
     }
 
     @Override
-    public Page<Feedback> getAllFeedback(Pageable pageable, FeedbackSearchDTO feedbackSearchDTO) {
+    public Page<FeedbackDTO> getAllFeedback(Pageable pageable, FeedbackSearchDTO feedbackSearchDTO) {
         Specification<Feedback> feedbackSpecification = FeedbackSpecification.getSpecification(feedbackSearchDTO);
-        return feedbackRepository.findAll(feedbackSpecification, pageable);
+        Page<Feedback> result = feedbackRepository.findAll(feedbackSpecification, pageable);
+        return result.map(this::convertFeedbackToFeedbackDTO);
     }
 
     public void validatePresent(String id){

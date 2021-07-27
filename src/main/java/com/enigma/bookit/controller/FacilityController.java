@@ -2,7 +2,7 @@ package com.enigma.bookit.controller;
 
 
 import com.enigma.bookit.constant.ApiUrlConstant;
-import com.enigma.bookit.constant.ResponseMessage;
+import com.enigma.bookit.constant.SuccessMessageConstant;
 import com.enigma.bookit.service.FacilityService;
 import com.enigma.bookit.entity.Facility;
 import com.enigma.bookit.utils.Response;
@@ -25,7 +25,7 @@ public class FacilityController {
     @PostMapping
     public ResponseEntity<Response<Facility>> addNewFacility(@RequestBody Facility facility){
         Response<Facility> response = new Response<>();
-        String message = String.format(ResponseMessage.INSERT_SUCCESS, "facility's");
+        String message = String.format(SuccessMessageConstant.CREATE_SUCCESS, "facility's");
         response.setMessage(message);
         response.setData(facilityService.save(facility));
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -36,7 +36,7 @@ public class FacilityController {
     @GetMapping("/{facilityId}")
     public ResponseEntity<Response<Facility>> getFacilityById(@PathVariable String facilityId){
         Response<Facility> response = new Response<>();
-        String message = String.format(ResponseMessage.GET_SUCCESS,"facility");
+        String message = String.format(SuccessMessageConstant.CREATE_SUCCESS,"facility");
         response.setMessage(message);
         response.setData(facilityService.getFacilityById(facilityId));
         return ResponseEntity.status(HttpStatus.OK)

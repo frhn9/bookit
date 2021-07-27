@@ -1,11 +1,12 @@
 package com.enigma.bookit.controller;
 
 import com.enigma.bookit.constant.ApiUrlConstant;
+import com.enigma.bookit.constant.SuccessMessageConstant;
 import com.enigma.bookit.dto.CustomerDto;
 import com.enigma.bookit.dto.InvoiceResponseDTO;
 import com.enigma.bookit.dto.PaymentDTO;
 import com.enigma.bookit.dto.PaymentSearchDTO;
-import com.enigma.bookit.entity.Customer;
+import com.enigma.bookit.entity.user.Customer;
 import com.enigma.bookit.entity.Payment;
 import com.enigma.bookit.entity.Refund;
 import com.enigma.bookit.service.CustomerService;
@@ -49,6 +50,7 @@ public class PaymentController {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(response);
     }
+
     @PutMapping("/pay/{id}")
     public ResponseEntity<Response<PaymentDTO>> payPayment(@PathVariable String id){
         Response<PaymentDTO> response = new Response<>();
@@ -78,12 +80,15 @@ public class PaymentController {
             @RequestParam(name="sortby", defaultValue="id") String sortBy,
             @RequestParam(name="direction", defaultValue="ASC") String direction){
         Sort sort = Sort.by(Sort.Direction.fromString(direction), sortBy);
+        Integer code = HttpStatus.OK.value();
+        String status = HttpStatus.OK.name();
+        String message = SuccessMessageConstant.GET_DATA_SUCCESSFUL;
         Pageable pageable = PageRequest.of(page, size, sort);
         Page<PaymentDTO> paymentPage = paymentService.getAllPerPage(pageable, paymentSearchDTO);
-        return new PageResponseWrapper<PaymentDTO>(paymentPage);
+        return new PageResponseWrapper<PaymentDTO>(code, status, message,paymentPage);
     }
 
-    @PostMapping("/payXendit/{id}")
+    @PostMapping("/payXendit}")
     public ResponseEntity<Response<?>> pay (@PathVariable String id){
         ModelMapper modelMapper = new ModelMapper();
         PaymentDTO payment = new PaymentDTO();
@@ -91,7 +96,7 @@ public class PaymentController {
         payment = paymentService.getById(id);
         String customerId = payment.getCustomer().getId();
         customer = customerService.getById(customerId);
-        Xendit.apiKey = "xnd_development_ALRsQqBYU0SiqLSHTM6diYrpUwwSMZQKKBcvG7nT1LsngPawa4pv08oECrXvx";
+        Xendit.apiKey = "xnd_public_development_5KWXDH4AKryvnfF04ljXCD811g9vyglVDV8Xv8Y3PQwsrqIJkdtbFtoqUwZ";
         try {
             Map<String, Object> params = new HashMap<>();
             params.put("external_id", (payment.getId()));
@@ -118,6 +123,7 @@ public class PaymentController {
                 XenditException e) {
             throw new RuntimeException("Error: " + e.getMessage());
         }
-
     }
+//    @GetMapping("/callback")
+//    void getCallback(@RequestBody)
 }

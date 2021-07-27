@@ -1,6 +1,6 @@
 package com.enigma.bookit.service.implementation;
 
-import com.enigma.bookit.constant.ResponseMessage;
+import com.enigma.bookit.constant.ErrorMessageConstant;
 import com.enigma.bookit.entity.Category;
 import com.enigma.bookit.exception.DataNotFoundException;
 import com.enigma.bookit.repository.CategoryRepository;
@@ -32,7 +32,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public Category getCategoryById(String id) {
         if (!categoryRepository.existsById(id)){
-          throw new DataNotFoundException(ResponseMessage.NOT_FOUND);}
+          throw new DataNotFoundException(String.format(ErrorMessageConstant.DATA_NOT_FOUND, "id"));}
         return categoryRepository.findById(id).get();
     }
 
@@ -54,8 +54,8 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public void validatePresent(String id) {
         if(!categoryRepository.findById(id).isPresent()){
-            String message = ResponseMessage.NOT_FOUND;
-            throw new DataNotFoundException(message);
+            String message = ErrorMessageConstant.DATA_NOT_FOUND;
+            throw new DataNotFoundException(String.format(message, "id"));
 
     }
 }
