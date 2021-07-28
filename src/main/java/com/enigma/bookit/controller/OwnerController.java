@@ -34,7 +34,7 @@ public class OwnerController {
         Response<UserDto> response = new Response<>();
         response.setCode(HttpStatus.CREATED.value());
         response.setStatus(HttpStatus.CREATED.name());
-        response.setMessage(SuccessMessageConstant.SUCCESS_CREATED_USER);
+        response.setMessage(SuccessMessageConstant.CREATED_USER_SUCCESSFUL);
         response.setTimestamp(LocalDateTime.now());
         response.setData(ownerService.registerUser(user));
         return ResponseEntity.status(HttpStatus.CREATED).contentType(MediaType.APPLICATION_JSON).body(response);

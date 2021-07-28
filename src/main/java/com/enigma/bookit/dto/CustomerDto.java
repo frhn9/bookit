@@ -22,6 +22,6 @@ public class CustomerDto {
     private String job;
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date dateOfBirth;
-    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

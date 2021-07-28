@@ -25,4 +25,6 @@ public interface OwnerService {
     Boolean deleteById(String id);
 
     void validateUpdateData(Owner owner, OwnerDto ownerDto);
+
+    Boolean userNameExist(String userName);
 }

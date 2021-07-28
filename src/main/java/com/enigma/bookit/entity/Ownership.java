@@ -21,7 +21,7 @@ public class Ownership {
     @Column(name = "id")
     private String id;
     @ManyToOne
-    @JoinColumn(name = "user_name")
+    @JoinColumn(name = "user_id")
     @JsonIgnoreProperties("ownership")
     private Owner owner;
 

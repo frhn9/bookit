@@ -28,4 +28,5 @@ public interface CustomerService {
 
     void validateUpdateData(Customer customer, CustomerDto customerDto);
 
+    Boolean userNameExist(String userName);
 }

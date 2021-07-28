@@ -1,5 +1,6 @@
 package com.enigma.bookit.service.implementation;
 
+import com.enigma.bookit.constant.ErrorMessageConstant;
 import com.enigma.bookit.dto.CustomerDto;
 import com.enigma.bookit.dto.UserDto;
 import com.enigma.bookit.dto.UserPasswordDto;
@@ -16,8 +17,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import springfox.documentation.service.ResponseMessage;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
@@ -109,5 +112,10 @@ public class CustomerServiceImpl implements CustomerService, UserConverter {
     @Override
     public UserDto convertUserToUserDto(User user) {
         return modelMapper.map(user, UserDto.class);
+    }
+
+    @Override
+    public Boolean userNameExist(String userName){
+        return customerRepository.existsByUserName(userName);
     }
 }

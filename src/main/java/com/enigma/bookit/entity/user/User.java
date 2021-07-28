@@ -9,6 +9,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 @MappedSuperclass
@@ -25,7 +26,7 @@ public class User {
     @NotBlank(message = "Full name cannot be empty")
     private String fullName;
     @NotBlank(message = "Email must not be blank")
-    @Email(message = "Wrong email input")
+    @Size(min = 8, message = "Password should have minimum 8 characters")
     private String email;
     @NotBlank(message = "Password must not be blank")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)

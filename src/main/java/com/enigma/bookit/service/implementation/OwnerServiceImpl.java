@@ -4,13 +4,11 @@ import com.enigma.bookit.dto.OwnerDto;
 import com.enigma.bookit.dto.UserDto;
 import com.enigma.bookit.dto.UserPasswordDto;
 import com.enigma.bookit.dto.UserSearchDto;
-import com.enigma.bookit.entity.user.Customer;
 import com.enigma.bookit.entity.user.Owner;
 import com.enigma.bookit.entity.user.User;
 import com.enigma.bookit.repository.OwnerRepository;
 import com.enigma.bookit.service.OwnerService;
 import com.enigma.bookit.service.converter.UserConverter;
-import com.enigma.bookit.specification.CustomerSpecification;
 import com.enigma.bookit.specification.OwnerSpecification;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -110,6 +108,11 @@ public class OwnerServiceImpl implements OwnerService, UserConverter {
     @Override
     public UserDto convertUserToUserDto(User user) {
         return modelMapper.map(user, UserDto.class);
+    }
+
+    @Override
+    public Boolean userNameExist(String userName){
+        return ownerRepository.existsByUserName(userName);
     }
 
 }
