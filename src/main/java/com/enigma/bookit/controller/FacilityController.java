@@ -21,6 +21,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -40,7 +41,9 @@ public class FacilityController {
     @Autowired
     FilesService filesService;
 
+
     @PostMapping
+    @PreAuthorize("hasRole('admin')")
     public ResponseEntity<Response<Facility>> addNewFacility(@Valid @RequestBody Facility facility){
         Response<Facility> response = new Response<>();
         String message = String.format(SuccessMessageConstant.INSERT_SUCCESS, "facility's");
@@ -83,6 +86,7 @@ public class FacilityController {
 
 
     @PutMapping(value="/{facilityId}", consumes="multipart/form-data", produces ="application/json")
+    @PreAuthorize("hasRole('admin')")
     public ResponseEntity<Response<Facility>>updateFacility(@PathVariable("facilityId") String id,
                                @RequestParam (name="name", required = false) String name,
                                @RequestParam(name="address",required = false) String address,
@@ -110,6 +114,7 @@ public class FacilityController {
     }
 
     @DeleteMapping("/{facilityId}")
+    @PreAuthorize("hasRole('admin')")
     public  ResponseEntity <Response<Facility>>  deleteFacility(@PathVariable("facilityId") String facilityId){
         Response<Facility> response = new Response<>();
         response.setCode(HttpStatus.GONE.value());

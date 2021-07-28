@@ -15,6 +15,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -28,6 +29,7 @@ public class BookController {
         BookService bookService;
 
     @PostMapping()
+    @PreAuthorize("hasRole('customer')")
     public ResponseEntity<Response<Book>> createBook(@RequestBody Book book){
         Response<Book> response = new Response<>();
         String message = "Book is inserted";
@@ -56,6 +58,7 @@ public class BookController {
         }
 
         @DeleteMapping("/{bookId}")
+        @PreAuthorize("hasRole('admin')")
         public ResponseEntity <Response> deleteBook(@PathVariable("bookId") String bookId){
             Response<Book> response = new Response<>();
             String message = String.format(SuccessMessageConstant.DELETE_DATA_SUCCESSFUL,"book");

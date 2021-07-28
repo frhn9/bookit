@@ -3,12 +3,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.domain.Page;
+
 import java.util.List;
 
 @Getter
 @Setter
 @NoArgsConstructor
 public class PageResponseWrapper <T>{
+
     private Integer code;
     private String status;
     private String message;
@@ -17,7 +19,6 @@ public class PageResponseWrapper <T>{
     private Integer page;
     private Integer size;
     private List<T> data;
-
 
     public PageResponseWrapper(Integer code, String status, String message, Page<T> page) {
         this.code = code;
@@ -29,7 +30,4 @@ public class PageResponseWrapper <T>{
         this.size = page.getSize();
         this.data = page.getContent();
     }
-
 }
-
-

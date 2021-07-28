@@ -14,6 +14,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -29,6 +30,7 @@ public class CategoryController {
     CategoryService categoryService;
 
     @PostMapping
+    @PreAuthorize("hasRole('admin')")
     public ResponseEntity<Response<Category>> createNewCategory(@Valid @RequestBody Category category){
         Response <Category> response = new Response<>();
         String message = String.format(SuccessMessageConstant.INSERT_SUCCESS,"category's");
@@ -71,6 +73,7 @@ public class CategoryController {
 
 
     @PutMapping
+    @PreAuthorize("hasRole('admin')")
     public ResponseEntity<Response<Category>> updateCategory(@RequestBody Category category){
             Response<Category> response = new Response<>();
             String message = String.format(SuccessMessageConstant.UPDATE_DATA_SUCCESSFUL,"category");
@@ -83,6 +86,7 @@ public class CategoryController {
      }
 
     @DeleteMapping("/{categoryId}")
+    @PreAuthorize("hasRole('admin')")
     public ResponseEntity <Response> deleteCategory(@PathVariable("categoryId") String categoryId){
             Response<Category> response = new Response<>();
             String message = String.format(SuccessMessageConstant.DELETE_DATA_SUCCESSFUL,"category");

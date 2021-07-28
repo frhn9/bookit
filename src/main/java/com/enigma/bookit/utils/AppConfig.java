@@ -1,4 +1,4 @@
-package com.enigma.bookit.config;
+package com.enigma.bookit.utils;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
@@ -11,4 +11,5 @@ public class AppConfig {
     public ModelMapper modelMapper(){
         return new ModelMapper();
     }
+
 }
