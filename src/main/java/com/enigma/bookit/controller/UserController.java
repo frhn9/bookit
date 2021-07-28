@@ -18,11 +18,14 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.*;
+
+//TAMBAHIN IMPLICIT PARAMNYA
 
 @RestController
 @RequestMapping(ApiUrlConstant.USER)
@@ -43,6 +46,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_CUSTOMER')")
     public ResponseEntity<Response<UserDto>> getUserById(@PathVariable String id) {
         Response<UserDto> response = new Response<>();
         response.setCode(HttpStatus.OK.value());
@@ -54,6 +58,7 @@ public class UserController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Response<List<UserDto>>> getAllUser() {
         Response<List<UserDto>> response = new Response<>();
         response.setCode(HttpStatus.OK.value());
@@ -65,6 +70,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_CUSTOMER')") //Tambahin ROLE_OWNER
     public ResponseEntity<Response<UserDto>> updateUserDto(@PathVariable String id, @RequestBody UserDto userDto) {
         Response<UserDto> response = new Response<>();
         response.setCode(HttpStatus.OK.value());
@@ -76,6 +82,7 @@ public class UserController {
     }
 
     @PutMapping
+    @PreAuthorize("hasRole('ROLE_CUSTOMER')") //Tambahin ROLE_OWNER
     public ResponseEntity<Response<UserDto>> changePassword(@RequestParam String id, @RequestBody UserPasswordDto userPassword) {
         Response<UserDto> response = new Response<>();
         response.setCode(HttpStatus.OK.value());
@@ -87,6 +94,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_CUSTOMER')") //Tambahin ROLE_ADMIN, ROLE_OWNER
     public ResponseEntity<DeleteResponse> deleteUser(@PathVariable String id) {
         DeleteResponse deleteResponse = new DeleteResponse();
         userService.deleteById(id);
@@ -99,6 +107,7 @@ public class UserController {
     }
 
     @GetMapping("/search")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public PageResponseWrapper<UserDto> searchUserPerPage(@RequestBody UserSearchDto userSearchDto,
                                                           @RequestParam(name = "page", defaultValue = "0") Integer page,
                                                           @RequestParam(name = "size", defaultValue = "10") Integer size,

@@ -29,41 +29,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private AuthEntryPointJwt authEntryPointJwt;
 
     @Bean
-    public AuthTokenFilter customerAuthTokenFilter(){
+    public AuthTokenFilter authTokenFilter(){
         return new AuthTokenFilter();
     }
 
-//    @Bean
-//    public OwnerAuthTokenFilter ownerAuthTokenFilter(){
-//        return new OwnerAuthTokenFilter();
-//    }
-//
     @Autowired
     @Override
     public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
         authenticationManagerBuilder.userDetailsService(customerDetailsService).passwordEncoder(passwordEncoder());
     }
-
-//    @SneakyThrows
-//    @Override
-//    public void configure(AuthenticationManagerBuilder auth) {
-//        auth.authenticationProvider(new AuthenticationProvider() {
-//            @Override
-//            public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-//                ArrayList<GrantedAuthority> authorities = new ArrayList<>();
-//                authorities.add(new SimpleGrantedAuthority("ROLE_OWNER"));  // list of roles from database
-//                authorities.add(new SimpleGrantedAuthority("ROLE_CUSTOMER"));
-//                return new UsernamePasswordAuthenticationToken(authentication.getPrincipal(), authentication.getCredentials(), authorities);
-//            }
-//
-//            @Override
-//            public boolean supports(Class<?> authentication) {
-//                return true;
-//            }
-//        });
-//
-//        auth.userDetailsService(customerDetailsService).passwordEncoder(passwordEncoder());
-//    }
 
     @Bean
     public PasswordEncoder passwordEncoder(){
@@ -81,7 +55,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.cors().and().csrf().disable()
                 .exceptionHandling().authenticationEntryPoint(authEntryPointJwt).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-                .authorizeRequests().antMatchers("/api/auth/**").permitAll()
+                .authorizeRequests().antMatchers("/api/**").permitAll().and()
+                .authorizeRequests().antMatchers("/auth/**").permitAll()
                 .antMatchers("/v2/api-docs",
                         "/configuration/ui",
                         "/swagger-resources/**",
@@ -89,6 +64,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/swagger-ui.html",
                         "/webjars/**").permitAll()
                 .anyRequest().authenticated();
-        http.addFilterBefore(customerAuthTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(authTokenFilter(), UsernamePasswordAuthenticationFilter.class);
     }
 }

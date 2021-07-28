@@ -14,7 +14,6 @@ import com.enigma.bookit.security.payload.response.JwtResponse;
 import com.enigma.bookit.security.services.UserDetailsImpl;
 import com.enigma.bookit.service.implementation.UserServiceImpl;
 import com.enigma.bookit.utils.Response;
-import org.hibernate.hql.internal.classic.AbstractParameterInformation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

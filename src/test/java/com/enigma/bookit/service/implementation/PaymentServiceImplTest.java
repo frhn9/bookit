@@ -3,6 +3,7 @@ package com.enigma.bookit.service.implementation;
 import com.enigma.bookit.dto.CallbackDTO;
 import com.enigma.bookit.dto.PaymentDTO;
 import com.enigma.bookit.dto.PaymentSearchDTO;
+import com.enigma.bookit.entity.Book;
 import com.enigma.bookit.entity.Facility;
 import com.enigma.bookit.entity.PackageChosen;
 import com.enigma.bookit.entity.Payment;
@@ -28,11 +29,11 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -43,6 +44,9 @@ class PaymentServiceImplTest {
 
     @Autowired
     PaymentServiceImpl paymentService;
+
+    @Autowired
+    BookServiceImpl bookService;
 
     @MockBean
     PaymentRepository paymentRepository;
@@ -365,6 +369,12 @@ class PaymentServiceImplTest {
 
     @Test
     void convertPaymentToPaymentDTO() {
+        Payment payment = new Payment();
+        payment.setId("payment01");
+
+        PaymentDTO paymentDTO = paymentService.convertPaymentToPaymentDTO(payment);
+
+        assertEquals(payment.getId(), paymentDTO.getId());
     }
 
 

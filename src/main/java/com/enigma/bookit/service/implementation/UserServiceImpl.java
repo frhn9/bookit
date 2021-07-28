@@ -40,7 +40,7 @@ public class UserServiceImpl implements UserService, UserConverter {
         user.setPassword(userPassword.getPassword());
         return convertUserToDto(userRepository.save(user));
     }
-//
+
     @Override
     public UserDto update(String id, UserDto userDto) {
         User user = userRepository.findById(id).get();
@@ -52,6 +52,7 @@ public class UserServiceImpl implements UserService, UserConverter {
 
     @Override
     public UserDto getById(String id) {
+        System.out.println(userRepository.findById(id).get());
         return convertUserToDto(userRepository.findById(id).get());
     }
 

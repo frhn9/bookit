@@ -4,6 +4,7 @@ import com.enigma.bookit.dto.FeedbackDTO;
 import com.enigma.bookit.dto.FeedbackSearchDTO;
 import com.enigma.bookit.entity.Book;
 import com.enigma.bookit.entity.Feedback;
+import com.enigma.bookit.exception.DataNotFoundException;
 import com.enigma.bookit.repository.FeedbackRepository;
 import com.enigma.bookit.service.FeedbackService;
 import org.junit.jupiter.api.Test;
@@ -21,6 +22,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -248,4 +250,13 @@ class FeedbackServiceImplTest {
         assertEquals(1, feedbackDTOPage.getContent().size());
 
     }
+
+    @Test
+    void validatePresent(){
+        when(feedbackRepository.findById("asal")).thenThrow(DataNotFoundException.class);
+
+        doThrow(DataNotFoundException.class).when(mock(feedbackService.getClass())).validatePresent("asal");
+
+    }
+
 }

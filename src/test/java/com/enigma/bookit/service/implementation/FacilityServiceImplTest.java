@@ -1,28 +1,37 @@
 package com.enigma.bookit.service.implementation;
 
+import com.enigma.bookit.dto.FacilitySearchDto;
 import com.enigma.bookit.dto.request.UpdateFacilityRequest;
 import com.enigma.bookit.entity.Facility;
 import com.enigma.bookit.entity.Files;
 import com.enigma.bookit.repository.FacilityRepository;
 import com.enigma.bookit.service.FilesService;
+import com.enigma.bookit.specification.FacilitySpecification;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -360,5 +369,309 @@ class FacilityServiceImplTest {
 //        assertEquals("admin", customerDtoPage.getContent().get(0).getUserName());
 //
 
+    @Test
+    void getFacilityPerPage(){
+        Facility facility = new Facility();
+        facility.setId("facility01");
+
+        List<Facility> facilities = new ArrayList<>();
+        facilities.add(facility);
+        Pageable pageable = new Pageable() {
+            @Override
+            public int getPageNumber() {
+                return 0;
+            }
+
+            @Override
+            public int getPageSize() {
+                return 0;
+            }
+
+            @Override
+            public long getOffset() {
+                return 0;
+            }
+
+            @Override
+            public Sort getSort() {
+                return null;
+            }
+
+            @Override
+            public Pageable next() {
+                return null;
+            }
+
+            @Override
+            public Pageable previousOrFirst() {
+                return null;
+            }
+
+            @Override
+            public Pageable first() {
+                return null;
+            }
+
+            @Override
+            public Pageable withPage(int i) {
+                return null;
+            }
+
+            @Override
+            public boolean hasPrevious() {
+                return false;
+            }
+        };
+
+        Page<Facility> facilityPage = new Page<Facility>() {
+            @Override
+            public int getTotalPages() {
+                return 0;
+            }
+
+            @Override
+            public long getTotalElements() {
+                return 0;
+            }
+
+            @Override
+            public <U> Page<U> map(Function<? super Facility, ? extends U> function) {
+                return null;
+            }
+
+            @Override
+            public int getNumber() {
+                return 0;
+            }
+
+            @Override
+            public int getSize() {
+                return 0;
+            }
+
+            @Override
+            public int getNumberOfElements() {
+                return 0;
+            }
+
+            @Override
+            public List<Facility> getContent() {
+                return facilities;
+            }
+
+            @Override
+            public boolean hasContent() {
+                return false;
+            }
+
+            @Override
+            public Sort getSort() {
+                return null;
+            }
+
+            @Override
+            public boolean isFirst() {
+                return false;
+            }
+
+            @Override
+            public boolean isLast() {
+                return false;
+            }
+
+            @Override
+            public boolean hasNext() {
+                return false;
+            }
+
+            @Override
+            public boolean hasPrevious() {
+                return false;
+            }
+
+            @Override
+            public Pageable nextPageable() {
+                return null;
+            }
+
+            @Override
+            public Pageable previousPageable() {
+                return null;
+            }
+
+            @Override
+            public Iterator<Facility> iterator() {
+                return null;
+            }
+        };
+
+        when(repository.findAll()).thenReturn(facilities);
+        when(service.getFacilityPerPage(pageable)).thenReturn(facilityPage);
+
+        assertEquals(1, repository.findAll().size());
+    }
+
+    @Test
+    void getPerPageFacility(){
+        Facility facility = new Facility();
+        facility.setId("facility01");
+        facility.setName("enigga sports center");
+
+        FacilitySearchDto facilitySearchDto = new FacilitySearchDto();
+        facilitySearchDto.setSearchFacilityName("enigga sports center");
+
+        Specification<Facility> specification = new Specification<Facility>() {
+            @Override
+            public Predicate toPredicate(Root<Facility> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+                List<Predicate> predicates = new ArrayList<>();
+
+                if(facilitySearchDto.getSearchFacilityName() != null){
+                    Predicate facilityNamePredicate = criteriaBuilder.like(criteriaBuilder.lower(root.get("name")),
+                            "%"  +facilitySearchDto.getSearchFacilityName().toLowerCase(Locale.ROOT)+"%");
+                    predicates.add(facilityNamePredicate);
+                }
+                Predicate[] arrayPredicates = predicates.toArray(new Predicate[predicates.size()]);
+                return criteriaBuilder.and(arrayPredicates);
+            }
+        };
+
+//        when(FacilitySpecification.getSpesification(facilitySearchDto)).thenReturn(specification);
+
+        List<Facility> facilities = new ArrayList<>();
+        facilities.add(facility);
+
+        Page<Facility> facilityPage = new Page<Facility>() {
+            @Override
+            public int getTotalPages() {
+                return 0;
+            }
+
+            @Override
+            public long getTotalElements() {
+                return 0;
+            }
+
+            @Override
+            public <U> Page<U> map(Function<? super Facility, ? extends U> function) {
+                return null;
+            }
+
+            @Override
+            public int getNumber() {
+                return 0;
+            }
+
+            @Override
+            public int getSize() {
+                return 0;
+            }
+
+            @Override
+            public int getNumberOfElements() {
+                return 0;
+            }
+
+            @Override
+            public List<Facility> getContent() {
+                return facilities;
+            }
+
+            @Override
+            public boolean hasContent() {
+                return false;
+            }
+
+            @Override
+            public Sort getSort() {
+                return null;
+            }
+
+            @Override
+            public boolean isFirst() {
+                return false;
+            }
+
+            @Override
+            public boolean isLast() {
+                return false;
+            }
+
+            @Override
+            public boolean hasNext() {
+                return false;
+            }
+
+            @Override
+            public boolean hasPrevious() {
+                return false;
+            }
+
+            @Override
+            public Pageable nextPageable() {
+                return null;
+            }
+
+            @Override
+            public Pageable previousPageable() {
+                return null;
+            }
+
+            @Override
+            public Iterator<Facility> iterator() {
+                return null;
+            }
+        };
+
+        Pageable pageable = new Pageable() {
+            @Override
+            public int getPageNumber() {
+                return 0;
+            }
+
+            @Override
+            public int getPageSize() {
+                return 0;
+            }
+
+            @Override
+            public long getOffset() {
+                return 0;
+            }
+
+            @Override
+            public Sort getSort() {
+                return null;
+            }
+
+            @Override
+            public Pageable next() {
+                return null;
+            }
+
+            @Override
+            public Pageable previousOrFirst() {
+                return null;
+            }
+
+            @Override
+            public Pageable first() {
+                return null;
+            }
+
+            @Override
+            public Pageable withPage(int i) {
+                return null;
+            }
+
+            @Override
+            public boolean hasPrevious() {
+                return false;
+            }
+        };
+
+        when(service.getFacilityPerPage(any(), any())).thenReturn(facilityPage);
+
+        assertEquals(0, repository.findAll().size());
+    }
 
     }

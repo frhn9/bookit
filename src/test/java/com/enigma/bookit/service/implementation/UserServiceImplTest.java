@@ -395,4 +395,14 @@ class UserServiceImplTest {
         assertEquals(false, service.userNameExist("asal"));
     }
 
+    @Test
+    void convertDtoToUser(){
+        UserDto userDto = new UserDto();
+        userDto.setId("user01");
+
+        User user = service.convertDtoToUser(userDto);
+
+        assertEquals(userDto.getId(), user.getId());
+    }
+
 }

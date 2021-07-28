@@ -60,61 +60,61 @@ class FilesControllerTest {
     }
 
 
-//    @Test
-//    void getFile() throws Exception {
-//        MultipartFile file = new MultipartFile() {
-//            @Override
-//            public String getName() {
-//                return null;
-//            }
-//
-//            @Override
-//            public String getOriginalFilename() {
-//                return null;
-//            }
-//
-//            @Override
-//            public String getContentType() {
-//                return null;
-//            }
-//
-//            @Override
-//            public boolean isEmpty() {
-//                return false;
-//            }
-//
-//            @Override
-//            public long getSize() {
-//                return 0;
-//            }
-//
-//            @Override
-//            public byte[] getBytes() throws IOException {
-//                return new byte[0];
-//            }
-//
-//            @Override
-//            public InputStream getInputStream() throws IOException {
-//                return null;
-//            }
-//
-//            @Override
-//            public void transferTo(File file) throws IOException, IllegalStateException {
-//
-//            }
-//        };
-//        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-//        Files files = new Files(fileName, file.getContentType(),file.getBytes());
-//        repository.save(files);
-//        files.setId("2");
-//        files.setData(file.getBytes());
-//        files.setType("image/jpeg");
-//        when(service.getFile("2")).thenReturn(files);
-//
-//        mockMvc.perform(get("/files")
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content(asJsonString(file)).accept(MediaType.APPLICATION_JSON_VALUE))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.name", Matchers.is(file.getName())));
-//    }
+    @Test
+    void getFile() throws Exception {
+        MultipartFile file = new MultipartFile() {
+            @Override
+            public String getName() {
+                return null;
+            }
+
+            @Override
+            public String getOriginalFilename() {
+                return null;
+            }
+
+            @Override
+            public String getContentType() {
+                return null;
+            }
+
+            @Override
+            public boolean isEmpty() {
+                return false;
+            }
+
+            @Override
+            public long getSize() {
+                return 0;
+            }
+
+            @Override
+            public byte[] getBytes() throws IOException {
+                return new byte[0];
+            }
+
+            @Override
+            public InputStream getInputStream() throws IOException {
+                return null;
+            }
+
+            @Override
+            public void transferTo(File file) throws IOException, IllegalStateException {
+
+            }
+        };
+        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+        Files files = new Files(fileName, file.getContentType(),file.getBytes());
+        repository.save(files);
+        files.setId("2");
+        files.setData(file.getBytes());
+        files.setType("image/jpeg");
+        when(service.getFile("2")).thenReturn(files);
+
+        mockMvc.perform(get("/files")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(file)).accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name", Matchers.is(file.getName())));
+    }
 }
