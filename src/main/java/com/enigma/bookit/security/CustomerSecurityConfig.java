@@ -2,7 +2,7 @@ package com.enigma.bookit.security;
 
 import com.enigma.bookit.security.jwt.AuthEntryPointJwt;
 import com.enigma.bookit.security.jwt.AuthTokenFilter;
-import com.enigma.bookit.security.services.CustomerDetailsServiceImpl;
+import com.enigma.bookit.security.services.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,7 +23,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class CustomerSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    CustomerDetailsServiceImpl customerDetailsService;
+    UserDetailsServiceImpl customerDetailsService;
 
     @Autowired
     private AuthEntryPointJwt authEntryPointJwt;

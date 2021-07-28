@@ -1,6 +1,6 @@
 package com.enigma.bookit.security.jwt;
 
-import com.enigma.bookit.security.services.CustomerDetailsServiceImpl;
+import com.enigma.bookit.security.services.UserDetailsServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     JwtUtils jwtUtils;
 
     @Autowired
-    CustomerDetailsServiceImpl customerService;
+    UserDetailsServiceImpl customerService;
 
     private static final Logger logger = LoggerFactory.getLogger(AuthTokenFilter.class);
 

@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @Data
 @Getter
 @AllArgsConstructor
-public class CustomerDetailsImpl implements UserDetails {
+public class UserDetailsImpl implements UserDetails {
 
     private String id;
     private String userName;
@@ -37,12 +37,12 @@ public class CustomerDetailsImpl implements UserDetails {
     private LocalDateTime deletedAt;
     private Collection<? extends GrantedAuthority> authorities;
 
-    public static CustomerDetailsImpl build(User user){
+    public static UserDetailsImpl build(User user){
         List<GrantedAuthority> authorities = user.getRoles().stream()
                                         .map(role -> new SimpleGrantedAuthority(role.getName().name()))
                                         .collect(Collectors.toList());
 
-        return new CustomerDetailsImpl(
+        return new UserDetailsImpl(
                 user.getId(),
                 user.getUserName(),
                 user.getPassword(),
