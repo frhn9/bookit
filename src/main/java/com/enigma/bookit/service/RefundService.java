@@ -13,6 +13,6 @@ public interface RefundService {
     RefundDTO applyRefund(Refund refund);
     RefundDTO acceptRefund(String id, BigDecimal amount);
     RefundDTO getById(String id);
-    void deleteById(String id);
+    Boolean deleteById(String id);
     Page<RefundDTO> getAllRefund(Pageable pageable, RefundSearchDTO refundSearchDTO);
 }

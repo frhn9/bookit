@@ -172,7 +172,7 @@ class RefundServiceImplTest {
         refund.setRefundAmount(BigDecimal.valueOf(1000.00));
         refund.setStatus(false);
         refundRepository.save(refund);
-        when(refundRepository.findById(refund.getId())).thenReturn(java.util.Optional.ofNullable(refund));
+        when(refundRepository.findById(refund.getId())).thenReturn(Optional.of(refund));
         service.deleteById(refund.getId());
         assertEquals(0, refundRepository.findAll().size());
     }

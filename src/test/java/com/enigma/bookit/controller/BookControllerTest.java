@@ -78,8 +78,6 @@ class BookControllerTest {
                 .andExpect(jsonPath("$.data.id", Matchers.is(book.getId())));
     }
 
-
-
     @Test
     void getBookById() throws Exception {
         Book book = new Book();

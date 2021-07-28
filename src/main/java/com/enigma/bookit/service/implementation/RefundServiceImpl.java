@@ -102,10 +102,12 @@ public class RefundServiceImpl implements RefundService {
     }
 
     @Override
-    public void deleteById(String id) {
-        if(refundRepository.findById(id).isPresent()) {
+    public Boolean deleteById(String id) {
+        Boolean isPresent = refundRepository.findById(id).isPresent();
+        if(isPresent) {
             refundRepository.deleteById(id);
-        }throw new DataNotFoundException(String.format(ErrorMessageConstant.DATA_NOT_FOUND, "id"));
+        }
+        return isPresent;
     }
 
     @Override
