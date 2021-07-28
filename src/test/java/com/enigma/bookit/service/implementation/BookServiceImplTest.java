@@ -2,18 +2,9 @@ package com.enigma.bookit.service.implementation;
 
 import com.enigma.bookit.dto.BookSearchDto;
 import com.enigma.bookit.entity.Book;
-import com.enigma.bookit.entity.Category;
 import com.enigma.bookit.entity.Facility;
-import com.enigma.bookit.entity.Payment;
 import com.enigma.bookit.repository.BookRepository;
-import com.enigma.bookit.repository.CategoryRepository;
-import javafx.util.converter.LocalDateTimeStringConverter;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -21,10 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.test.web.servlet.MockMvc;
 
-import javax.validation.constraints.AssertTrue;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.ArrayList;
@@ -36,7 +24,6 @@ import java.util.function.Function;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 

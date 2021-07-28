@@ -4,7 +4,6 @@ import com.enigma.bookit.constant.ApiUrlConstant;
 import com.enigma.bookit.constant.SuccessMessageConstant;
 import com.enigma.bookit.dto.BookSearchDto;
 import com.enigma.bookit.entity.Book;
-import com.enigma.bookit.entity.Payment;
 import com.enigma.bookit.repository.BookRepository;
 import com.enigma.bookit.service.BookService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,7 +19,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 
@@ -240,5 +238,4 @@ class BookControllerTest {
                 .andExpect(jsonPath("$.message",is(SuccessMessageConstant.GET_DATA_SUCCESSFUL)))
                 .andExpect(jsonPath("$.data",is(bookSearchDto.getActiveUntil())));
     }
-
 }
