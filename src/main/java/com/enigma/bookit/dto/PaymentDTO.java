@@ -2,7 +2,7 @@ package com.enigma.bookit.dto;
 
 import com.enigma.bookit.entity.Facility;
 import com.enigma.bookit.entity.PackageChosen;
-import com.enigma.bookit.entity.user.Customer;
+
 import com.enigma.bookit.entity.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class PaymentDTO {
     private String id;
-    private Customer customer;
+    private User user;
     private Facility facility;
     private PackageChosen packageChosen;
     private BigDecimal amount;

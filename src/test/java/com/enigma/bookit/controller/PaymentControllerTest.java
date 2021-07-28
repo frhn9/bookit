@@ -1,17 +1,16 @@
 package com.enigma.bookit.controller;
 
 import com.enigma.bookit.constant.SuccessMessageConstant;
-import com.enigma.bookit.dto.CallbackDTO;
-import com.enigma.bookit.dto.CustomerDto;
 import com.enigma.bookit.dto.PaymentDTO;
 import com.enigma.bookit.dto.PaymentSearchDTO;
+import com.enigma.bookit.dto.UserDto;
 import com.enigma.bookit.entity.Book;
-import com.enigma.bookit.entity.user.Customer;
 import com.enigma.bookit.entity.Facility;
 import com.enigma.bookit.entity.PackageChosen;
 import com.enigma.bookit.entity.Payment;
-import com.enigma.bookit.service.CustomerService;
+import com.enigma.bookit.entity.user.User;
 import com.enigma.bookit.service.PaymentService;
+import com.enigma.bookit.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.hamcrest.Matchers;
@@ -29,14 +28,12 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -49,7 +46,7 @@ class PaymentControllerTest {
     PaymentService paymentService;
 
     @MockBean
-    CustomerService customerService;
+    UserService userService;
 
     @Autowired
     MockMvc mockMvc;
@@ -64,10 +61,10 @@ class PaymentControllerTest {
         Facility facility = new Facility();
         facility.setId("F01");
         payment.setFacility(facility);
-        Customer customer = new Customer();
-        customer.setId("C01");
-        customer.setEmail("test@gmail.com");
-        payment.setCustomer(customer);
+        User user = new User();
+        user.setId("C01");
+        user.setEmail("test@gmail.com");
+        payment.setUser(user);
         payment.setPaymentStatus("PENDING");
 //        payment.setPaymentDate(LocalDateTime.now());
         payment.setPaidAmount(BigDecimal.valueOf(1000));
@@ -88,15 +85,15 @@ class PaymentControllerTest {
     @Test
     void createPayment() throws Exception {
 
-        CustomerDto customerDto = new CustomerDto();
-        customerDto.setEmail("test@gmail.com");
+        UserDto userDto = new UserDto();
+        userDto.setEmail("test@gmail.com");
 
         PaymentDTO paymentDTO = new PaymentDTO();
         paymentDTO.setId("P01");
 
 
         when(paymentService.save(any(Payment.class))).thenReturn(modelMapper.map(payment, PaymentDTO.class));
-        when(customerService.getById(any(String.class))).thenReturn(customerDto);
+        when(userService.getById(any(String.class))).thenReturn(userDto);
 
         mockMvc.perform(post("/api/payment")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -130,10 +127,10 @@ class PaymentControllerTest {
         Facility facility = new Facility();
         facility.setId("F01");
         payment.setFacility(facility);
-        Customer customer = new Customer();
-        customer.setId("C01");
-        customer.setEmail("test@gmail.com");
-        payment.setCustomer(customer);
+        User user = new User();
+        user.setId("C01");
+        user.setEmail("test@gmail.com");
+        payment.setUser(user);
         payment.setPaidAmount(BigDecimal.valueOf(1000));
 
         PaymentSearchDTO paymentSearchDTO = new PaymentSearchDTO();
@@ -242,20 +239,20 @@ class PaymentControllerTest {
     @SneakyThrows
     @Test
     void extendBook(){
-        CustomerDto customerDto = new CustomerDto();
-        customerDto.setId("C01");
-        customerDto.setEmail("test@gmail.com");
+        UserDto userDto = new UserDto();
+        userDto.setId("C01");
+        userDto.setEmail("test@gmail.com");
 
         PaymentDTO paymentDTO = new PaymentDTO();
         paymentDTO.setId("P01");
 
 
         when(paymentService.save(any(Payment.class))).thenReturn(modelMapper.map(payment, PaymentDTO.class));
-        when(customerService.getById(any(String.class))).thenReturn(customerDto);
+        when(userService.getById(any(String.class))).thenReturn(userDto);
 
         paymentDTO.setId("P01");
         paymentDTO.setAmount(BigDecimal.valueOf(10000));
-        paymentDTO.setCustomer(modelMapper.map(customerDto, Customer.class));
+        paymentDTO.setUser(modelMapper.map(userDto, User.class));
         Book book = new Book();
         book.setId("B01");
         book.setPayment(modelMapper.map(paymentDTO, Payment.class));
@@ -263,7 +260,7 @@ class PaymentControllerTest {
         PackageChosen packageChosen = PackageChosen.WEEKLY;
 
         when(paymentService.extendBook(any(String.class), any(PackageChosen.class))).thenReturn(paymentDTO);
-        when(customerService.getById(any(String.class))).thenReturn(customerDto);
+        when(userService.getById(any(String.class))).thenReturn(userDto);
 
         mockMvc.perform(post("/api/payment/extend/{id}", book.getId())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

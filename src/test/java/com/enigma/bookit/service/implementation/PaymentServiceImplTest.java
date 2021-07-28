@@ -3,15 +3,14 @@ package com.enigma.bookit.service.implementation;
 import com.enigma.bookit.dto.CallbackDTO;
 import com.enigma.bookit.dto.PaymentDTO;
 import com.enigma.bookit.dto.PaymentSearchDTO;
-import com.enigma.bookit.entity.user.Customer;
 import com.enigma.bookit.entity.Facility;
 import com.enigma.bookit.entity.PackageChosen;
 import com.enigma.bookit.entity.Payment;
-import com.enigma.bookit.exception.DataNotFoundException;
+import com.enigma.bookit.entity.user.User;
 import com.enigma.bookit.repository.BookRepository;
-import com.enigma.bookit.repository.CustomerRepository;
 import com.enigma.bookit.repository.FacilityRepository;
 import com.enigma.bookit.repository.PaymentRepository;
+import com.enigma.bookit.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Spy;
@@ -22,11 +21,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.http.HttpMethod;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -38,7 +33,6 @@ import java.util.function.Function;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -57,22 +51,22 @@ class PaymentServiceImplTest {
     FacilityRepository facilityRepository;
 
     @MockBean
-    CustomerRepository customerRepository;
+    UserRepository userRepository;
 
     @MockBean
     BookRepository bookRepository;
 
     private Payment payment = new Payment();
-    private Customer customer = new Customer();
+    private User user = new User();
     private Facility facility = new Facility();
 
     @BeforeEach
     void setup(){
-        customer.setId("C01");
-        customer.setContact("0812345");
-        customer.setEmail("test@gmail.com");
-        customerRepository.save(customer);
-        when(customerRepository.findById("C01")).thenReturn(java.util.Optional.ofNullable(customer));
+        user.setId("C01");
+        user.setContact("0812345");
+        user.setEmail("test@gmail.com");
+        userRepository.save(user);
+        when(userRepository.findById("C01")).thenReturn(java.util.Optional.ofNullable(user));
 
         facility.setId("F01");
         facility.setContact("0854321");
@@ -84,7 +78,7 @@ class PaymentServiceImplTest {
         payment.setId("P01");
         payment.setPaymentStatus("PENDING");
         payment.setPaymentDate(LocalDateTime.now());
-        payment.setCustomer(customer);
+        payment.setUser(user);
         payment.setFacility(facility);
         payment.setBookingStart(LocalDateTime.now());
         payment.setDueTime(LocalDateTime.now().plusHours(2));
@@ -144,7 +138,7 @@ class PaymentServiceImplTest {
     @Test
     void pay() {
         when(paymentRepository.findById(payment.getId())).thenReturn(java.util.Optional.ofNullable(payment));
-        when(customerRepository.findById(any(String.class))).thenReturn(java.util.Optional.ofNullable(customer));
+        when(userRepository.findById(any(String.class))).thenReturn(java.util.Optional.ofNullable(user));
         Payment output = new Payment();
         output.setId(payment.getId());
 
@@ -159,11 +153,11 @@ class PaymentServiceImplTest {
 
     @Test
     void getAllPerPage() {
-        Customer customer = new Customer();
+        User user = new User();
         Facility facility = new Facility();
         Payment payment = new Payment();
-        customer.setId("C01");
-        customer.setContact("0812345");
+        user.setId("C01");
+        user.setContact("0812345");
 //        customerRepository.save(customer);
 //        when(customerRepository.findById("C01")).thenReturn(java.util.Optional.ofNullable(customer));
 
@@ -177,7 +171,7 @@ class PaymentServiceImplTest {
         payment.setId("P01");
         payment.setPaymentStatus("PENDING");
         payment.setPaymentDate(LocalDateTime.now());
-        payment.setCustomer(customer);
+        payment.setUser(user);
         payment.setFacility(facility);
         payment.setBookingStart(LocalDateTime.now());
         payment.setDueTime(LocalDateTime.now().plusHours(2));

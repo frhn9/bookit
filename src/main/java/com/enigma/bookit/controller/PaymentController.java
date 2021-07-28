@@ -4,11 +4,9 @@ import com.enigma.bookit.constant.ApiUrlConstant;
 import com.enigma.bookit.constant.SuccessMessageConstant;
 import com.enigma.bookit.dto.*;
 import com.enigma.bookit.entity.PackageChosen;
-import com.enigma.bookit.entity.user.Customer;
 import com.enigma.bookit.entity.Payment;
-import com.enigma.bookit.entity.Refund;
-import com.enigma.bookit.service.CustomerService;
 import com.enigma.bookit.service.PaymentService;
+import com.enigma.bookit.service.UserService;
 import com.enigma.bookit.utils.PageResponseWrapper;
 import com.enigma.bookit.utils.Response;
 import com.xendit.Xendit;
@@ -36,7 +34,7 @@ public class PaymentController {
     PaymentService paymentService;
 
     @Autowired
-    CustomerService customerService;
+    UserService userService;
 
     private ModelMapper modelMapper = new ModelMapper();
 
@@ -45,14 +43,14 @@ public class PaymentController {
         Response<InvoiceResponseDTO> response = new Response<>();
         PaymentDTO paymentDTO = paymentService.save(payment);
 
-        String customerId = payment.getCustomer().getId();
-        CustomerDto customer = customerService.getById(customerId);
+        String userId = payment.getUser().getId();
+        UserDto user = userService.getById(userId);
         Xendit.apiKey = "xnd_development_1sRaZoJjfer9Xjmqb44h96lv0LOxPbcVft3VGGJCuA7fg1wjZ7LOabMDDxOxR0";
         try {
             Map<String, Object> params = new HashMap<>();
             params.put("external_id", (paymentDTO.getId()));
             params.put("amount", paymentDTO.getAmount());
-            params.put("payer_email", customer.getEmail());
+            params.put("payer_email", user.getEmail());
             params.put("description", (paymentDTO.getPackageChosen()));
 
             Invoice invoice = Invoice.create(params);
@@ -112,14 +110,14 @@ public class PaymentController {
         Response<InvoiceResponseDTO> response = new Response<>();
         PaymentDTO paymentDTO = paymentService.extendBook(bookId, packageChosen);
 
-        String customerId = paymentDTO.getCustomer().getId();
-        CustomerDto customer = customerService.getById(customerId);
+        String customerId = paymentDTO.getUser().getId();
+        UserDto user = userService.getById(customerId);
         Xendit.apiKey = "xnd_development_1sRaZoJjfer9Xjmqb44h96lv0LOxPbcVft3VGGJCuA7fg1wjZ7LOabMDDxOxR0";
         try {
             Map<String, Object> params = new HashMap<>();
             params.put("external_id", (paymentDTO.getId()));
             params.put("amount", paymentDTO.getAmount());
-            params.put("payer_email", customer.getEmail());
+            params.put("payer_email", user.getEmail());
             params.put("description", (paymentDTO.getPackageChosen()));
 
             Invoice invoice = Invoice.create(params);

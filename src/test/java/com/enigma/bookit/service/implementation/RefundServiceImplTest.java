@@ -3,15 +3,11 @@ package com.enigma.bookit.service.implementation;
 import com.enigma.bookit.dto.RefundDTO;
 import com.enigma.bookit.dto.RefundSearchDTO;
 import com.enigma.bookit.entity.*;
-import com.enigma.bookit.entity.user.Customer;
-import com.enigma.bookit.exception.DataNotFoundException;
+import com.enigma.bookit.entity.user.User;
 import com.enigma.bookit.repository.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Matchers;
 import org.mockito.Spy;
-import org.mockito.stubbing.OngoingStubbing;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -19,23 +15,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.persistence.EntityManager;
 
 import static org.mockito.ArgumentMatchers.any;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -65,7 +53,7 @@ class RefundServiceImplTest {
     FacilityRepository facilityRepository;
 
     @MockBean
-    CustomerRepository customerRepository;
+    UserRepository userRepository;
 
     @Autowired
     EntityManager entityManager;
@@ -73,15 +61,15 @@ class RefundServiceImplTest {
     private Refund refund = new Refund();
     private Book book =  new Book();
     private Payment payment = new Payment();
-    private Customer customer = new Customer();
+    private User user = new User();
     private Facility facility = new Facility();
 
     @BeforeEach
     void setup(){
-        customer.setId("C01");
-        customer.setContact("0812345");
-        customerRepository.save(customer);
-        when(customerRepository.findById("C01")).thenReturn(java.util.Optional.ofNullable(customer));
+        user.setId("C01");
+        user.setContact("0812345");
+        userRepository.save(user);
+        when(userRepository.findById("C01")).thenReturn(java.util.Optional.ofNullable(user));
 
         facility.setId("F01");
         facility.setContact("0854321");
@@ -92,7 +80,7 @@ class RefundServiceImplTest {
         payment.setPaymentStatus("PENDING");
         payment.setPackageChosen(PackageChosen.WEEKLY);
         payment.setPaymentDate(LocalDateTime.now());
-        payment.setCustomer(customer);
+        payment.setUser(user);
         payment.setFacility(facility);
         payment.setBookingStart(LocalDateTime.now());
         payment.setBookingEnd(LocalDateTime.now().plusDays(7));

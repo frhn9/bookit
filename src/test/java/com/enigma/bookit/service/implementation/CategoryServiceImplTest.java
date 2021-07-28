@@ -4,7 +4,6 @@ import com.enigma.bookit.constant.ErrorMessageConstant;
 import com.enigma.bookit.entity.Category;
 import com.enigma.bookit.exception.DataNotFoundException;
 import com.enigma.bookit.repository.CategoryRepository;
-import com.enigma.bookit.repository.CustomerRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

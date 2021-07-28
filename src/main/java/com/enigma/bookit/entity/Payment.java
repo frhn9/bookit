@@ -26,9 +26,9 @@ public class Payment {
     @Column(name = "payment_id")
     private String id;
     @ManyToOne
-    @JoinColumn(name = "customer_id")
+    @JoinColumn(name = "user_id")
     @JsonIgnoreProperties("payment")
-    private User customer;
+    private User user;
     @ManyToOne
     @JoinColumn(name = "facility_id")
     @JsonIgnoreProperties("payment")

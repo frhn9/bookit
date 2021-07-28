@@ -37,7 +37,7 @@ public class RefundServiceImpl implements RefundService {
     PaymentService paymentService;
 
     @Autowired
-    CustomerService customerService;
+    UserService userService;
 
     @Autowired
     FacilityService facilityService;

@@ -13,9 +13,9 @@ import com.enigma.bookit.exception.BadRequestException;
 import com.enigma.bookit.exception.DataNotFoundException;
 import com.enigma.bookit.repository.PaymentRepository;
 import com.enigma.bookit.service.BookService;
-import com.enigma.bookit.service.CustomerService;
 import com.enigma.bookit.service.FacilityService;
 import com.enigma.bookit.service.PaymentService;
+import com.enigma.bookit.service.UserService;
 import com.enigma.bookit.specification.PaymentSpecification;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +40,7 @@ public class PaymentServiceImpl implements PaymentService{
     @Autowired
     BookService bookService;
     @Autowired
-    CustomerService customerService;
+    UserService userService;
     @Autowired
     RestTemplate restTemplate;
     @Autowired
@@ -149,7 +149,7 @@ public class PaymentServiceImpl implements PaymentService{
         Book book = bookService.getBookById(bookId);
         Payment payment = paymentRepository.findById(book.getPayment().getId()).get();
         Payment newPayment = new Payment();
-        newPayment.setCustomer(payment.getCustomer());
+        newPayment.setUser(payment.getUser());
         newPayment.setFacility(payment.getFacility());
         newPayment.setPackageChosen(packageChosen);
         newPayment.setBookingStart(book.getActiveUntil());
