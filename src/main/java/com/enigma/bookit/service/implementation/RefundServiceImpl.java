@@ -1,6 +1,6 @@
 package com.enigma.bookit.service.implementation;
 
-import com.enigma.bookit.constant.ResponseMessage;
+import com.enigma.bookit.constant.ErrorMessageConstant;
 import com.enigma.bookit.dto.PaymentDTO;
 import com.enigma.bookit.dto.RefundDTO;
 import com.enigma.bookit.dto.RefundSearchDTO;
@@ -79,17 +79,6 @@ public class RefundServiceImpl implements RefundService {
             Book book = bookService.getBookById(refund.getBook().getId());
             book.setActiveUntil(LocalDateTime.now());
             PaymentDTO payment = paymentService.getById(book.getPayment().getId());
-            String facilityContact = facilityService.getFacilityById(payment.getFacility().getId()).getContact();
-            String customerContact = customerService.getById(payment.getCustomer().getId()).getContact();
-
-            String url = "http://localhost:8081/transfer";
-            UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
-                    .queryParam("sender", facilityContact)
-                    .queryParam("receiver", customerContact)
-                    .queryParam("amount", amount);
-            // http://localhost:8081/debit?phoneNumber=082100000&amount=9000
-
-            restTemplate.exchange(builder.toUriString(), HttpMethod.POST, null, String.class);
             bookService.addBook(book);
             return convertRefundToRefundDTO(refundRepository.save(refund));
         }
@@ -109,20 +98,21 @@ public class RefundServiceImpl implements RefundService {
         if(refundRepository.findById(id).isPresent()) {
             return convertRefundToRefundDTO(refundRepository.findById(id).get());
         }
-        throw new DataNotFoundException(ResponseMessage.NOT_FOUND);
+        throw new DataNotFoundException(String.format(ErrorMessageConstant.DATA_NOT_FOUND, "id "));
     }
 
     @Override
     public void deleteById(String id) {
         if(refundRepository.findById(id).isPresent()) {
             refundRepository.deleteById(id);
-        }throw new DataNotFoundException(ResponseMessage.NOT_FOUND);
+        }throw new DataNotFoundException(String.format(ErrorMessageConstant.DATA_NOT_FOUND, "id"));
     }
 
     @Override
-    public Page<Refund> getAllRefund(Pageable pageable, RefundSearchDTO refundSearchDTO) {
+    public Page<RefundDTO> getAllRefund(Pageable pageable, RefundSearchDTO refundSearchDTO) {
         Specification<Refund> refundSpecification = RefundSpecification.getSpecification(refundSearchDTO);
-        return refundRepository.findAll(refundSpecification, pageable);
+        Page<Refund> result = refundRepository.findAll(refundSpecification, pageable);
+        return result.map(this::convertRefundToRefundDTO);
     }
 
     public RefundDTO convertRefundToRefundDTO(Refund refund){

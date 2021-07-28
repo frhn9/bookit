@@ -22,5 +22,5 @@ public interface BookService {
 
         public List<Integer> getCapacity(String id, LocalDateTime start, LocalDateTime stop);
 
-        public void extendBook(String bookId, PackageChosen packageChosen);
+
 }

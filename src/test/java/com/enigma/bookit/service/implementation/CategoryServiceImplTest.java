@@ -1,6 +1,6 @@
 package com.enigma.bookit.service.implementation;
 
-import com.enigma.bookit.constant.ResponseMessage;
+import com.enigma.bookit.constant.ErrorMessageConstant;
 import com.enigma.bookit.entity.Category;
 import com.enigma.bookit.exception.DataNotFoundException;
 import com.enigma.bookit.repository.CategoryRepository;
@@ -104,7 +104,7 @@ class CategoryServiceImplTest {
     void validatePresent() {
         repository.save(category);
         if(!repository.findById(category.getId()).isPresent()){
-            assertEquals(ResponseMessage.NOT_FOUND, ResponseMessage.NOT_FOUND);
+            assertEquals(ErrorMessageConstant.DATA_NOT_FOUND, ErrorMessageConstant.DATA_NOT_FOUND);
 
         }
     }

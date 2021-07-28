@@ -1,8 +1,9 @@
 package com.enigma.bookit.service.implementation;
 
-import com.enigma.bookit.constant.ResponseMessage;
+import com.enigma.bookit.dto.CallbackDTO;
 import com.enigma.bookit.dto.PaymentDTO;
-import com.enigma.bookit.entity.Customer;
+import com.enigma.bookit.dto.PaymentSearchDTO;
+import com.enigma.bookit.entity.user.Customer;
 import com.enigma.bookit.entity.Facility;
 import com.enigma.bookit.entity.PackageChosen;
 import com.enigma.bookit.entity.Payment;
@@ -17,6 +18,10 @@ import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpMethod;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -26,10 +31,13 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
@@ -62,6 +70,7 @@ class PaymentServiceImplTest {
     void setup(){
         customer.setId("C01");
         customer.setContact("0812345");
+        customer.setEmail("test@gmail.com");
         customerRepository.save(customer);
         when(customerRepository.findById("C01")).thenReturn(java.util.Optional.ofNullable(customer));
 
@@ -73,7 +82,7 @@ class PaymentServiceImplTest {
         when(facilityRepository.findById("F01")).thenReturn(java.util.Optional.ofNullable(facility));
 
         payment.setId("P01");
-        payment.setPaymentStatus(false);
+        payment.setPaymentStatus("PENDING");
         payment.setPaymentDate(LocalDateTime.now());
         payment.setCustomer(customer);
         payment.setFacility(facility);
@@ -135,22 +144,219 @@ class PaymentServiceImplTest {
     @Test
     void pay() {
         when(paymentRepository.findById(payment.getId())).thenReturn(java.util.Optional.ofNullable(payment));
+        when(customerRepository.findById(any(String.class))).thenReturn(java.util.Optional.ofNullable(customer));
         Payment output = new Payment();
         output.setId(payment.getId());
-        String url = "http://localhost:8081/transfer";
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
-                .queryParam("sender", facility.getContact())
-                .queryParam("receiver", customer.getContact())
-                .queryParam("amount", 100);
-        when(restTemplate.exchange(builder.toUriString(), HttpMethod.POST, null, String.class))
-                .thenReturn(null);
-        payment.setAmount(BigDecimal.valueOf(1000));
+
+        CallbackDTO callbackDTO = new CallbackDTO();
+        callbackDTO.setExternal_id(payment.getId());
+        callbackDTO.setStatus("PENDING");
+
+        payment.setPaidAmount(BigDecimal.valueOf(1000));
         when(paymentRepository.save(payment)).thenReturn(payment);
-        assertEquals(output.getId(), paymentService.pay(payment.getId()).getId());
+        assertEquals(output.getId(), paymentService.pay(callbackDTO).getId());
     }
 
     @Test
     void getAllPerPage() {
+        Customer customer = new Customer();
+        Facility facility = new Facility();
+        Payment payment = new Payment();
+        customer.setId("C01");
+        customer.setContact("0812345");
+//        customerRepository.save(customer);
+//        when(customerRepository.findById("C01")).thenReturn(java.util.Optional.ofNullable(customer));
+
+        facility.setId("F01");
+        facility.setContact("0854321");
+        facility.setCapacity(5);
+        facility.setRentPriceOnce(BigDecimal.valueOf(100));
+//        facilityRepository.save(facility);
+//        when(facilityRepository.findById("F01")).thenReturn(java.util.Optional.ofNullable(facility));
+
+        payment.setId("P01");
+        payment.setPaymentStatus("PENDING");
+        payment.setPaymentDate(LocalDateTime.now());
+        payment.setCustomer(customer);
+        payment.setFacility(facility);
+        payment.setBookingStart(LocalDateTime.now());
+        payment.setDueTime(LocalDateTime.now().plusHours(2));
+//        paymentRepository.save(payment);
+//        when(paymentRepository.findById("P01")).thenReturn(java.util.Optional.ofNullable(payment));
+
+        PaymentSearchDTO paymentSearchDTO = new PaymentSearchDTO();
+        paymentSearchDTO.setBookingStartFrom(LocalDateTime.now().minusHours(2));
+
+        PaymentDTO paymentDTO = paymentService.convertPaymentToPaymentDTO(payment);
+        List<PaymentDTO> paymentDTOS = new ArrayList<>();
+        paymentDTOS.add(paymentDTO);
+
+        Page<PaymentDTO> paymentDTOPage = new Page<PaymentDTO>() {
+            @Override
+            public int getTotalPages() {
+                return 0;
+            }
+
+            @Override
+            public long getTotalElements() {
+                return 0;
+            }
+
+            @Override
+            public <U> Page<U> map(Function<? super PaymentDTO, ? extends U> function) {
+                return null;
+            }
+
+            @Override
+            public int getNumber() {
+                return 0;
+            }
+
+            @Override
+            public int getSize() {
+                return 0;
+            }
+
+            @Override
+            public int getNumberOfElements() {
+                return 0;
+            }
+
+            @Override
+            public List<PaymentDTO> getContent() {
+                return paymentDTOS;
+            }
+
+            @Override
+            public boolean hasContent() {
+                return false;
+            }
+
+            @Override
+            public Sort getSort() {
+                return null;
+            }
+
+            @Override
+            public boolean isFirst() {
+                return false;
+            }
+
+            @Override
+            public boolean isLast() {
+                return false;
+            }
+
+            @Override
+            public boolean hasNext() {
+                return false;
+            }
+
+            @Override
+            public boolean hasPrevious() {
+                return false;
+            }
+
+            @Override
+            public Pageable nextPageable() {
+                return null;
+            }
+
+            @Override
+            public Pageable previousPageable() {
+                return null;
+            }
+
+            @Override
+            public Iterator<PaymentDTO> iterator() {
+                return null;
+            }
+        };
+        Page<Payment> paymentPage = new Page<Payment>() {
+            @Override
+            public int getTotalPages() {
+                return 0;
+            }
+
+            @Override
+            public long getTotalElements() {
+                return 0;
+            }
+
+            @Override
+            public <U> Page<U> map(Function<? super Payment, ? extends U> function) {
+                return null;
+            }
+
+            @Override
+            public int getNumber() {
+                return 0;
+            }
+
+            @Override
+            public int getSize() {
+                return 0;
+            }
+
+            @Override
+            public int getNumberOfElements() {
+                return 0;
+            }
+
+            @Override
+            public List<Payment> getContent() {
+                return null;
+            }
+
+            @Override
+            public boolean hasContent() {
+                return false;
+            }
+
+            @Override
+            public Sort getSort() {
+                return null;
+            }
+
+            @Override
+            public boolean isFirst() {
+                return false;
+            }
+
+            @Override
+            public boolean isLast() {
+                return false;
+            }
+
+            @Override
+            public boolean hasNext() {
+                return false;
+            }
+
+            @Override
+            public boolean hasPrevious() {
+                return false;
+            }
+
+            @Override
+            public Pageable nextPageable() {
+                return null;
+            }
+
+            @Override
+            public Pageable previousPageable() {
+                return null;
+            }
+
+            @Override
+            public Iterator<Payment> iterator() {
+                return null;
+            }
+        };
+        when(paymentRepository.findAll((Specification<Payment>)any(), any())).thenReturn(paymentPage);
+        paymentRepository.save(payment);
+        when(paymentService.getAllPerPage(any(), eq(paymentSearchDTO))).thenReturn(paymentDTOPage);
+        assertEquals(1, paymentDTOPage.getContent().size());
     }
 
     @Test

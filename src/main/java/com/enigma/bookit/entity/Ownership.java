@@ -1,5 +1,6 @@
 package com.enigma.bookit.entity;
 
+import com.enigma.bookit.entity.user.Owner;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,7 +21,7 @@ public class Ownership {
     @Column(name = "id")
     private String id;
     @ManyToOne
-    @JoinColumn(name = "owner_id")
+    @JoinColumn(name = "user_name")
     @JsonIgnoreProperties("ownership")
     private Owner owner;
 

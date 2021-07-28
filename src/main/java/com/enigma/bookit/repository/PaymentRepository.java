@@ -13,7 +13,7 @@ import java.util.List;
 
 @Repository
 public interface PaymentRepository extends JpaRepository<Payment, String> {
-    Page<PaymentDTO> findAll (Specification<Payment> paymentSpecification, Pageable pageable);
+    Page<Payment> findAll (Specification<Payment> paymentSpecification, Pageable pageable);
 
     List<Payment> findAll(Specification<Payment> paymentSpecification);
 }

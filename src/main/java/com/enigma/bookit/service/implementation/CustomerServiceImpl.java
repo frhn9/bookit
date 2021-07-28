@@ -1,76 +1,113 @@
 package com.enigma.bookit.service.implementation;
 
 import com.enigma.bookit.dto.CustomerDto;
-import com.enigma.bookit.entity.Customer;
+import com.enigma.bookit.dto.UserDto;
+import com.enigma.bookit.dto.UserPasswordDto;
+import com.enigma.bookit.dto.UserSearchDto;
+import com.enigma.bookit.entity.user.Customer;
+import com.enigma.bookit.entity.user.User;
 import com.enigma.bookit.repository.CustomerRepository;
+import com.enigma.bookit.service.converter.UserConverter;
 import com.enigma.bookit.service.CustomerService;
+import com.enigma.bookit.specification.CustomerSpecification;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-public class CustomerServiceImpl implements CustomerService {
+public class CustomerServiceImpl implements CustomerService, UserConverter {
 
     @Autowired
     CustomerRepository customerRepository;
 
     @Autowired
-    private ModelMapper modelMapper;
-
-    ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-    Validator validator = factory.getValidator();
+    ModelMapper modelMapper;
 
     @Override
-    public void save(CustomerDto customerDto) {
-        validateData(customerDto);
+    public UserDto registerUser(User user) {
+        Customer customer = customerRepository.save(convertUserToEntity(user));
+        user = convertEntityToUser(customer);
+
+        return convertUserToUserDto(user);
+    }
+
+    @Override
+    public UserDto changePassword(String id, UserPasswordDto userPassword) {
+        Customer customer = customerRepository.findById(id).get();
+        customer.setPassword(userPassword.getPassword());
+
+        customer = customerRepository.save(customer);
+        User user = convertEntityToUser(customer);
+        return convertUserToUserDto(user);
+    }
+
+    @Override
+    public CustomerDto update(String id, CustomerDto customerDto) {
+        Customer customer = customerRepository.findById(id).get();
+        validateUpdateData(customer, customerDto);
+
+        customer = customerRepository.save(customer);
+        return convertEntityToDto(customer);
     }
 
     @Override
     public CustomerDto getById(String id) {
-        CustomerDto customerDto = convertToDto(customerRepository.findById(id).get());
-        return customerDto;
+        return convertEntityToDto(customerRepository.findById(id).get());
     }
 
     @Override
     public List<CustomerDto> getAll() {
         List<Customer> customerList = customerRepository.findAll();
-        List<CustomerDto> customerDtoList = customerList.stream().map(this::convertToDto).collect(Collectors.toList());
-        return customerDtoList;
+        return customerList.stream().map(this::convertEntityToDto).collect(Collectors.toList());
     }
 
     @Override
-    public void deleteById(String id) {
+    public Page<CustomerDto> getCustomerPerPage(Pageable pageable, UserSearchDto userSearchDto) {
+        Specification<Customer> customerSpecification = CustomerSpecification.getSpecification(userSearchDto);
+        Page<Customer> getCustomerData = customerRepository.findAll(customerSpecification, pageable);
+        return getCustomerData.map(this::convertEntityToDto);
+    }
+
+    @Override
+    public Boolean deleteById(String id) {
+        Boolean isFound = customerRepository.existsById(id);
         customerRepository.deleteById(id);
+        return isFound;
     }
 
     @Override
-    public Customer validateData(CustomerDto customerDto) {
-        Set<ConstraintViolation<CustomerDto>> violations = validator.validate(customerDto);
-        if (violations.size() == 0){
-            Customer customer = convertToEntity(customerDto);
-            return customerRepository.save(customer);
-        }
-        return null;
+    public void validateUpdateData(Customer customer, CustomerDto customerDto) {
+        if(customerDto.getFullName() != null) customer.setFullName(customerDto.getFullName());
+        if (customerDto.getAddress() != null) customer.setAddress(customerDto.getAddress());
+        if (customerDto.getContact() != null) customer.setContact(customerDto.getContact());
+        if (customerDto.getEmail() != null) customer.setContact(customerDto.getEmail());
+        if (customerDto.getGender() != null) customer.setGender(customerDto.getGender());
+        if (customerDto.getJob() != null) customer.setJob(customerDto.getJob());
     }
 
     @Override
-    public CustomerDto convertToDto(Customer customer) {
-        CustomerDto customerDto = modelMapper.map(customer, CustomerDto.class);
-        return customerDto;
+    public CustomerDto convertEntityToDto(Object entity) {
+        return modelMapper.map(entity, CustomerDto.class);
     }
 
     @Override
-    public Customer convertToEntity(CustomerDto customerDto) {
-        Customer customer = modelMapper.map(customerDto, Customer.class);
-        return customer;
+    public Customer convertUserToEntity(Object user) {
+        return modelMapper.map(user, Customer.class);
     }
 
+    @Override
+    public User convertEntityToUser(Object entity) {
+        return modelMapper.map(entity, User.class);
+    }
+
+    @Override
+    public UserDto convertUserToUserDto(User user) {
+        return modelMapper.map(user, UserDto.class);
+    }
 }

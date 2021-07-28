@@ -32,12 +32,6 @@ public class BookController {
             bookService.deleteBook(bookId);
         }
 
-        @PostMapping("/extend/{bookId}")
-        public void extendBook(@PathVariable("bookId") String bookId,
-                               @RequestBody PackageChosen packageChosen){
-            bookService.extendBook(bookId, packageChosen);
-
-        }
 
 }
 
