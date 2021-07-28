@@ -8,5 +8,6 @@ public class SuccessMessageConstant {
     public static final String UPDATE_DATA_SUCCESSFUL = "Data updated successfully";
     public static final String CHANGE_PASSWORD_SUCCESSFUL = "Password changed successfully";
     public static final String DELETE_DATA_SUCCESSFUL = "Data deleted successfully";
+    public static final String CREATE_SUCCESS = "%s created successfully";
 
 }
