@@ -1,6 +1,6 @@
 package com.enigma.bookit.security.jwt;
 
-import com.enigma.bookit.security.services.CustomerDetailsImpl;
+import com.enigma.bookit.security.services.UserDetailsImpl;
 import io.jsonwebtoken.*;
 import org.springframework.security.core.Authentication;
 import org.slf4j.Logger;
@@ -21,7 +21,7 @@ public class JwtUtils {
     private int jwtExpirationMs;
 
     public String generateJwtToken(Authentication authentication){
-        CustomerDetailsImpl customerDetails = (CustomerDetailsImpl)  authentication.getPrincipal();
+        UserDetailsImpl customerDetails = (UserDetailsImpl)  authentication.getPrincipal();
 
         return Jwts.builder()
                 .setSubject(customerDetails.getUsername())
