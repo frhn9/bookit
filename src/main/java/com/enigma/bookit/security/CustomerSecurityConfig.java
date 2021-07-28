@@ -1,14 +1,11 @@
 package com.enigma.bookit.security;
 
 import com.enigma.bookit.security.jwt.AuthEntryPointJwt;
-import com.enigma.bookit.security.jwt.customer.CustomerAuthTokenFilter;
-import com.enigma.bookit.security.jwt.owner.OwnerAuthTokenFilter;
-import com.enigma.bookit.security.services.customer.CustomerDetailsServiceImpl;
-import com.enigma.bookit.security.services.owner.OwnerDetailsServiceImpl;
+import com.enigma.bookit.security.jwt.AuthTokenFilter;
+import com.enigma.bookit.security.services.CustomerDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -23,7 +20,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-@Order(1)
 public class CustomerSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
@@ -33,15 +29,41 @@ public class CustomerSecurityConfig extends WebSecurityConfigurerAdapter {
     private AuthEntryPointJwt authEntryPointJwt;
 
     @Bean
-    public CustomerAuthTokenFilter customerAuthTokenFilter(){
-        return new CustomerAuthTokenFilter();
+    public AuthTokenFilter customerAuthTokenFilter(){
+        return new AuthTokenFilter();
     }
 
+//    @Bean
+//    public OwnerAuthTokenFilter ownerAuthTokenFilter(){
+//        return new OwnerAuthTokenFilter();
+//    }
+//
     @Autowired
     @Override
     public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
         authenticationManagerBuilder.userDetailsService(customerDetailsService).passwordEncoder(passwordEncoder());
     }
+
+//    @SneakyThrows
+//    @Override
+//    public void configure(AuthenticationManagerBuilder auth) {
+//        auth.authenticationProvider(new AuthenticationProvider() {
+//            @Override
+//            public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+//                ArrayList<GrantedAuthority> authorities = new ArrayList<>();
+//                authorities.add(new SimpleGrantedAuthority("ROLE_OWNER"));  // list of roles from database
+//                authorities.add(new SimpleGrantedAuthority("ROLE_CUSTOMER"));
+//                return new UsernamePasswordAuthenticationToken(authentication.getPrincipal(), authentication.getCredentials(), authorities);
+//            }
+//
+//            @Override
+//            public boolean supports(Class<?> authentication) {
+//                return true;
+//            }
+//        });
+//
+//        auth.userDetailsService(customerDetailsService).passwordEncoder(passwordEncoder());
+//    }
 
     @Bean
     public PasswordEncoder passwordEncoder(){

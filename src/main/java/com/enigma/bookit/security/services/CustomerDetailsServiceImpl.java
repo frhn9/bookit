@@ -1,7 +1,8 @@
-package com.enigma.bookit.security.services.owner;
+package com.enigma.bookit.security.services;
 
-import com.enigma.bookit.entity.user.Owner;
-import com.enigma.bookit.repository.OwnerRepository;
+import com.enigma.bookit.entity.user.User;
+import com.enigma.bookit.repository.UserRepository;
+import com.enigma.bookit.security.services.CustomerDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -10,16 +11,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class OwnerDetailsServiceImpl implements UserDetailsService {
+public class CustomerDetailsServiceImpl implements UserDetailsService {
 
     @Autowired
-    OwnerRepository ownerRepository;
+    UserRepository userRepository;
 
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
-        Owner owner = ownerRepository.findByUserName(userName)
+        User user = userRepository.findByUserName(userName)
                 .orElseThrow(() -> new UsernameNotFoundException("Username not found"));
-        return OwnerDetailsImpl.build(owner);
+        return CustomerDetailsImpl.build(user);
     }
 }

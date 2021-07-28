@@ -1,4 +1,4 @@
-package com.enigma.bookit.security.payload.response.customer;
+package com.enigma.bookit.security.payload.response;
 
 import lombok.Data;
 
@@ -7,7 +7,7 @@ import java.util.Date;
 import java.util.List;
 
 @Data
-public class CustomerJwtResponse {
+public class JwtResponse {
     private String token;
     private String type = "Bearer";
     private String id;
@@ -25,7 +25,7 @@ public class CustomerJwtResponse {
     private LocalDateTime deletedAt;
     private List<String> roles;
 
-    public CustomerJwtResponse(String token, String id, String userName, String fullName, String address, String contact, String gender, String email, String job, Date dateOfBirth, List<String> roles) {
+    public JwtResponse(String token, String id, String userName, String fullName, String address, String contact, String gender, String email, String job, Date dateOfBirth, List<String> roles) {
         this.token = token;
         this.id = id;
         this.userName = userName;

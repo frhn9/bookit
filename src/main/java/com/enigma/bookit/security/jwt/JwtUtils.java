@@ -1,6 +1,6 @@
-package com.enigma.bookit.security.jwt.customer;
+package com.enigma.bookit.security.jwt;
 
-import com.enigma.bookit.security.services.customer.CustomerDetailsImpl;
+import com.enigma.bookit.security.services.CustomerDetailsImpl;
 import io.jsonwebtoken.*;
 import org.springframework.security.core.Authentication;
 import org.slf4j.Logger;
@@ -11,9 +11,9 @@ import org.springframework.stereotype.Component;
 import java.util.Date;
 
 @Component
-public class CustomerJwtUtils {
+public class JwtUtils {
 
-    private static final Logger logger = LoggerFactory.getLogger(CustomerJwtUtils.class);
+    private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
 
     @Value("BookitSecretKey")
     private String jwtSecret;

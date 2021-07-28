@@ -2,12 +2,11 @@ package com.enigma.bookit.controller;
 
 import com.enigma.bookit.constant.ApiUrlConstant;
 import com.enigma.bookit.constant.SuccessMessageConstant;
-import com.enigma.bookit.dto.CustomerDto;
 import com.enigma.bookit.dto.UserDto;
 import com.enigma.bookit.dto.UserPasswordDto;
 import com.enigma.bookit.dto.UserSearchDto;
 import com.enigma.bookit.entity.user.User;
-import com.enigma.bookit.service.CustomerService;
+import com.enigma.bookit.service.UserService;
 import com.enigma.bookit.utils.DeleteResponse;
 import com.enigma.bookit.utils.PageResponseWrapper;
 import com.enigma.bookit.utils.Response;
@@ -26,53 +25,53 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @RestController
-@RequestMapping(ApiUrlConstant.CUSTOMER)
-public class CustomerController {
+@RequestMapping(ApiUrlConstant.USER)
+public class UserController {
 
     @Autowired
-    CustomerService customerService;
+    UserService userService;
 
     @PostMapping
-    public ResponseEntity<Response<UserDto>> registerCustomer(@Valid @RequestBody User user) {
+    public ResponseEntity<Response<UserDto>> registerUser(@Valid @RequestBody User user) {
         Response<UserDto> response = new Response<>();
         response.setCode(HttpStatus.CREATED.value());
         response.setStatus(HttpStatus.CREATED.name());
         response.setMessage(SuccessMessageConstant.CREATED_USER_SUCCESSFUL);
         response.setTimestamp(LocalDateTime.now());
-        response.setData(customerService.registerUser(user));
+        response.setData(userService.registerUser(user));
         return ResponseEntity.status(HttpStatus.CREATED).contentType(MediaType.APPLICATION_JSON).body(response);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Response<CustomerDto>> getCustomerById(@PathVariable String id) {
-        Response<CustomerDto> response = new Response<>();
+    public ResponseEntity<Response<UserDto>> getUserById(@PathVariable String id) {
+        Response<UserDto> response = new Response<>();
         response.setCode(HttpStatus.OK.value());
         response.setStatus(HttpStatus.OK.name());
         response.setMessage(SuccessMessageConstant.GET_DATA_SUCCESSFUL);
         response.setTimestamp(LocalDateTime.now());
-        response.setData(customerService.getById(id));
+        response.setData(userService.getById(id));
         return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(response);
     }
 
     @GetMapping
-    public ResponseEntity<Response<List<CustomerDto>>> getAllCustomer() {
-        Response<List<CustomerDto>> response = new Response<>();
+    public ResponseEntity<Response<List<UserDto>>> getAllUser() {
+        Response<List<UserDto>> response = new Response<>();
         response.setCode(HttpStatus.OK.value());
         response.setStatus(HttpStatus.OK.name());
         response.setMessage(SuccessMessageConstant.GET_DATA_SUCCESSFUL);
         response.setTimestamp(LocalDateTime.now());
-        response.setData(customerService.getAll());
+        response.setData(userService.getAll());
         return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(response);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Response<CustomerDto>> updateCustomerDto(@PathVariable String id, @RequestBody CustomerDto customerDto) {
-        Response<CustomerDto> response = new Response<>();
+    public ResponseEntity<Response<UserDto>> updateUserDto(@PathVariable String id, @RequestBody UserDto userDto) {
+        Response<UserDto> response = new Response<>();
         response.setCode(HttpStatus.OK.value());
         response.setStatus(HttpStatus.OK.name());
         response.setMessage(SuccessMessageConstant.UPDATE_DATA_SUCCESSFUL);
         response.setTimestamp(LocalDateTime.now());
-        response.setData(customerService.update(id, customerDto));
+        response.setData(userService.update(id, userDto));
         return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(response);
     }
 
@@ -83,14 +82,14 @@ public class CustomerController {
         response.setStatus(HttpStatus.OK.name());
         response.setMessage(SuccessMessageConstant.CHANGE_PASSWORD_SUCCESSFUL);
         response.setTimestamp(LocalDateTime.now());
-        response.setData(customerService.changePassword(id, userPassword));
+        response.setData(userService.changePassword(id, userPassword));
         return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(response);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<DeleteResponse> deleteCustomer(@PathVariable String id) {
+    public ResponseEntity<DeleteResponse> deleteUser(@PathVariable String id) {
         DeleteResponse deleteResponse = new DeleteResponse();
-        customerService.deleteById(id);
+        userService.deleteById(id);
 
         deleteResponse.setCode(HttpStatus.GONE.value());
         deleteResponse.setStatus(HttpStatus.GONE.name());
@@ -100,17 +99,17 @@ public class CustomerController {
     }
 
     @GetMapping("/search")
-    public PageResponseWrapper<CustomerDto> searchCustomerPerPage(@RequestBody UserSearchDto userSearchDto,
-                                                                  @RequestParam(name = "page", defaultValue = "0") Integer page,
-                                                                  @RequestParam(name = "size", defaultValue = "10") Integer size,
-                                                                  @RequestParam(name = "sort", defaultValue = "fullName") String sort,
-                                                                  @RequestParam(name = "direction", defaultValue = "ASC") String direction) {
+    public PageResponseWrapper<UserDto> searchUserPerPage(@RequestBody UserSearchDto userSearchDto,
+                                                          @RequestParam(name = "page", defaultValue = "0") Integer page,
+                                                          @RequestParam(name = "size", defaultValue = "10") Integer size,
+                                                          @RequestParam(name = "sort", defaultValue = "fullName") String sort,
+                                                          @RequestParam(name = "direction", defaultValue = "ASC") String direction) {
         Sort sortBy = Sort.by(Sort.Direction.fromString(direction), sort);
         Pageable pageable = PageRequest.of(page, size, sortBy);
-        Page<CustomerDto> customerDtoPage = customerService.getCustomerPerPage(pageable, userSearchDto);
+        Page<UserDto> userDtoPage = userService.getCustomerPerPage(pageable, userSearchDto);
         Integer code = HttpStatus.OK.value();
         String status = HttpStatus.OK.name();
         String message = SuccessMessageConstant.GET_DATA_SUCCESSFUL;
-        return new PageResponseWrapper<>(code, status, message, customerDtoPage);
+        return new PageResponseWrapper<>(code, status, message, userDtoPage);
     }
 }

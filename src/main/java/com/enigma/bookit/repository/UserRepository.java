@@ -1,6 +1,6 @@
 package com.enigma.bookit.repository;
 
-import com.enigma.bookit.entity.user.Customer;
+import com.enigma.bookit.entity.user.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -10,10 +10,10 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface CustomerRepository extends JpaRepository<Customer, String> {
-    Page<Customer> findAll(Specification<Customer> customerSpecification, Pageable pageable);
+public interface UserRepository extends JpaRepository<User, String> {
+    Page<User> findAll(Specification<User> userSpecification, Pageable pageable);
 
-    Optional<Customer> findByUserName(String userName);
+    Optional<User> findByUserName(String userName);
 
     Boolean existsByUserName(String userName);
 }

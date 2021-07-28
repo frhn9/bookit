@@ -2,21 +2,16 @@ package com.enigma.bookit.controller;
 
 import com.enigma.bookit.constant.SuccessMessageConstant;
 import com.enigma.bookit.dto.UserDto;
-import com.enigma.bookit.entity.user.Customer;
 import com.enigma.bookit.entity.user.ERole;
-import com.enigma.bookit.entity.user.Owner;
 import com.enigma.bookit.entity.user.Role;
+import com.enigma.bookit.entity.user.User;
 import com.enigma.bookit.repository.RoleRepository;
-import com.enigma.bookit.security.jwt.customer.CustomerJwtUtils;
-import com.enigma.bookit.security.jwt.owner.OwnerJwtUtils;
+import com.enigma.bookit.security.jwt.JwtUtils;
 import com.enigma.bookit.security.payload.request.LoginRequest;
 import com.enigma.bookit.security.payload.request.SignupRequest;
-import com.enigma.bookit.security.payload.response.customer.CustomerJwtResponse;
-import com.enigma.bookit.security.payload.response.owner.OwnerJwtResponse;
-import com.enigma.bookit.security.services.customer.CustomerDetailsImpl;
-import com.enigma.bookit.security.services.owner.OwnerDetailsImpl;
-import com.enigma.bookit.service.implementation.CustomerServiceImpl;
-import com.enigma.bookit.service.implementation.OwnerServiceImpl;
+import com.enigma.bookit.security.payload.response.JwtResponse;
+import com.enigma.bookit.security.services.CustomerDetailsImpl;
+import com.enigma.bookit.service.implementation.UserServiceImpl;
 import com.enigma.bookit.utils.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -48,10 +43,7 @@ public class AuthController {
     AuthenticationManager authenticationManager;
 
     @Autowired
-    CustomerServiceImpl customerService;
-
-    @Autowired
-    OwnerServiceImpl ownerService;
+    UserServiceImpl customerService;
 
     @Autowired
     RoleRepository roleRepository;
@@ -60,32 +52,29 @@ public class AuthController {
     PasswordEncoder passwordEncoder;
 
     @Autowired
-    CustomerJwtUtils customerJwtUtils;
-
-    @Autowired
-    OwnerJwtUtils ownerJwtUtils;
+    JwtUtils jwtUtils;
 
     @PostMapping("/customers/signin")
-    public ResponseEntity<Response<CustomerJwtResponse>> authenticateCustomer(@Valid @RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<Response<JwtResponse>> authenticateCustomer(@Valid @RequestBody LoginRequest loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUserName(), loginRequest.getPassword())
         );
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = customerJwtUtils.generateJwtToken(authentication);
+        String jwt = jwtUtils.generateJwtToken(authentication);
 
         CustomerDetailsImpl customerDetails = (CustomerDetailsImpl) authentication.getPrincipal();
         List<String> roles = customerDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
 
-        Response<CustomerJwtResponse> response = new Response<>();
+        Response<JwtResponse> response = new Response<>();
 
         response.setCode(HttpStatus.OK.value());
         response.setStatus(HttpStatus.OK.name());
         response.setMessage(SuccessMessageConstant.LOGIN_USER_SUCCESSFUL);
         response.setTimestamp(LocalDateTime.now());
-        response.setData(new CustomerJwtResponse(jwt, customerDetails.getId(), customerDetails.getUsername(),
+        response.setData(new JwtResponse(jwt, customerDetails.getId(), customerDetails.getUsername(),
                 customerDetails.getFullName(), customerDetails.getAddress(), customerDetails.getContact(),
                 customerDetails.getGender(), customerDetails.getEmail(), customerDetails.getJob(),
                 customerDetails.getDateOfBirth(), roles));
@@ -93,32 +82,32 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(response);
     }
 
-    @PostMapping("/owners/signin")
-    public ResponseEntity<Response<OwnerJwtResponse>> authenticateOwner(@Valid @RequestBody LoginRequest loginRequest){
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getUserName(), loginRequest.getPassword())
-        );
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = ownerJwtUtils.generateJwtToken(authentication);
-
-        OwnerDetailsImpl ownerDetails = (OwnerDetailsImpl) authentication.getPrincipal();
-        List<String> roles = ownerDetails.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toList());
-
-        Response<OwnerJwtResponse> response = new Response<>();
-
-        response.setCode(HttpStatus.OK.value());
-        response.setStatus(HttpStatus.OK.name());
-        response.setMessage(SuccessMessageConstant.LOGIN_USER_SUCCESSFUL);
-        response.setTimestamp(LocalDateTime.now());
-        response.setData(new OwnerJwtResponse(jwt, ownerDetails.getId(), ownerDetails.getUsername(),
-                ownerDetails.getFullName(), ownerDetails.getAddress(), ownerDetails.getContact(),
-                ownerDetails.getGender(), ownerDetails.getEmail(), ownerDetails.getDateOfBirth(), roles));
-
-        return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(response);
-    }
+//    @PostMapping("/owners/signin")
+//    public ResponseEntity<Response<OwnerJwtResponse>> authenticateOwner(@Valid @RequestBody LoginRequest loginRequest){
+//        Authentication authentication = authenticationManager.authenticate(
+//                new UsernamePasswordAuthenticationToken(loginRequest.getUserName(), loginRequest.getPassword())
+//        );
+//
+//        SecurityContextHolder.getContext().setAuthentication(authentication);
+//        String jwt = ownerJwtUtils.generateJwtToken(authentication);
+//
+//        OwnerDetailsImpl ownerDetails = (OwnerDetailsImpl) authentication.getPrincipal();
+//        List<String> roles = ownerDetails.getAuthorities().stream()
+//                .map(GrantedAuthority::getAuthority)
+//                .collect(Collectors.toList());
+//
+//        Response<OwnerJwtResponse> response = new Response<>();
+//
+//        response.setCode(HttpStatus.OK.value());
+//        response.setStatus(HttpStatus.OK.name());
+//        response.setMessage(SuccessMessageConstant.LOGIN_USER_SUCCESSFUL);
+//        response.setTimestamp(LocalDateTime.now());
+//        response.setData(new OwnerJwtResponse(jwt, ownerDetails.getId(), ownerDetails.getUsername(),
+//                ownerDetails.getFullName(), ownerDetails.getAddress(), ownerDetails.getContact(),
+//                ownerDetails.getGender(), ownerDetails.getEmail(), ownerDetails.getDateOfBirth(), roles));
+//
+//        return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(response);
+//    }
 
     @PostMapping("/customers/signup")
     public ResponseEntity<Response<UserDto>> registerCustomer(@Valid @RequestBody SignupRequest signupRequest) {
@@ -126,7 +115,7 @@ public class AuthController {
             throw new KeyAlreadyExistsException();
         }
 
-        Customer customer = new Customer(signupRequest.getFullName(),
+        User user = new User(signupRequest.getFullName(),
                 signupRequest.getUserName(),
                 passwordEncoder.encode(signupRequest.getPassword()),
                 signupRequest.getEmail());
@@ -153,8 +142,8 @@ public class AuthController {
                 }
             });
         }
-        customer.setRoles(roles);
-        customerService.registerUser(customer);
+        user.setRoles(roles);
+        customerService.registerUser(user);
 
         Response<UserDto> response = new Response<>();
 
@@ -162,54 +151,54 @@ public class AuthController {
         response.setStatus(HttpStatus.CREATED.name());
         response.setMessage(SuccessMessageConstant.CREATED_USER_SUCCESSFUL);
         response.setTimestamp(LocalDateTime.now());
-        response.setData(customerService.registerUser(customer));
+        response.setData(customerService.registerUser(user));
         return ResponseEntity.status(HttpStatus.CREATED).contentType(MediaType.APPLICATION_JSON).body(response);
     }
 
-    @PostMapping("/owners/signup")
-    public ResponseEntity<Response<UserDto>> registerOwner(@Valid @RequestBody SignupRequest signupRequest){
-        if (ownerService.userNameExist(signupRequest.getUserName())) {
-            throw new KeyAlreadyExistsException();
-        }
-
-        Owner owner = new Owner(signupRequest.getFullName(),
-                signupRequest.getUserName(),
-                passwordEncoder.encode(signupRequest.getPassword()),
-                signupRequest.getEmail());
-
-        Set<String> strRoles = signupRequest.getRole();
-        Set<Role> roles = new HashSet<>();
-
-        if (strRoles == null) {
-            Role userRole = roleRepository.findByName(ERole.ROLE_OWNER)
-                    .orElseThrow(() -> new RuntimeException("Error: Role is not found"));
-            roles.add(userRole);
-        } else {
-            strRoles.forEach(role -> {
-                switch (role) {
-                    case "admin":
-                        Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-                                .orElseThrow(NoSuchElementException::new);
-                        roles.add(adminRole);
-                        break;
-                    default:
-                        Role userRole = roleRepository.findByName(ERole.ROLE_OWNER)
-                                .orElseThrow(NoSuchElementException::new);
-                        roles.add(userRole);
-                }
-            });
-        }
-        owner.setRoles(roles);
-        customerService.registerUser(owner);
-
-        Response<UserDto> response = new Response<>();
-
-        response.setCode(HttpStatus.CREATED.value());
-        response.setStatus(HttpStatus.CREATED.name());
-        response.setMessage(SuccessMessageConstant.CREATED_USER_SUCCESSFUL);
-        response.setTimestamp(LocalDateTime.now());
-        response.setData(ownerService.registerUser(owner));
-        return ResponseEntity.status(HttpStatus.CREATED).contentType(MediaType.APPLICATION_JSON).body(response);
-    }
+//    @PostMapping("/owners/signup")
+//    public ResponseEntity<Response<UserDto>> registerOwner(@Valid @RequestBody SignupRequest signupRequest){
+//        if (ownerService.userNameExist(signupRequest.getUserName())) {
+//            throw new KeyAlreadyExistsException();
+//        }
+//
+//        Owner owner = new Owner(signupRequest.getFullName(),
+//                signupRequest.getUserName(),
+//                passwordEncoder.encode(signupRequest.getPassword()),
+//                signupRequest.getEmail());
+//
+//        Set<String> strRoles = signupRequest.getRole();
+//        Set<Role> roles = new HashSet<>();
+//
+//        if (strRoles == null) {
+//            Role userRole = roleRepository.findByName(ERole.ROLE_OWNER)
+//                    .orElseThrow(() -> new RuntimeException("Error: Role is not found"));
+//            roles.add(userRole);
+//        } else {
+//            strRoles.forEach(role -> {
+//                switch (role) {
+//                    case "admin":
+//                        Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
+//                                .orElseThrow(NoSuchElementException::new);
+//                        roles.add(adminRole);
+//                        break;
+//                    default:
+//                        Role userRole = roleRepository.findByName(ERole.ROLE_OWNER)
+//                                .orElseThrow(NoSuchElementException::new);
+//                        roles.add(userRole);
+//                }
+//            });
+//        }
+//        owner.setRoles(roles);
+//        customerService.registerUser(owner);
+//
+//        Response<UserDto> response = new Response<>();
+//
+//        response.setCode(HttpStatus.CREATED.value());
+//        response.setStatus(HttpStatus.CREATED.name());
+//        response.setMessage(SuccessMessageConstant.CREATED_USER_SUCCESSFUL);
+//        response.setTimestamp(LocalDateTime.now());
+//        response.setData(ownerService.registerUser(owner));
+//        return ResponseEntity.status(HttpStatus.CREATED).contentType(MediaType.APPLICATION_JSON).body(response);
+//    }
 
 }
