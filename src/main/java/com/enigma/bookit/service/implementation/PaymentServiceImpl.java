@@ -1,7 +1,6 @@
 package com.enigma.bookit.service.implementation;
 
 import com.enigma.bookit.entity.Payment;
-import com.enigma.bookit.exception.DataNotFoundException;
 import com.enigma.bookit.repository.PaymentRepository;
 import com.enigma.bookit.service.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;

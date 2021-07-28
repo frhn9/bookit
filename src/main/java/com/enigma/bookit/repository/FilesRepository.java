@@ -1,9 +1,11 @@
 package com.enigma.bookit.repository;
 
-import com.enigma.bookit.entity.Feedback;
+import com.enigma.bookit.entity.Files;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface FeedbackRepository extends JpaRepository<Feedback, String> {
+public interface FilesRepository extends JpaRepository<Files, String> {
+
+
 }

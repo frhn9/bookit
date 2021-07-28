@@ -1,15 +1,23 @@
 package com.enigma.bookit.service.implementation;
 
+import com.enigma.bookit.dto.FacilitySearchDto;
+import com.enigma.bookit.dto.request.UpdateFacilityRequest;
 import com.enigma.bookit.entity.Facility;
-import com.enigma.bookit.exception.DataNotFoundException;
+import com.enigma.bookit.entity.Files;
 import com.enigma.bookit.repository.FacilityRepository;
 import com.enigma.bookit.service.FacilityService;
+import com.enigma.bookit.service.FilesService;
+import com.enigma.bookit.spesification.FacilitySpesification;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -17,6 +25,10 @@ public class FacilityServiceImpl implements FacilityService {
 
     @Autowired
     FacilityRepository facilityRepository;
+    @Autowired
+    FilesService filesService;
+    @Autowired
+    ModelMapper modelMapper;
 
     @Override
     public Facility save(Facility facility) {
@@ -33,35 +45,38 @@ public class FacilityServiceImpl implements FacilityService {
         return facilityRepository.findAll();
     }
 
-
     @Override
-    public void deleteFacility(String id) {
-        validatePresent(id);
+    public Facility deleteFacility(String id) {
         facilityRepository.deleteById(id);
+        return null;
     }
 
     @Override
-    public void updateFacility(String id, Facility facility) {
-            validatePresent(id);
-            facility.setId(id);
-            facilityRepository.save(facility);
-        }
+    public Facility updateFacility(String id, UpdateFacilityRequest request, MultipartFile file) throws IOException {
+          Files files = filesService.upload(file);
+            String downloadUrl = ServletUriComponentsBuilder
+                .fromCurrentContextPath()
+                .path("/files/")
+                .path(files.getId())
+                .toUriString();
+          request.setId(id);
+          Facility facility = modelMapper.map(request, Facility.class);
+            facility.setFiles(files);
+            facility.getFiles().setUrl(downloadUrl);
+            return facilityRepository.save(facility);
+    }
 
     @Override
     public Page<Facility> getFacilityPerPage(Pageable pageable) {
         return facilityRepository.findAll(pageable);
     }
 
-    @Override
-    public List<Facility> getFacilityByNameContainingIgnoreCase(String name) {
-        return facilityRepository.getFacilityByNameContainingIgnoreCase(name);
-    }
+
 
     @Override
-    public void validatePresent(String id) {
-            if(!facilityRepository.findById(id).isPresent()){
-                String message = "id not found";
-                throw new DataNotFoundException(message);
-            }
-        }
+    public Page<Facility> getFacilityPerPage(Pageable pageable, FacilitySearchDto facilitySearchDto) {
+        Specification<Facility> facilitySpecification = FacilitySpesification.getSpesification(facilitySearchDto);
+        return facilityRepository.findAll(facilitySpecification,pageable);
     }
+
+}

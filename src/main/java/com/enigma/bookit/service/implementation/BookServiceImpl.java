@@ -1,13 +1,18 @@
 package com.enigma.bookit.service.implementation;
 
+import com.enigma.bookit.dto.BookSearchDto;
 import com.enigma.bookit.entity.Book;
 import com.enigma.bookit.repository.BookRepository;
 import com.enigma.bookit.service.BookService;
+import com.enigma.bookit.spesification.BookSpesification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -32,20 +37,35 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public void deleteBook(String id) {
-        bookRepository.deleteById(id);
-
+    public Book deleteBook(String id) {
+       bookRepository.deleteById(id);
+        return null;
     }
 
     @Override
     public void updateBook(String id, Book book) {
-        if (getBookById(id) != null){
-            book.setId(id);
+        book = bookRepository.findById(id).get();
+        book.setId(id);
             bookRepository.save(book);
     }
-}
     @Override
-    public Page<Book> getBookPerPage(Pageable pagable) {
-        return bookRepository.findAll(pagable);
+    public List<Integer> getCapacity(String id, LocalDateTime start, LocalDateTime stop) {
+        return bookRepository.countCap(id, start, stop);
     }
+
+    @Override
+    public Page<Book> searchBookPerPage(Pageable pageable, BookSearchDto bookSearchDto) {
+        Specification<Book> bookSpecification = BookSpesification.getSpesification(bookSearchDto);
+        return bookRepository.findAll(bookSpecification, pageable);
+    }
+
+    @Override
+    public Boolean checkActiveBook(String id) {
+            Book book = bookRepository.findById(id).get();
+            if(LocalDateTime.now().isAfter(book.getActiveUntil())){
+                return false;
+            }
+            return true;
+        }
 }
+

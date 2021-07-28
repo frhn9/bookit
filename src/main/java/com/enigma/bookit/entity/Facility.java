@@ -19,11 +19,8 @@ public class Facility {
     @GenericGenerator(name ="system-uuid", strategy="uuid")
     @Column(name="facility_id")
     private String id;
-    @NotBlank(message = "name must not be blank")
     private String name;
-    @NotBlank(message = "address must not be blank")
     private String address;
-    @NotBlank(message = "contact must not be blank")
     private String contact;
     @Column(name="rent_price_once")
     private BigDecimal rentPriceOnce;
@@ -39,7 +36,25 @@ public class Facility {
     @JoinColumn(name ="category_id")
     private Category category;
 
+    @OneToOne
+    @JoinColumn(name = "files_id")
+    private Files files;
+
     public Facility(String id, String name, String address, String contact, BigDecimal rentPriceOnce, BigDecimal rentPriceWeekly, BigDecimal rentPriceMonthly, Boolean status, String location, Integer capacity, Category category) {
+        this.id = id;
+        this.name = name;
+        this.address = address;
+        this.contact = contact;
+        this.rentPriceOnce = rentPriceOnce;
+        this.rentPriceWeekly = rentPriceWeekly;
+        this.rentPriceMonthly = rentPriceMonthly;
+        this.status = status;
+        this.location = location;
+        this.capacity = capacity;
+        this.category = category;
+    }
+
+    public Facility(String id, String name, String address, String contact, BigDecimal rentPriceOnce, BigDecimal rentPriceWeekly, BigDecimal rentPriceMonthly, Boolean status, String location, Integer capacity) {
         this.id = id;
         this.name = name;
         this.address = address;

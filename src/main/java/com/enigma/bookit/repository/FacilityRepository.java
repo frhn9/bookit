@@ -1,6 +1,9 @@
 package com.enigma.bookit.repository;
 
 import com.enigma.bookit.entity.Facility;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -13,5 +16,5 @@ import java.util.List;
 
 @Repository
 public interface FacilityRepository extends JpaRepository<Facility, String> {
-    public List<Facility> getFacilityByNameContainingIgnoreCase (String name);
+    Page<Facility> findAll(Specification<Facility> facilitySpecification, Pageable pageable);
 }

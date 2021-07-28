@@ -1,11 +1,11 @@
 package com.enigma.bookit.service.implementation;
 
-import com.enigma.bookit.constant.ResponseMessage;
 import com.enigma.bookit.entity.Category;
-import com.enigma.bookit.exception.DataNotFoundException;
 import com.enigma.bookit.repository.CategoryRepository;
 import com.enigma.bookit.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,16 +23,13 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public void deleteCategory(String id) {
-        validatePresent(id);
+    public Category deleteCategory(String id) {
         categoryRepository.deleteById(id);
-
+        return null;
     }
 
     @Override
     public Category getCategoryById(String id) {
-        if (!categoryRepository.existsById(id)){
-          throw new DataNotFoundException(ResponseMessage.NOT_FOUND);}
         return categoryRepository.findById(id).get();
     }
 
@@ -44,19 +41,18 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public void updateCategory(String id, Category category){
-            if(getCategoryById(id) != null){
+         category = categoryRepository.findById(id).get();
             category.setId(id);
             categoryRepository.save(category);
-            }
     }
-
 
     @Override
-    public void validatePresent(String id) {
-        if(!categoryRepository.findById(id).isPresent()){
-            String message = ResponseMessage.NOT_FOUND;
-            throw new DataNotFoundException(message);
-
+    public Page<Category> getCategoryPerPage(Pageable pageable) {
+        return categoryRepository.findAll(pageable);
     }
-}
+
+    @Override
+    public List<Category> findByName(String name) {
+        return categoryRepository.findByNameContainingIgnoreCase(name);
+    }
 }

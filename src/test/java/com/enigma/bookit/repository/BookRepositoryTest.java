@@ -2,6 +2,7 @@ package com.enigma.bookit.repository;
 
 import com.enigma.bookit.entity.Book;
 import com.enigma.bookit.entity.Category;
+import com.enigma.bookit.entity.Facility;
 import com.enigma.bookit.entity.Payment;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,10 +13,13 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import javax.persistence.EntityManager;
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
 @DataJpaTest
 class BookRepositoryTest {
@@ -32,18 +36,18 @@ class BookRepositoryTest {
     void setup(){
         book = new Book();
         book.setId("c1");
-        book.setActiveFrom(Timestamp.valueOf("2021-07-12 10:00:00"));
-        book.setActiveUntil(Timestamp.valueOf("2021-07-12 11:00:00"));
+        book.setActiveFrom(LocalDateTime.of(2021, Month.JULY,20,10,00,00));
+        book.setActiveUntil(LocalDateTime.of(2021, Month.JULY,20,11,00,00));
         book.setPayment(book.getPayment());
     }
     @Test
-    void shouldSave_Category_GetId() {
+    void shouldSave_Book() {
         Book input = bookRepository.save(book);
         assertNotNull(entityManager.find(Book.class, input.getId()));
 
     }
     @Test
-    void shouldFindAll_Category_GetId() {
+    void shouldFindAll_Book_GetId() {
         Book input = bookRepository.save(book);
         List<Book> books = new ArrayList<>();
         books.add(input);
@@ -54,5 +58,6 @@ class BookRepositoryTest {
     void deleteAll(){
         bookRepository.deleteAll();
     }
+
 
 }

@@ -1,18 +1,11 @@
 package com.enigma.bookit.service.implementation;
 
-import com.enigma.bookit.constant.ResponseMessage;
 import com.enigma.bookit.entity.Category;
-import com.enigma.bookit.exception.DataNotFoundException;
 import com.enigma.bookit.repository.CategoryRepository;
-import com.enigma.bookit.repository.CustomerRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,38 +13,25 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
 class CategoryServiceImplTest {
 
-    @InjectMocks
+    @Autowired
     CategoryServiceImpl service;
 
-    @Mock
+    @MockBean
     CategoryRepository repository;
-
-    @Autowired
-    MockMvc mockMvc;
-
-    private Category category;
-    private Category output;
-
-    @BeforeEach
-    void setup(){
-        category = new Category("c1","gym");
-
-        output = new Category();
-        category.setId(category.getId());
-        category.setName(category.getName());
-        when (repository.save(any())).thenReturn(output);
-    }
 
     @Test
     void addCategory() {
+        Category category = new Category();
+        category = new Category("c1","gym");
+        when(repository.save(category)).thenReturn(category);
         service.addCategory(category);
+
         List<Category> categories = new ArrayList<>();
         categories.add(category);
 
@@ -60,27 +40,32 @@ class CategoryServiceImplTest {
     }
 
     @Test
-    void deleteCategory_validate() {
+    void deleteCategory (){
+        Category category = new Category();
+        category = new Category("c1","gym");
         repository.save(category);
-        if(repository.findById(category.getId()).isPresent()){
-        service.deleteCategory(category.getId());
-        assertEquals(0,repository.findAll().size());}
+        when(repository.findById(category.getId())).thenReturn(Optional.of(category));
+        service.deleteCategory("c1");
+        assertEquals(0,repository.findAll().size());
     }
 
 
     @Test
     void getCategoryById() {
+        Category category = new Category();
+        category = new Category("c1","gym");
         repository.save(category);
-        if(repository.findById(category.getId()).isPresent()){
-
-        given(repository.findById("c1")).willReturn(Optional.of(output));
+        when(repository.findById(category.getId())).thenReturn(Optional.of(category));
         Category returned = service.getCategoryById("c1");
         verify(repository).findById("c1");
-        assertNotNull(returned);}
+        assertNotNull(returned);
     }
 
+//
     @Test
     void getAllCategory() {
+        Category category = new Category();
+        category = new Category("c1","gym");
         repository.save(category);
         List<Category>categories= new ArrayList<>();
         categories.add(category);
@@ -92,21 +77,120 @@ class CategoryServiceImplTest {
 
     @Test
     void updateCategory() {
+        Category category = new Category();
+        category = new Category("c1","gym");
+        when(repository.save(category)).thenReturn(category);
+        category.setName("futsal");
         repository.save(category);
-        if(repository.getById(category.getId()) != null){
-            category.setId(category.getId());
-            category.setName("FUTSAL");
-            repository.save(category);
-            assertEquals("FUTSAL", category.getName());}
-        }
 
+        when(repository.findById(category.getId())).thenReturn(Optional.of(category));
+        service.updateCategory(category.getId(), category);
+            assertEquals("futsal", repository.findById("c1").get().getName());
+    }
     @Test
-    void validatePresent() {
+    void findByName() {
+        Category category = new Category();
+        category = new Category("c1","gym");
         repository.save(category);
-        if(!repository.findById(category.getId()).isPresent()){
-            assertEquals(ResponseMessage.NOT_FOUND, ResponseMessage.NOT_FOUND);
+        when(repository.save(category)).thenReturn(category);
 
-        }
+        service.findByName("gym");
+        assertEquals("gym",category.getName());
     }
 
+//    @Test
+//    void getPerPage(){
+//        Category category = new Category();
+//        category = new Category("c1","gym");
+//        repository.save(category);
+//
+//        List<Category> categories = new ArrayList<>();
+//        categories.add(category);
+//       Page<Category> categoryPage = new Page<Category>() {
+//           @Override
+//           public int getTotalPages() {
+//               return 0;
+//           }
+//
+//           @Override
+//           public long getTotalElements() {
+//               return 0;
+//           }
+//
+//           @Override
+//           public <U> Page<U> map(Function<? super Category, ? extends U> function) {
+//               return null;
+//           }
+//
+//           @Override
+//           public int getNumber() {
+//               return 0;
+//           }
+//
+//           @Override
+//           public int getSize() {
+//               return 0;
+//           }
+//
+//           @Override
+//           public int getNumberOfElements() {
+//               return 0;
+//           }
+//
+//           @Override
+//           public List<Category> getContent() {
+//               return null;
+//           }
+//
+//           @Override
+//           public boolean hasContent() {
+//               return false;
+//           }
+//
+//           @Override
+//           public Sort getSort() {
+//               return null;
+//           }
+//
+//           @Override
+//           public boolean isFirst() {
+//               return false;
+//           }
+//
+//           @Override
+//           public boolean isLast() {
+//               return false;
+//           }
+//
+//           @Override
+//           public boolean hasNext() {
+//               return false;
+//           }
+//
+//           @Override
+//           public boolean hasPrevious() {
+//               return false;
+//           }
+//
+//           @Override
+//           public Pageable nextPageable() {
+//               return null;
+//           }
+//
+//           @Override
+//           public Pageable previousPageable() {
+//               return null;
+//           }
+//
+//           @Override
+//           public Iterator<Category> iterator() {
+//               return null;
+//           }
+//       };
+//       when(repository.findAll() anyp\())
+//        repository.save(category);
+//        when(service.getCategoryPerPage(any())).thenReturn(categoryPage);
+//        assertEquals("gym", categoryPage.getContent().get(0).getName()) ;
+//
+//    }
 }
