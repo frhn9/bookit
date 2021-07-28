@@ -25,20 +25,17 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public Payment getById(String id) {
-        validatePresent(id);
         return paymentRepository.findById(id).get();
     }
 
     @Override
     public void deleteById(String id) {
-        validatePresent(id);
         paymentRepository.deleteById(id);
     }
 
     @Override
     //harus cek jam ini udah dipesan atau belum dari tabel book
     public Payment pay(String id) {
-        validatePresent(id);
         Payment payment = getById(id);
         payment.setPaymentStatus(true);
         payment.setPaymentDate(new Date(System.currentTimeMillis()));
@@ -48,13 +45,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public Page<Payment> getAllPerPage(Pageable pageable) {
-        return paymentRepository.findAll(pageable);
+        return null;
     }
 
-    private void validatePresent(String id){
-        if(!paymentRepository.findById(id).isPresent()){
-            String message = "id not found";
-            throw new DataNotFoundException(message);
-        }
-    }
 }

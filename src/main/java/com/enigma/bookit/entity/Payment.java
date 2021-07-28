@@ -19,10 +19,10 @@ public class Payment {
     @GenericGenerator(name = "system-uuid", strategy = "uuid")
     @Column(name = "payment_id")
     private String id;
-    @ManyToOne
-    @JoinColumn(name = "customer_id")
-    @JsonIgnoreProperties("payment")
-    private Customer customer;
+//    @ManyToOne
+//    @JoinColumn(name = "customer_id")
+////    @JsonIgnoreProperties("payment")
+////    private Customer customer;
     @ManyToOne
     @JoinColumn(name = "facility_id")
     @JsonIgnoreProperties("payment")

@@ -1,5 +1,6 @@
 package com.enigma.bookit.exception;
 
+import com.enigma.bookit.utils.ResponseMessageFiles;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;

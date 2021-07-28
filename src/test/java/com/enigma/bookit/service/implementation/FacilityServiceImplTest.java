@@ -1,11 +1,8 @@
 package com.enigma.bookit.service.implementation;
 
-import com.enigma.bookit.dto.FacilitySearchDto;
 import com.enigma.bookit.dto.request.UpdateFacilityRequest;
-import com.enigma.bookit.entity.Category;
 import com.enigma.bookit.entity.Facility;
 import com.enigma.bookit.entity.Files;
-import com.enigma.bookit.repository.CategoryRepository;
 import com.enigma.bookit.repository.FacilityRepository;
 import com.enigma.bookit.service.FilesService;
 import org.junit.jupiter.api.Test;
@@ -42,7 +39,7 @@ class FacilityServiceImplTest {
 
 
     @Test
-    void save() {
+    void shouldsave_facility() {
         Facility facility = new Facility();
         facility.setId("c02");
         facility.setName("Barong");
@@ -59,7 +56,7 @@ class FacilityServiceImplTest {
     }
 
     @Test
-    void getFacilityById() {
+    void should_getFacilityById() {
         Facility facility = new Facility();
         facility.setId("c02");
         facility.setName("Barong");
@@ -72,7 +69,7 @@ class FacilityServiceImplTest {
     }
 
     @Test
-    void getAllFacility() {
+    void should_getAllFacility() {
         Facility facility = new Facility();
         facility.setId("c02");
         facility.setName("Barong");
@@ -86,7 +83,7 @@ class FacilityServiceImplTest {
     }
 
     @Test
-    void deleteFacility() {
+    void should_deleteFacility() {
         Facility facility = new Facility();
         facility.setId("c02");
         facility.setName("Barong");
@@ -98,7 +95,7 @@ class FacilityServiceImplTest {
     }
 
     @Test
-    void updateFacility() throws IOException {
+    void should_updateFacility() throws IOException {
         Facility facility = new Facility();
         facility.setId("c02");
         facility.setName("Barong");
@@ -168,9 +165,6 @@ class FacilityServiceImplTest {
         assertEquals("c02", repository.findById("c02").get().getId());
     }
 
-    @Test
-    void getFacilityPerPage() {
-    }
 
 
 //    @Test

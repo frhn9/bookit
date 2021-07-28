@@ -32,7 +32,7 @@ class FilesServiceImplTest {
     FilesRepository repository;
 
     @Test
-    void upload() throws IOException {
+    void should_upload_file() throws IOException {
         MultipartFile file = new MultipartFile() {
             @Override
             public String getName() {
@@ -90,7 +90,7 @@ class FilesServiceImplTest {
     }
 
     @Test
-    void getFile() {
+    void should_getfile_byId() {
         Files file = new Files();
         file.setId("2");
         file.setName("Pas Photo");
@@ -102,7 +102,7 @@ class FilesServiceImplTest {
     }
 
     @Test
-    void getAllFiles() {
+    void should_expected_1_when_getallfiles_size() {
         Files file = new Files();
         file.setId("2");
         file.setName("Pas Photo");
