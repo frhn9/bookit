@@ -1,6 +1,8 @@
 package com.enigma.bookit.controller;
 
 
+import com.enigma.bookit.constant.ApiUrlConstant;
+import com.enigma.bookit.constant.SuccessMessageConstant;
 import com.enigma.bookit.entity.Category;
 import com.enigma.bookit.service.CategoryService;
 import com.enigma.bookit.utils.Response;
@@ -13,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/category")
+@RequestMapping(ApiUrlConstant.CATEGORY)
 public class CategoryController {
 
     @Autowired
@@ -22,7 +24,7 @@ public class CategoryController {
     @PostMapping
     public ResponseEntity<Response<Category>> createNewCategory(@RequestBody Category category){
         Response <Category> response = new Response<>();
-        String message = String.format("NEW CATEGORY INSERTED");
+        String message = String.format(SuccessMessageConstant.CREATE_SUCCESS,"category's");
         response.setMessage(message);
         response.setData(categoryService.addCategory(category));
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -41,8 +43,8 @@ public class CategoryController {
         return categoryService.getAllCategory();
     }
 
-    @PutMapping("/{categoryId}")
-    public Category updateCategory(@PathVariable("categoryId") String categoryId, @RequestBody Category category){
+    @PutMapping
+    public Category updateCategory(@RequestBody Category category){
         return categoryService.addCategory(category);
     }
 

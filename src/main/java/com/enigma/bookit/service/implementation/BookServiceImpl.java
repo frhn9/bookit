@@ -1,13 +1,21 @@
 package com.enigma.bookit.service.implementation;
 
+import com.enigma.bookit.dto.PaymentDTO;
 import com.enigma.bookit.entity.Book;
+import com.enigma.bookit.entity.PackageChosen;
+import com.enigma.bookit.entity.Payment;
 import com.enigma.bookit.repository.BookRepository;
 import com.enigma.bookit.service.BookService;
+import com.enigma.bookit.service.PaymentService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -16,7 +24,11 @@ public class BookServiceImpl implements BookService {
     @Autowired
     BookRepository bookRepository;
 
+    @Autowired
+    PaymentService paymentService;
 
+    @Autowired
+    ModelMapper modelMapper;
 
     @Override
     public Book addBook(Book book) {
@@ -26,6 +38,14 @@ public class BookServiceImpl implements BookService {
     @Override
     public Book getBookById(String id) {
         return bookRepository.findById(id).get();
+    }
+
+    public Boolean checkActiveBook(String id){
+        Book book = bookRepository.findById(id).get();
+        if(LocalDateTime.now().isAfter(book.getActiveUntil())){
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -50,4 +70,10 @@ public class BookServiceImpl implements BookService {
     public Page<Book> getBookPerPage(Pageable pagable) {
         return bookRepository.findAll(pagable);
     }
+
+    @Override
+    public List<Integer> getCapacity(String id, LocalDateTime start, LocalDateTime stop) {
+        return bookRepository.countCap(id, start, stop);
+    }
+
 }
