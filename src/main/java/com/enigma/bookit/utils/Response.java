@@ -14,12 +14,7 @@ public class Response<T> {
     private String message;
     private LocalDateTime timestamp;
     private T data;
-<<<<<<< HEAD
 }
-=======
 
 
-
-    }
->>>>>>> dinny
 

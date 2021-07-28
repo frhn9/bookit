@@ -83,7 +83,7 @@
         <dependency>
             <groupId>net.sf.jasperreports</groupId>
             <artifactId>jasperreports</artifactId>
-            <version>6.16.0</version>
+            <version>6.17.0</version>
         </dependency>
         <dependency>
             <groupId>com.xendit</groupId>
@@ -102,7 +102,6 @@
             <version>0.13.0</version>
         </dependency>
     </dependencies>
-
 
     <repositories>
         <repository>
