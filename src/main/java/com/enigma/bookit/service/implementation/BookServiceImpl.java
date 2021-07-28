@@ -4,14 +4,13 @@ import com.enigma.bookit.dto.BookSearchDto;
 import com.enigma.bookit.entity.Book;
 import com.enigma.bookit.repository.BookRepository;
 import com.enigma.bookit.service.BookService;
-import com.enigma.bookit.spesification.BookSpesification;
+import com.enigma.bookit.specification.BookSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -55,7 +54,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public Page<Book> searchBookPerPage(Pageable pageable, BookSearchDto bookSearchDto) {
-        Specification<Book> bookSpecification = BookSpesification.getSpesification(bookSearchDto);
+        Specification<Book> bookSpecification = BookSpecification.getSpesification(bookSearchDto);
         return bookRepository.findAll(bookSpecification, pageable);
     }
 

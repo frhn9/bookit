@@ -7,7 +7,7 @@ import com.enigma.bookit.entity.Files;
 import com.enigma.bookit.repository.FacilityRepository;
 import com.enigma.bookit.service.FacilityService;
 import com.enigma.bookit.service.FilesService;
-import com.enigma.bookit.spesification.FacilitySpesification;
+import com.enigma.bookit.specification.FacilitySpecification;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -75,7 +75,7 @@ public class FacilityServiceImpl implements FacilityService {
 
     @Override
     public Page<Facility> getFacilityPerPage(Pageable pageable, FacilitySearchDto facilitySearchDto) {
-        Specification<Facility> facilitySpecification = FacilitySpesification.getSpesification(facilitySearchDto);
+        Specification<Facility> facilitySpecification = FacilitySpecification.getSpesification(facilitySearchDto);
         return facilityRepository.findAll(facilitySpecification,pageable);
     }
 

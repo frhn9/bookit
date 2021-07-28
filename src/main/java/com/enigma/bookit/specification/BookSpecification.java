@@ -1,4 +1,4 @@
-package com.enigma.bookit.spesification;
+package com.enigma.bookit.specification;
 
 import com.enigma.bookit.dto.BookSearchDto;
 import com.enigma.bookit.entity.Book;
@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.criteria.Predicate;
 
-public class BookSpesification {
+public class BookSpecification {
     public static Specification<Book> getSpesification(BookSearchDto bookSearchDto){
         return new Specification<Book>() {
             @Override

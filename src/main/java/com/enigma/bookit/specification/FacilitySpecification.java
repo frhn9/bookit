@@ -1,4 +1,4 @@
-package com.enigma.bookit.spesification;
+package com.enigma.bookit.specification;
 
 import com.enigma.bookit.dto.FacilitySearchDto;
 import com.enigma.bookit.entity.Facility;
@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class FacilitySpesification {
+public class FacilitySpecification {
 
     public static Specification<Facility> getSpesification(FacilitySearchDto facilitySearchDto){
         return new Specification<Facility>() {
