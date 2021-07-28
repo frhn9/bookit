@@ -1,5 +1,6 @@
 package com.enigma.bookit.utils;
 
+<<<<<<< HEAD
 public class Response <T> {
 
         private String message;
@@ -23,3 +24,19 @@ public class Response <T> {
     }
 
 
+=======
+import lombok.Getter;
+import lombok.Setter;
+
+import java.time.LocalDateTime;
+
+@Getter
+@Setter
+public class Response<T> {
+    private Integer code;
+    private String status;
+    private String message;
+    private LocalDateTime timestamp;
+    private T data;
+}
+>>>>>>> fadiel
