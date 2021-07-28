@@ -1,6 +1,6 @@
 package com.enigma.bookit.utils;
-
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.domain.Page;
 
@@ -8,7 +8,9 @@ import java.util.List;
 
 @Getter
 @Setter
-public class PageResponseWrapper<T> {
+@NoArgsConstructor
+public class PageResponseWrapper <T>{
+
     private Integer code;
     private String status;
     private String message;
