@@ -4,6 +4,7 @@ import com.enigma.bookit.constant.ApiUrlConstant;
 import com.enigma.bookit.constant.SuccessMessageConstant;
 import com.enigma.bookit.dto.BookSearchDto;
 import com.enigma.bookit.entity.Book;
+import com.enigma.bookit.entity.Payment;
 import com.enigma.bookit.repository.BookRepository;
 import com.enigma.bookit.service.BookService;
 import com.fasterxml.jackson.databind.ObjectMapper;
