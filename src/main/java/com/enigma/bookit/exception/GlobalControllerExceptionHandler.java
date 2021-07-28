@@ -4,12 +4,14 @@ import com.enigma.bookit.constant.ErrorMessageConstant;
 import com.enigma.bookit.constant.ResponseLabelConstant;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import javax.management.openmbean.KeyAlreadyExistsException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -44,6 +46,19 @@ public class GlobalControllerExceptionHandler extends RuntimeException{
         errors.put(ResponseLabelConstant.LABEL_CODE, HttpStatus.NOT_FOUND.value());
         errors.put(ResponseLabelConstant.LABEL_STATUS, HttpStatus.NOT_FOUND.name());
         errors.put(ResponseLabelConstant.LABEL_MESSAGE, ErrorMessageConstant.GET_OR_UPDATE_DATA_FAILED);
+        errors.put(ResponseLabelConstant.LABEL_TIMESTAMP, LocalDateTime.now());
+
+        return errors;
+    }
+
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ExceptionHandler(KeyAlreadyExistsException.class)
+    public Map<String, Object> handleKeyAlreadyExistsException() {
+        Map<String, Object> errors = new HashMap<>();
+
+        errors.put(ResponseLabelConstant.LABEL_CODE, HttpStatus.CONFLICT.value());
+        errors.put(ResponseLabelConstant.LABEL_STATUS, HttpStatus.CONFLICT.name());
+        errors.put(ResponseLabelConstant.LABEL_MESSAGE, ErrorMessageConstant.ID_ALREADY_TAKEN);
         errors.put(ResponseLabelConstant.LABEL_TIMESTAMP, LocalDateTime.now());
 
         return errors;

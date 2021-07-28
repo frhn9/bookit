@@ -1,7 +1,8 @@
 package com.enigma.bookit.entity;
 
-import com.enigma.bookit.entity.user.Owner;
+import com.enigma.bookit.entity.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,6 +14,7 @@ import javax.persistence.*;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "trx_ownership")
 public class Ownership {
     @Id
@@ -21,12 +23,8 @@ public class Ownership {
     @Column(name = "id")
     private String id;
     @ManyToOne
-    @JoinColumn(name = "user_name")
+    @JoinColumn(name = "user_id")
     @JsonIgnoreProperties("ownership")
-    private Owner owner;
+    private User user;
 
-    public Ownership(String id, Owner owner) {
-        this.id = id;
-        this.owner = owner;
-    }
 }

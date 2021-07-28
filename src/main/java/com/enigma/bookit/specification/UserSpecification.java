@@ -1,7 +1,7 @@
 package com.enigma.bookit.specification;
 
 import com.enigma.bookit.dto.UserSearchDto;
-import com.enigma.bookit.entity.user.Customer;
+import com.enigma.bookit.entity.user.User;
 import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -13,12 +13,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class CustomerSpecification {
+public class UserSpecification {
 
-    public static Specification<Customer> getSpecification(UserSearchDto userSearchDto){
-        return new Specification<Customer>() {
+    public static Specification<User> getSpecification(UserSearchDto userSearchDto){
+        return new Specification<User>() {
             @Override
-            public Predicate toPredicate(Root<Customer> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+            public Predicate toPredicate(Root<User> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
                 List<Predicate> predicates = new ArrayList<>();
 
                 if(!(userSearchDto.getSearchUserName() == null)){

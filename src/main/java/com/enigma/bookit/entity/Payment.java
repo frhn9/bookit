@@ -1,6 +1,6 @@
 package com.enigma.bookit.entity;
 
-import com.enigma.bookit.entity.user.Customer;
+
 import com.enigma.bookit.entity.user.User;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -28,7 +28,7 @@ public class Payment {
     @ManyToOne
     @JoinColumn(name = "customer_id")
     @JsonIgnoreProperties("payment")
-    private Customer customer;
+    private User customer;
     @ManyToOne
     @JoinColumn(name = "facility_id")
     @JsonIgnoreProperties("payment")
