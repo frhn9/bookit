@@ -6,6 +6,8 @@ import com.enigma.bookit.constant.SuccessMessageConstant;
 import com.enigma.bookit.entity.Category;
 import com.enigma.bookit.service.CategoryService;
 import com.enigma.bookit.utils.Response;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -29,8 +31,11 @@ public class CategoryController {
     @Autowired
     CategoryService categoryService;
 
+    @PreAuthorize("hasRole('ROLE_OWNER')OR hasRole('ROLE_ADMIN')")
+    @ApiImplicitParams(
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header"))
     @PostMapping
-    @PreAuthorize("hasRole('admin')")
     public ResponseEntity<Response<Category>> createNewCategory(@Valid @RequestBody Category category){
         Response <Category> response = new Response<>();
         String message = String.format(SuccessMessageConstant.INSERT_SUCCESS,"category's");
@@ -45,6 +50,9 @@ public class CategoryController {
     }
 
 
+    @ApiImplicitParams(
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header"))
     @GetMapping("/{categoryId}")
     public  ResponseEntity<Response<Category>> getCategoryById(@PathVariable String categoryId){
             Response<Category> response = new Response<>();
@@ -59,6 +67,9 @@ public class CategoryController {
                     .body(response);
     }
 
+    @ApiImplicitParams(
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header"))
     @GetMapping
     public ResponseEntity<Response<List<Category>>> getAllCategory(){
             Response<List<Category>> response = new Response<>();
@@ -71,9 +82,11 @@ public class CategoryController {
             return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(response);
     }
 
-
+    @PreAuthorize("hasRole('ROLE_OWNER')")
+    @ApiImplicitParams(
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header"))
     @PutMapping
-    @PreAuthorize("hasRole('admin')")
     public ResponseEntity<Response<Category>> updateCategory(@RequestBody Category category){
             Response<Category> response = new Response<>();
             String message = String.format(SuccessMessageConstant.UPDATE_DATA_SUCCESSFUL,"category");
@@ -84,9 +97,11 @@ public class CategoryController {
             response.setData(categoryService.addCategory(category));
             return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(response);
      }
-
+    @PreAuthorize("hasRole('ROLE_OWNER')")
+    @ApiImplicitParams(
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header"))
     @DeleteMapping("/{categoryId}")
-    @PreAuthorize("hasRole('admin')")
     public ResponseEntity <Response> deleteCategory(@PathVariable("categoryId") String categoryId){
             Response<Category> response = new Response<>();
             String message = String.format(SuccessMessageConstant.DELETE_DATA_SUCCESSFUL,"category");
@@ -100,6 +115,9 @@ public class CategoryController {
                     .body(response);
     }
 
+    @ApiImplicitParams(
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header"))
     @GetMapping("/page")
     public Page<Category> getAllCategoryPerPage(@RequestParam(name="page", defaultValue ="0") Integer page,
                                                 @RequestParam(name="size", defaultValue = "2") Integer size,
@@ -110,6 +128,9 @@ public class CategoryController {
         return categoryService.getCategoryPerPage(pageable);
     }
 
+    @ApiImplicitParams(
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header"))
     @GetMapping("/search")
     public List<Category> searchCategoryByName(@RequestParam(name="name", required = false) String name){
         return categoryService.findByName(name);
