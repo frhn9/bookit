@@ -12,6 +12,8 @@ import com.enigma.bookit.utils.Response;
 import com.xendit.Xendit;
 import com.xendit.exception.XenditException;
 import com.xendit.model.Invoice;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -21,6 +23,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -38,6 +41,8 @@ public class PaymentController {
 
     private ModelMapper modelMapper = new ModelMapper();
 
+    @PreAuthorize("hasRole('ROLE_CUSTOMER')")
+    @ApiImplicitParams({@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
     @PostMapping()
     public ResponseEntity<Response<InvoiceResponseDTO>> createPayment(@RequestBody Payment payment) throws XenditException {
         Response<InvoiceResponseDTO> response = new Response<>();
@@ -66,16 +71,19 @@ public class PaymentController {
         }
     }
 
+    @ApiImplicitParams({@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
     @GetMapping("/{id}")
     public PaymentDTO getById(@PathVariable String id){
         return paymentService.getById(id);
     }
 
+    @ApiImplicitParams({@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
     @DeleteMapping("/{id}")
     public void deleteById(@PathVariable String id){
         paymentService.deleteById(id);
     }
 
+    @ApiImplicitParams({@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
     @GetMapping()
     public PageResponseWrapper<PaymentDTO> getPaymentByPage(
             @RequestBody PaymentSearchDTO paymentSearchDTO,
@@ -104,6 +112,8 @@ public class PaymentController {
                 .body(response);
     }
 
+    @PreAuthorize("hasRole('CUSTOMER') ")
+    @ApiImplicitParams({@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
     @PostMapping("/extend/{bookId}")
     public ResponseEntity<Response<InvoiceResponseDTO>> extendBook(@PathVariable("bookId") String bookId,
                            @RequestBody PackageChosen packageChosen){

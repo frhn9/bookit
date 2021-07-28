@@ -13,6 +13,8 @@ import com.enigma.bookit.utils.Response;
 import com.xendit.Xendit;
 import com.xendit.exception.XenditException;
 import com.xendit.model.Invoice;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -22,6 +24,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -37,7 +40,10 @@ public class RefundController {
 
     private ModelMapper modelMapper = new ModelMapper();
 
-    //customer apply a refund of an active book
+    @PreAuthorize("hasRole('ROLE_CUSTOMER')")
+    @ApiImplicitParams(
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header"))
     @PostMapping
     public ResponseEntity<Response<RefundDTO>> applyRefund(@RequestBody Refund refund){
         Response <RefundDTO> response = new Response<>();
@@ -51,6 +57,8 @@ public class RefundController {
     }
     //facility pay the refound to the customer
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_OWNER')")
+    @ApiImplicitParams({@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
     public ResponseEntity<Response<InvoiceResponseDTO>> acceptRefund (@PathVariable String id,
                                                           @RequestBody Refund refund) {
         Response<InvoiceResponseDTO> response = new Response<>();
@@ -76,7 +84,7 @@ public class RefundController {
             throw new RuntimeException("Error: " + e.getMessage());
         }
     }
-
+    @ApiImplicitParams({@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
     @GetMapping
     public PageResponseWrapper<RefundDTO> searchFeedbackPerPage(@RequestBody RefundSearchDTO refundSearchDTO,
                                                              @RequestParam(name = "page", defaultValue = "0") Integer page,

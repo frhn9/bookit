@@ -8,6 +8,8 @@ import com.enigma.bookit.entity.Feedback;
 import com.enigma.bookit.service.FeedbackService;
 import com.enigma.bookit.utils.PageResponseWrapper;
 import com.enigma.bookit.utils.Response;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,6 +18,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -24,7 +27,9 @@ public class FeedbackController {
 
     @Autowired
     FeedbackService feedbackService;
-
+//    or @userSecurity.check(authentication, #userId)
+    @PreAuthorize("hasRole('CUSTOMER')")
+    @ApiImplicitParams({@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
     //Customer send feedback
     @PostMapping()
     public ResponseEntity<Response<FeedbackDTO>> createFeedback(@RequestBody Feedback feedback){
@@ -37,6 +42,8 @@ public class FeedbackController {
                 .body(response);
     }
 
+    @PreAuthorize("hasRole('OWNER')")
+    @ApiImplicitParams({@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
     //Owner response to customer's feedback
     @PutMapping("/{id}")
     public ResponseEntity<Response<FeedbackDTO>> responseFeedback(@PathVariable String id, @RequestBody Feedback feedback){
@@ -49,6 +56,8 @@ public class FeedbackController {
                 .body(response);
     }
 
+    @PreAuthorize("hasRole('OWNER') or hasRole('ADMIN')")
+    @ApiImplicitParams({@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
     //Owner delete inappropriate feedback
     @DeleteMapping("/{id}")
     public ResponseEntity<Response<Feedback>> deleteFeedback(@PathVariable String id) {
@@ -61,6 +70,8 @@ public class FeedbackController {
                 .body(response);
     }
 
+    @PreAuthorize("hasRole('OWNER')")
+    @ApiImplicitParams({@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
     //Get All Response per Page
     @GetMapping
     public PageResponseWrapper<FeedbackDTO> searchFeedbackPerPage(@RequestBody FeedbackSearchDTO feedbackSearchDTO,
