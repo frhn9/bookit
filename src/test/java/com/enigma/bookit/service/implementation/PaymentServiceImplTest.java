@@ -85,7 +85,6 @@ class PaymentServiceImplTest {
         payment.setUser(user);
         payment.setFacility(facility);
         payment.setBookingStart(LocalDateTime.now());
-        payment.setDueTime(LocalDateTime.now().plusHours(2));
         paymentRepository.save(payment);
         when(paymentRepository.findById("P01")).thenReturn(java.util.Optional.ofNullable(payment));
     }
@@ -177,8 +176,7 @@ class PaymentServiceImplTest {
         payment.setPaymentDate(LocalDateTime.now());
         payment.setUser(user);
         payment.setFacility(facility);
-        payment.setBookingStart(LocalDateTime.now());
-        payment.setDueTime(LocalDateTime.now().plusHours(2));
+        payment.setBookingStart(LocalDateTime.now());;
 //        paymentRepository.save(payment);
 //        when(paymentRepository.findById("P01")).thenReturn(java.util.Optional.ofNullable(payment));
 

@@ -84,7 +84,6 @@ class RefundServiceImplTest {
         payment.setFacility(facility);
         payment.setBookingStart(LocalDateTime.now());
         payment.setBookingEnd(LocalDateTime.now().plusDays(7));
-        payment.setDueTime(LocalDateTime.now().plusHours(2));
         paymentRepository.save(payment);
         when(paymentRepository.findById("P01")).thenReturn(java.util.Optional.ofNullable(payment));
 

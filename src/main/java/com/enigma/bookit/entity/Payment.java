@@ -42,8 +42,6 @@ public class Payment {
     private LocalDateTime bookingEnd;
     private String paymentStatus;
     @Column(columnDefinition = "TIMESTAMP")
-    private LocalDateTime dueTime;
-    @Column(columnDefinition = "TIMESTAMP")
     private LocalDateTime paymentDate;
 
 

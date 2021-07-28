@@ -46,10 +46,11 @@ public class PaymentController {
     @PostMapping()
     public ResponseEntity<Response<InvoiceResponseDTO>> createPayment(@RequestBody Payment payment) throws XenditException {
         Response<InvoiceResponseDTO> response = new Response<>();
-        PaymentDTO paymentDTO = paymentService.save(payment);
 
         String userId = payment.getUser().getId();
         UserDto user = userService.getById(userId);
+
+        PaymentDTO paymentDTO = paymentService.save(payment);
         Xendit.apiKey = "xnd_development_1sRaZoJjfer9Xjmqb44h96lv0LOxPbcVft3VGGJCuA7fg1wjZ7LOabMDDxOxR0";
         try {
             Map<String, Object> params = new HashMap<>();

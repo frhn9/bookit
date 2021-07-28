@@ -52,8 +52,6 @@ public class PaymentServiceImpl implements PaymentService{
 
         String facilityId = payment.getFacility().getId();
         Integer limit = facilityService.getFacilityById(facilityId).getCapacity();
-        LocalDateTime due = LocalDateTime.now().plusHours(2);
-        payment.setDueTime(due);
         Facility facility = facilityService.getFacilityById(facilityId);
         switch(payment.getPackageChosen()){
             case ONCE:
@@ -100,9 +98,6 @@ public class PaymentServiceImpl implements PaymentService{
         payment.setPaymentStatus(callbackDTO.getStatus());
         LocalDateTime dateTime = LocalDateTime.now();
         payment.setPaymentDate(dateTime);
-        if(payment.getDueTime().isBefore(LocalDateTime.now())){
-            throw new BadRequestException("Transaction already closed, please create new transaction");
-        }
 
         payment.setPaymentDate(LocalDateTime.now());
         Book book = new Book();
