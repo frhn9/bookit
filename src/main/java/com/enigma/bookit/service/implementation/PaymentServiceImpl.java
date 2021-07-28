@@ -1,10 +1,13 @@
 package com.enigma.bookit.service.implementation;
 
 import com.enigma.bookit.constant.ErrorMessageConstant;
+import com.enigma.bookit.dto.CallbackDTO;
+import com.enigma.bookit.dto.InvoiceResponseDTO;
 import com.enigma.bookit.dto.PaymentDTO;
 import com.enigma.bookit.dto.PaymentSearchDTO;
 import com.enigma.bookit.entity.Book;
 import com.enigma.bookit.entity.Facility;
+import com.enigma.bookit.entity.PackageChosen;
 import com.enigma.bookit.entity.Payment;
 import com.enigma.bookit.exception.BadRequestException;
 import com.enigma.bookit.exception.DataNotFoundException;
@@ -19,21 +22,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.sql.Time;
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 @Service
 public class PaymentServiceImpl implements PaymentService{
@@ -56,32 +52,29 @@ public class PaymentServiceImpl implements PaymentService{
 
         String facilityId = payment.getFacility().getId();
         Integer limit = facilityService.getFacilityById(facilityId).getCapacity();
-//        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         LocalDateTime due = LocalDateTime.now().plusHours(2);
         payment.setDueTime(due);
-        //get facility
         Facility facility = facilityService.getFacilityById(facilityId);
         switch(payment.getPackageChosen()){
-            //once rent, the price determined by the duration
             case ONCE:
                 BigDecimal price = facility.getRentPriceOnce();
                 //get duration
                 BigDecimal duration = BigDecimal.valueOf(ChronoUnit.HOURS.between(payment.getBookingStart(), payment.getBookingEnd()));
                 BigDecimal amount = duration.multiply(price);
-                payment.setAmount(amount);
+                payment.setPaidAmount(amount);
                 break;
             case WEEKLY:
-                payment.setAmount(facility.getRentPriceWeekly());
+                payment.setPaidAmount(facility.getRentPriceWeekly());
                 payment.setBookingEnd(payment.getBookingStart().plusDays(7));
-//                Timestamp weekTime = Timestamp.valueOf(formatter.format(String.valueOf(payment.getBookingStart().getTime() + TimeUnit.DAYS.toMillis(7))));
                 break;
             case MONTHLY:
-                payment.setAmount(facility.getRentPriceMonthly());
+                payment.setPaidAmount(facility.getRentPriceMonthly());
                 payment.setBookingEnd(payment.getBookingStart().plusDays(30));
                 break;
         }
 
         //Check if the facility hasn't reached the max capacity
+        payment.setPaymentStatus("PENDING");
         checkFacilityCapacity(payment);
         paymentRepository.save(payment);
         return convertPaymentToPaymentDTO(payment);
@@ -101,20 +94,16 @@ public class PaymentServiceImpl implements PaymentService{
 
     @Override
     //harus cek jam ini udah dipesan atau belum dari tabel book
-    public PaymentDTO pay(String id) {
-        Payment payment = paymentRepository.findById(id).get();
+    public PaymentDTO pay(CallbackDTO callbackDTO) {
+        Payment payment = paymentRepository.findById(callbackDTO.getExternal_id()).get();
         checkFacilityCapacity(payment);
-
-        if(payment.isPaymentStatus()){
-            throw new BadRequestException("The payment has been already paid");
-        }
-
+        payment.setPaymentStatus(callbackDTO.getStatus());
+        LocalDateTime dateTime = LocalDateTime.now();
+        payment.setPaymentDate(dateTime);
         if(payment.getDueTime().isBefore(LocalDateTime.now())){
             throw new BadRequestException("Transaction already closed, please create new transaction");
         }
 
-        payment.setPaymentStatus(true);
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         payment.setPaymentDate(LocalDateTime.now());
         Book book = new Book();
         book.setPayment(payment);
@@ -122,19 +111,7 @@ public class PaymentServiceImpl implements PaymentService{
         book.setActiveUntil(payment.getBookingEnd());
         bookService.addBook(book);
 
-        String facilityContact = facilityService.getFacilityById(payment.getFacility().getId()).getContact();
-        String customerContact = customerService.getById(payment.getCustomer().getId()).getContact();
 
-
-
-        String url = "http://localhost:8081/transfer";
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
-                .queryParam("sender", customerContact)
-                .queryParam("receiver", facilityContact)
-                .queryParam("amount", payment.getAmount());
-        // http://localhost:8081/debit?phoneNumber=082100000&amount=9000
-
-        restTemplate.exchange(builder.toUriString(), HttpMethod.POST, null, String.class);
         paymentRepository.save(payment);
         return convertPaymentToPaymentDTO(payment);
     }
@@ -166,6 +143,20 @@ public class PaymentServiceImpl implements PaymentService{
             throw new BadRequestException("Maximum facility's capacity has been reached");
         }
     }
+
+    @Override
+    public PaymentDTO extendBook(String bookId, PackageChosen packageChosen) {
+        Book book = bookService.getBookById(bookId);
+        Payment payment = paymentRepository.findById(book.getPayment().getId()).get();
+        Payment newPayment = new Payment();
+        newPayment.setCustomer(payment.getCustomer());
+        newPayment.setFacility(payment.getFacility());
+        newPayment.setPackageChosen(packageChosen);
+        newPayment.setBookingStart(book.getActiveUntil());
+        newPayment.setPaymentStatus("PENDING");
+        return save(newPayment);
+    }
+
     public PaymentDTO convertPaymentToPaymentDTO(Payment payment) {
         return modelMapper.map(payment, PaymentDTO.class);
     }

@@ -1,5 +1,6 @@
 package com.enigma.bookit.service.implementation;
 
+import com.enigma.bookit.dto.CallbackDTO;
 import com.enigma.bookit.dto.PaymentDTO;
 import com.enigma.bookit.dto.PaymentSearchDTO;
 import com.enigma.bookit.entity.user.Customer;
@@ -69,6 +70,7 @@ class PaymentServiceImplTest {
     void setup(){
         customer.setId("C01");
         customer.setContact("0812345");
+        customer.setEmail("test@gmail.com");
         customerRepository.save(customer);
         when(customerRepository.findById("C01")).thenReturn(java.util.Optional.ofNullable(customer));
 
@@ -80,7 +82,7 @@ class PaymentServiceImplTest {
         when(facilityRepository.findById("F01")).thenReturn(java.util.Optional.ofNullable(facility));
 
         payment.setId("P01");
-        payment.setPaymentStatus(false);
+        payment.setPaymentStatus("PENDING");
         payment.setPaymentDate(LocalDateTime.now());
         payment.setCustomer(customer);
         payment.setFacility(facility);
@@ -142,18 +144,17 @@ class PaymentServiceImplTest {
     @Test
     void pay() {
         when(paymentRepository.findById(payment.getId())).thenReturn(java.util.Optional.ofNullable(payment));
+        when(customerRepository.findById(any(String.class))).thenReturn(java.util.Optional.ofNullable(customer));
         Payment output = new Payment();
         output.setId(payment.getId());
-        String url = "http://localhost:8081/transfer";
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
-                .queryParam("sender", facility.getContact())
-                .queryParam("receiver", customer.getContact())
-                .queryParam("amount", 100);
-        when(restTemplate.exchange(builder.toUriString(), HttpMethod.POST, null, String.class))
-                .thenReturn(null);
-        payment.setAmount(BigDecimal.valueOf(1000));
+
+        CallbackDTO callbackDTO = new CallbackDTO();
+        callbackDTO.setExternal_id(payment.getId());
+        callbackDTO.setStatus("PENDING");
+
+        payment.setPaidAmount(BigDecimal.valueOf(1000));
         when(paymentRepository.save(payment)).thenReturn(payment);
-        assertEquals(output.getId(), paymentService.pay(payment.getId()).getId());
+        assertEquals(output.getId(), paymentService.pay(callbackDTO).getId());
     }
 
     @Test
@@ -174,7 +175,7 @@ class PaymentServiceImplTest {
 //        when(facilityRepository.findById("F01")).thenReturn(java.util.Optional.ofNullable(facility));
 
         payment.setId("P01");
-        payment.setPaymentStatus(false);
+        payment.setPaymentStatus("PENDING");
         payment.setPaymentDate(LocalDateTime.now());
         payment.setCustomer(customer);
         payment.setFacility(facility);

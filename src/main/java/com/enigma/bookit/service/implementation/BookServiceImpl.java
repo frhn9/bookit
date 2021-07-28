@@ -76,16 +76,4 @@ public class BookServiceImpl implements BookService {
         return bookRepository.countCap(id, start, stop);
     }
 
-    @Override
-    public void extendBook(String bookId, PackageChosen packageChosen) {
-        Book book = bookRepository.getById(bookId);
-        PaymentDTO payment = paymentService.getById(book.getPayment().getId());
-        payment.setPackageChosen(packageChosen);
-        payment.setPaymentDate(null);
-        payment.setBookingStart(book.getActiveUntil());
-        payment.setPaymentStatus(false);
-        paymentService.save(modelMapper.map(payment, Payment.class));
-    }
-
-
 }

@@ -35,12 +35,12 @@ public class Payment {
     private Facility facility;
     @Enumerated(EnumType.STRING)
     private PackageChosen packageChosen;
-    private BigDecimal amount;
+    private BigDecimal paidAmount;
     @Column(columnDefinition = "TIMESTAMP")
     private LocalDateTime bookingStart;
     @Column(columnDefinition = "TIMESTAMP")
     private LocalDateTime bookingEnd;
-    private boolean paymentStatus;
+    private String paymentStatus;
     @Column(columnDefinition = "TIMESTAMP")
     private LocalDateTime dueTime;
     @Column(columnDefinition = "TIMESTAMP")

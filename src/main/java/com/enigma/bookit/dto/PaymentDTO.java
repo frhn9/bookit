@@ -24,7 +24,7 @@ public class PaymentDTO {
     private BigDecimal amount;
     private LocalDateTime bookingStart;
     private LocalDateTime bookingEnd;
-    private boolean paymentStatus;
+    private String paymentStatus;
     private LocalDateTime dueTime;
     private LocalDateTime paymentDate;
 }

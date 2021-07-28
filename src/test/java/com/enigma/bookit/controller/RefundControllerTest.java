@@ -91,8 +91,8 @@ class RefundControllerTest {
         mockMvc.perform(put("/api/refund/{id}", refund.getId())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(asJsonString(refund)).accept(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.id", Matchers.is(refund.getId())));
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.data.externalId", Matchers.is(refund.getId())));
     }
 
     @Test

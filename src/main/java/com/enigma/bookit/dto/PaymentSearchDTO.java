@@ -29,7 +29,7 @@ public class PaymentSearchDTO {
     private LocalDateTime bookingStartUntil;
     private LocalDateTime bookingEndFrom;
     private LocalDateTime bookingEndUntil;
-    private Boolean paymentStatus;
+    private String paymentStatus;
     private LocalDateTime dueTimeStart;
     private LocalDateTime dueTimeEnd;
     private LocalDateTime paymentDateFrom;

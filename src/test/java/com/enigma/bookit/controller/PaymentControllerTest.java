@@ -1,9 +1,11 @@
 package com.enigma.bookit.controller;
 
 import com.enigma.bookit.constant.SuccessMessageConstant;
+import com.enigma.bookit.dto.CallbackDTO;
 import com.enigma.bookit.dto.CustomerDto;
 import com.enigma.bookit.dto.PaymentDTO;
 import com.enigma.bookit.dto.PaymentSearchDTO;
+import com.enigma.bookit.entity.Book;
 import com.enigma.bookit.entity.user.Customer;
 import com.enigma.bookit.entity.Facility;
 import com.enigma.bookit.entity.PackageChosen;
@@ -11,6 +13,7 @@ import com.enigma.bookit.entity.Payment;
 import com.enigma.bookit.service.CustomerService;
 import com.enigma.bookit.service.PaymentService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.SneakyThrows;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -65,9 +68,9 @@ class PaymentControllerTest {
         customer.setId("C01");
         customer.setEmail("test@gmail.com");
         payment.setCustomer(customer);
-        payment.setPaymentStatus(false);
+        payment.setPaymentStatus("PENDING");
 //        payment.setPaymentDate(LocalDateTime.now());
-        payment.setAmount(BigDecimal.valueOf(1000));
+        payment.setPaidAmount(BigDecimal.valueOf(1000));
 //        payment.setBookingStart(LocalDateTime.now());
 //        payment.setBookingEnd(LocalDateTime.now().plusHours(1));
         payment.setPackageChosen(PackageChosen.WEEKLY);
@@ -85,25 +88,23 @@ class PaymentControllerTest {
     @Test
     void createPayment() throws Exception {
 
+        CustomerDto customerDto = new CustomerDto();
+        customerDto.setEmail("test@gmail.com");
+
+        PaymentDTO paymentDTO = new PaymentDTO();
+        paymentDTO.setId("P01");
+
+
         when(paymentService.save(any(Payment.class))).thenReturn(modelMapper.map(payment, PaymentDTO.class));
+        when(customerService.getById(any(String.class))).thenReturn(customerDto);
 
         mockMvc.perform(post("/api/payment")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(asJsonString(payment)).accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.data.id", Matchers.is(payment.getId())));
+                .andExpect(jsonPath("$.data.externalId", Matchers.is(payment.getId())));
     }
 
-    @Test
-    void payPayment() throws Exception {
-        when(paymentService.pay(any(String.class))).thenReturn(modelMapper.map(payment, PaymentDTO.class));
-
-        mockMvc.perform(put("/api/payment/pay/{id}", payment.getId())
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(asJsonString(payment)).accept(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.id", Matchers.is(payment.getId())));
-    }
 
     @Test
     void getById() throws Exception {
@@ -120,30 +121,7 @@ class PaymentControllerTest {
 
     }
 
-    @Test
-    void payXendit() throws Exception {
-        payment = new Payment();
-        payment.setId("P01");
-        Facility facility = new Facility();
-        facility.setId("F01");
-        payment.setFacility(facility);
-        Customer customer = new Customer();
-        customer.setId("C01");
-        customer.setEmail("test@gmail.com");
-        payment.setCustomer(customer);
-        payment.setAmount(BigDecimal.valueOf(1000));
-        payment.setPackageChosen(PackageChosen.WEEKLY);
-        CustomerDto customerDto = new CustomerDto();
-        customerDto.setId("C01");
-        customerDto.setEmail("test@gmail.com");
-        when(paymentService.getById(any(String.class))).thenReturn(modelMapper.map(payment, PaymentDTO.class));
-        when(paymentService.pay(any(String.class))).thenReturn(modelMapper.map(payment, PaymentDTO.class));
-        when(customerService.getById(any(String.class))).thenReturn(customerDto);
-        mockMvc.perform(post("/api/payment/payXendit/{id}", payment.getId())
-                .contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(jsonPath("$.data.id", Matchers.is(payment.getId())));
-    }
+
 
     @Test
     void searchPaymentPerPage() throws Exception {
@@ -156,14 +134,14 @@ class PaymentControllerTest {
         customer.setId("C01");
         customer.setEmail("test@gmail.com");
         payment.setCustomer(customer);
-        payment.setAmount(BigDecimal.valueOf(1000));
+        payment.setPaidAmount(BigDecimal.valueOf(1000));
 
         PaymentSearchDTO paymentSearchDTO = new PaymentSearchDTO();
         paymentSearchDTO.setAmountStart(BigDecimal.valueOf(0));
 
         PaymentDTO paymentDTO = new PaymentDTO();
         paymentDTO.setId(payment.getId());
-        paymentDTO.setAmount(payment.getAmount());
+        paymentDTO.setAmount(payment.getPaidAmount());
 
         List<PaymentDTO> paymentDTOS =  new ArrayList<>();
         paymentDTOS.add(paymentDTO);
@@ -259,5 +237,37 @@ class PaymentControllerTest {
                 .andExpect(jsonPath("$.message",is(SuccessMessageConstant.GET_DATA_SUCCESSFUL)))
                 .andExpect(jsonPath("$.data[0].id",is("P01")));
 
+    }
+
+    @SneakyThrows
+    @Test
+    void extendBook(){
+        CustomerDto customerDto = new CustomerDto();
+        customerDto.setId("C01");
+        customerDto.setEmail("test@gmail.com");
+
+        PaymentDTO paymentDTO = new PaymentDTO();
+        paymentDTO.setId("P01");
+
+
+        when(paymentService.save(any(Payment.class))).thenReturn(modelMapper.map(payment, PaymentDTO.class));
+        when(customerService.getById(any(String.class))).thenReturn(customerDto);
+
+        paymentDTO.setId("P01");
+        paymentDTO.setAmount(BigDecimal.valueOf(10000));
+        paymentDTO.setCustomer(modelMapper.map(customerDto, Customer.class));
+        Book book = new Book();
+        book.setId("B01");
+        book.setPayment(modelMapper.map(paymentDTO, Payment.class));
+
+        PackageChosen packageChosen = PackageChosen.WEEKLY;
+
+        when(paymentService.extendBook(any(String.class), any(PackageChosen.class))).thenReturn(paymentDTO);
+        when(customerService.getById(any(String.class))).thenReturn(customerDto);
+
+        mockMvc.perform(post("/api/payment/extend/{id}", book.getId())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(asJsonString(packageChosen)).accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isCreated());
     }
 }

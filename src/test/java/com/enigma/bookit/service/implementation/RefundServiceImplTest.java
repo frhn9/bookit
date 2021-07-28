@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Matchers;
 import org.mockito.Spy;
+import org.mockito.stubbing.OngoingStubbing;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -33,10 +34,7 @@ import static org.mockito.ArgumentMatchers.any;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
@@ -91,7 +89,7 @@ class RefundServiceImplTest {
         when(facilityRepository.findById("F01")).thenReturn(java.util.Optional.ofNullable(facility));
 
         payment.setId("P01");
-        payment.setPaymentStatus(false);
+        payment.setPaymentStatus("PENDING");
         payment.setPackageChosen(PackageChosen.WEEKLY);
         payment.setPaymentDate(LocalDateTime.now());
         payment.setCustomer(customer);
@@ -142,19 +140,19 @@ class RefundServiceImplTest {
         assertTrue(service.checkRefundStatus(refund));
     }
 
-    @Test
-    void acceptRefund() {
-        String url = "http://localhost:8081/transfer";
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
-                .queryParam("sender", facility.getContact())
-                .queryParam("receiver", customer.getContact())
-                .queryParam("amount", 100);
-        when(restTemplate.exchange(builder.toUriString(), HttpMethod.POST, null, String.class))
-                .thenReturn(null);
-        when(refundRepository.findById("R01")).thenReturn(java.util.Optional.ofNullable(refund));
-        when(refundRepository.save(refund)).thenReturn(refund);
-        assertEquals(refund.getId(), service.acceptRefund(refund.getId(), BigDecimal.valueOf(100)).getId());
-    }
+//    @Test
+//    void acceptRefund() {
+//        String url = "http://localhost:8081/transfer";
+//        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
+//                .queryParam("sender", facility.getContact())
+//                .queryParam("receiver", customer.getContact())
+//                .queryParam("amount", 100);
+//        when(restTemplate.exchange(builder.toUriString(), HttpMethod.POST, null, String.class))
+//                .thenReturn(null);
+//        when(refundRepository.findById("R01")).thenReturn(java.util.Optional.ofNullable(refund));
+//        when(refundRepository.save(refund)).thenReturn(refund);
+//        assertEquals(refund.getId(), service.acceptRefund(refund.getId(), BigDecimal.valueOf(100)).getId());
+//    }
 
     @Test
     void getById() {
@@ -376,5 +374,29 @@ class RefundServiceImplTest {
         refundRepository.save(refund);
         when(service.getAllRefund(any(), eq(refundSearchDTO))).thenReturn(refundDTOPage);
         assertEquals(1, refundDTOPage.getContent().size());
+    }
+
+    @Test
+    void acceptRefund(){
+        Payment payment = new Payment();
+        payment.setId("P01");
+        Book book = new Book();
+        book.setId("B01");
+        book.setPayment(payment);
+        book.setActiveUntil(LocalDateTime.now().plusHours(2));
+        Refund refund = new Refund();
+        refund.setId("R01");
+        refund.setBook(book);
+        refund.setStatus(false);
+        RefundDTO refundDto = new RefundDTO();
+        refundDto.setId(refund.getId());
+        refundDto.setBook(refund.getBook());
+        when(bookRepository.findById(any(String.class))).thenReturn(Optional.ofNullable(book));
+        when(refundRepository.findById(any(String.class))).thenReturn(java.util.Optional.of(refund));
+        when(paymentRepository.findById(any(String.class))).thenReturn(Optional.of(payment));
+        when(refundRepository.save(any(Refund.class))).thenReturn(refund);
+        RefundDTO output = service.acceptRefund(refund.getId(), payment.getPaidAmount());
+        assertEquals(refundDto.getId(), output.getId());
+
     }
 }
