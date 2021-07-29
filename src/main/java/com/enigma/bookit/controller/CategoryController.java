@@ -33,8 +33,7 @@ public class CategoryController {
 
     @PreAuthorize("hasRole('ROLE_OWNER')OR hasRole('ROLE_ADMIN')")
     @ApiImplicitParams(
-            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
-                    required = true, dataType = "string", paramType = "header"))
+            {@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
     @PostMapping
     public ResponseEntity<Response<Category>> createNewCategory(@Valid @RequestBody Category category){
         Response <Category> response = new Response<>();
@@ -51,15 +50,13 @@ public class CategoryController {
 
 
     @ApiImplicitParams(
-            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
-                    required = true, dataType = "string", paramType = "header"))
+            {@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
     @GetMapping("/{categoryId}")
     public  ResponseEntity<Response<Category>> getCategoryById(@PathVariable String categoryId){
             Response<Category> response = new Response<>();
-            String message = String.format(SuccessMessageConstant.GET_DATA_SUCCESSFUL,"category's");
             response.setCode(HttpStatus.OK.value());
             response.setStatus(HttpStatus.OK.name());
-            response.setMessage(message);
+            response.setMessage(SuccessMessageConstant.GET_DATA_SUCCESSFUL);
             response.setTimestamp(LocalDateTime.now());
             response.setData(categoryService.getCategoryById(categoryId));
             return ResponseEntity.status(HttpStatus.OK)
@@ -68,15 +65,14 @@ public class CategoryController {
     }
 
     @ApiImplicitParams(
-            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
-                    required = true, dataType = "string", paramType = "header"))
+            {@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
     @GetMapping
     public ResponseEntity<Response<List<Category>>> getAllCategory(){
             Response<List<Category>> response = new Response<>();
-            String message = String.format(SuccessMessageConstant.GET_DATA_SUCCESSFUL,"category's");
+
             response.setCode(HttpStatus.OK.value());
             response.setStatus(HttpStatus.OK.name());
-            response.setMessage(message);
+            response.setMessage(SuccessMessageConstant.GET_DATA_SUCCESSFUL);
             response.setTimestamp(LocalDateTime.now());
             response.setData(categoryService.getAllCategory());
             return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(response);
@@ -84,30 +80,26 @@ public class CategoryController {
 
     @PreAuthorize("hasRole('ROLE_OWNER')")
     @ApiImplicitParams(
-            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
-                    required = true, dataType = "string", paramType = "header"))
+            {@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
     @PutMapping
     public ResponseEntity<Response<Category>> updateCategory(@RequestBody Category category){
             Response<Category> response = new Response<>();
-            String message = String.format(SuccessMessageConstant.UPDATE_DATA_SUCCESSFUL,"category");
             response.setCode(HttpStatus.OK.value());
             response.setStatus(HttpStatus.OK.name());
-            response.setMessage(message);
+            response.setMessage(SuccessMessageConstant.UPDATE_DATA_SUCCESSFUL);
             response.setTimestamp(LocalDateTime.now());
             response.setData(categoryService.addCategory(category));
             return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(response);
      }
     @PreAuthorize("hasRole('ROLE_OWNER')")
     @ApiImplicitParams(
-            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
-                    required = true, dataType = "string", paramType = "header"))
+            {@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
     @DeleteMapping("/{categoryId}")
     public ResponseEntity <Response> deleteCategory(@PathVariable("categoryId") String categoryId){
             Response<Category> response = new Response<>();
-            String message = String.format(SuccessMessageConstant.DELETE_DATA_SUCCESSFUL,"category");
             response.setCode(HttpStatus.GONE.value());
             response.setStatus(HttpStatus.GONE.name());
-            response.setMessage(message);
+            response.setMessage(SuccessMessageConstant.DELETE_DATA_SUCCESSFUL);
             response.setTimestamp(LocalDateTime.now());
             response.setData(categoryService.deleteCategory(categoryId));
             return ResponseEntity.status(HttpStatus.GONE)
@@ -116,8 +108,7 @@ public class CategoryController {
     }
 
     @ApiImplicitParams(
-            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
-                    required = true, dataType = "string", paramType = "header"))
+            {@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
     @GetMapping("/page")
     public Page<Category> getAllCategoryPerPage(@RequestParam(name="page", defaultValue ="0") Integer page,
                                                 @RequestParam(name="size", defaultValue = "2") Integer size,
@@ -129,8 +120,8 @@ public class CategoryController {
     }
 
     @ApiImplicitParams(
-            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
-                    required = true, dataType = "string", paramType = "header"))
+            {@ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header") })
     @GetMapping("/search")
     public List<Category> searchCategoryByName(@RequestParam(name="name", required = false) String name){
         return categoryService.findByName(name);

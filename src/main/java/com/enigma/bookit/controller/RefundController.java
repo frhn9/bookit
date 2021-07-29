@@ -40,11 +40,11 @@ public class RefundController {
 
     private ModelMapper modelMapper = new ModelMapper();
 
+    @PostMapping
     @PreAuthorize("hasRole('ROLE_CUSTOMER')")
     @ApiImplicitParams(
             @ApiImplicitParam(name = "Authorization", value = "Authorization token",
                     required = true, dataType = "string", paramType = "header"))
-    @PostMapping
     public ResponseEntity<Response<RefundDTO>> applyRefund(@RequestBody Refund refund){
         Response <RefundDTO> response = new Response<>();
         String message = String.format(SuccessMessageConstant.CREATE_SUCCESS,"refund's");

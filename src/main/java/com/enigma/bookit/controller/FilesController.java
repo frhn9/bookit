@@ -23,8 +23,8 @@ public class FilesController {
     }
 
     @ApiImplicitParams(
-            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
-                    required = true, dataType = "string", paramType = "header"))
+            {@ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header") })
     @GetMapping("/{id}")
     public ResponseEntity<byte[]> getFile(@PathVariable String id) {
         Files files = filesService.getFile(id);

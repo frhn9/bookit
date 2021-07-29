@@ -45,8 +45,7 @@ public class FacilityController {
 
     @PreAuthorize("hasRole('ROLE_OWNER')OR hasRole('ROLE_ADMIN')")
     @ApiImplicitParams(
-            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
-                    required = true, dataType = "string", paramType = "header"))
+            {@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
     @PostMapping
     public ResponseEntity<Response<Facility>> addNewFacility(@Valid @RequestBody Facility facility){
         Response<Facility> response = new Response<>();
@@ -62,15 +61,14 @@ public class FacilityController {
     }
 
     @ApiImplicitParams(
-            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
-                    required = true, dataType = "string", paramType = "header"))
+            {@ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header") })
     @GetMapping("/{facilityId}")
     public ResponseEntity<Response<Facility>> getFacilityById(@PathVariable String facilityId){
         Response<Facility> response = new Response<>();
-        String message = String.format(SuccessMessageConstant.GET_DATA_SUCCESSFUL,"facility");
         response.setCode(HttpStatus.OK.value());
         response.setStatus(HttpStatus.OK.name());
-        response.setMessage(message);
+        response.setMessage(SuccessMessageConstant.GET_DATA_SUCCESSFUL);
         response.setTimestamp(LocalDateTime.now());
         response.setData(facilityService.getFacilityById(facilityId));
         return ResponseEntity.status(HttpStatus.OK)
@@ -78,15 +76,14 @@ public class FacilityController {
                 .body(response);
     }
     @ApiImplicitParams(
-            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
-                    required = true, dataType = "string", paramType = "header"))
+            {@ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header") })
     @GetMapping
     public ResponseEntity<Response<List<Facility>>> getAllFacility(){
                 Response<List<Facility>> response = new Response<>();
-                String message = String.format(SuccessMessageConstant.GET_DATA_SUCCESSFUL,"category's");
                 response.setCode(HttpStatus.OK.value());
                 response.setStatus(HttpStatus.OK.name());
-                response.setMessage(message);
+                response.setMessage(SuccessMessageConstant.GET_DATA_SUCCESSFUL);
                 response.setTimestamp(LocalDateTime.now());
                 response.setData(facilityService.getAllFacility());
                 return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(response);
@@ -95,8 +92,8 @@ public class FacilityController {
 
     @PreAuthorize("hasRole('ROLE_OWNER')")
     @ApiImplicitParams(
-            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
-                    required = true, dataType = "string", paramType = "header"))
+            {@ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header") })
     @PutMapping(value="/{facilityId}", consumes="multipart/form-data", produces ="application/json")
     public ResponseEntity<Response<Facility>>updateFacility(@PathVariable("facilityId") String id,
                                @RequestParam (name="name", required = false) String name,
@@ -113,10 +110,9 @@ public class FacilityController {
         UpdateFacilityRequest request = new UpdateFacilityRequest(id,name, address, contact, rentPriceOnce, rentPriceWeekly,
                 rentPriceMonthly, status, location, capacity, category);
         Response<Facility> response = new Response<>();
-        String message = String.format(SuccessMessageConstant.UPDATE_DATA_SUCCESSFUL,"facility");
         response.setCode(HttpStatus.OK.value());
         response.setStatus(HttpStatus.OK.name());
-        response.setMessage(message);
+        response.setMessage(SuccessMessageConstant.UPDATE_DATA_SUCCESSFUL);
         response.setTimestamp(LocalDateTime.now());
         response.setData(facilityService.updateFacility(id,request,files));
         return ResponseEntity.status(HttpStatus.OK)
@@ -125,15 +121,14 @@ public class FacilityController {
     }
     @PreAuthorize("hasRole('ROLE_OWNER')")
     @ApiImplicitParams(
-            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
-                    required = true, dataType = "string", paramType = "header"))
+            {@ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header") })
     @DeleteMapping("/{facilityId}")
     public  ResponseEntity <Response<Facility>>  deleteFacility(@PathVariable("facilityId") String facilityId){
         Response<Facility> response = new Response<>();
         response.setCode(HttpStatus.GONE.value());
         response.setStatus(HttpStatus.GONE.name());
-        String message = String.format(SuccessMessageConstant.DELETE_DATA_SUCCESSFUL,"facility");
-        response.setMessage(message);
+        response.setMessage(SuccessMessageConstant.DELETE_DATA_SUCCESSFUL);
         response.setTimestamp(LocalDateTime.now());
         response.setData(facilityService.deleteFacility(facilityId));
         return ResponseEntity.status(HttpStatus.GONE)
@@ -142,13 +137,12 @@ public class FacilityController {
     }
 
     @ApiImplicitParams(
-            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
-                    required = true, dataType = "string", paramType = "header"))
+            {@ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header") })
     @GetMapping("/download/{fileId}")
     public ResponseEntity<ResponseLink<Files>> downloadFiles(@PathVariable String fileId) {
         ResponseLink<Files> response = new ResponseLink<>();
-        String message = String.format(SuccessMessageConstant.DOWNLOAD_SUCCESS);
-        response.setMessage(message);
+        response.setMessage(SuccessMessageConstant.DOWNLOAD_SUCCESS);
         response.setLink(filesService.getFile(fileId).getUrl());
         return ResponseEntity.status(HttpStatus.OK)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -156,8 +150,8 @@ public class FacilityController {
     }
 
     @ApiImplicitParams(
-            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
-                    required = true, dataType = "string", paramType = "header"))
+            {@ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header") })
         @GetMapping("/page")
         public PageResponseWrapper<Facility> getAllFacilityPerPage(@RequestBody FacilitySearchDto facilitySearchDto,
                                                     @RequestParam(name="page", defaultValue ="0") Integer page,
