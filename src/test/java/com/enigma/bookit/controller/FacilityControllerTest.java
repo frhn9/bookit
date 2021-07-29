@@ -6,6 +6,10 @@ import com.enigma.bookit.dto.FacilitySearchDto;
 import com.enigma.bookit.entity.Facility;
 import com.enigma.bookit.entity.Files;
 import com.enigma.bookit.repository.FacilityRepository;
+import com.enigma.bookit.security.WebSecurityConfig;
+import com.enigma.bookit.security.jwt.AuthEntryPointJwt;
+import com.enigma.bookit.security.jwt.JwtUtils;
+import com.enigma.bookit.security.services.UserDetailsServiceImpl;
 import com.enigma.bookit.service.FacilityService;
 import com.enigma.bookit.service.FilesService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,6 +25,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.web.multipart.MultipartFile;
@@ -63,6 +68,18 @@ class FacilityControllerTest {
     @MockBean
     FacilityRepository repository;
 
+    @MockBean
+    AuthEntryPointJwt authEntryPointJwt;
+
+    @MockBean
+    JwtUtils jwtUtils;
+
+    @MockBean
+    UserDetailsServiceImpl userDetailsService;
+
+    @Autowired
+    WebSecurityConfig webSecurityConfig;
+
     public static String asJsonString(final Object obj){
         try {
             return new ObjectMapper().writeValueAsString(obj);
@@ -72,6 +89,7 @@ class FacilityControllerTest {
     }
     @SneakyThrows
     @Test
+    @WithMockUser(username = "fadiel123456", password = "mengontol", roles = "ROLE_OWNER")
     void addNewFacility() {
         Facility facility = new Facility();
         facility.setId("c02");
@@ -91,6 +109,7 @@ class FacilityControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "fadiel123456", password = "mengontol", roles = "ROLE_CUSTOMER")
     void getFacilityById() throws Exception {
         Facility facility = new Facility();
         facility.setId("c02");
@@ -106,6 +125,7 @@ class FacilityControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "fadiel123456", password = "mengontol", roles = "ROLE_CUSTOMER")
     void getAllFacility() throws Exception {
         Facility facility = new Facility();
         facility.setId("c02");
@@ -194,6 +214,7 @@ class FacilityControllerTest {
 
 
     @Test
+    @WithMockUser(username = "fadiel123456", password = "mengontol", roles = "ROLE_OWNER")
     void deleteFacility() throws Exception {
         Facility facility = new Facility();
         facility.setId("delete02");
@@ -205,6 +226,7 @@ class FacilityControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "fadiel123456", password = "mengontol", roles = "ROLE_CUSTOMER")
     void downloadFiles() throws Exception {
         Files files = new Files();
         files.setId("down1");
@@ -222,6 +244,7 @@ class FacilityControllerTest {
 
     @SneakyThrows
     @Test
+    @WithMockUser(username = "fadiel123456", password = "mengontol", roles = "ROLE_ADMIN")
     void getAllFacilityPerPage() {
           Facility facility = new Facility();
             facility.setId("c02");

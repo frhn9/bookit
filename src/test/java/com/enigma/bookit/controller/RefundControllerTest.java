@@ -6,6 +6,10 @@ import com.enigma.bookit.dto.RefundDTO;
 import com.enigma.bookit.dto.RefundSearchDTO;
 import com.enigma.bookit.entity.Book;
 import com.enigma.bookit.entity.Refund;
+import com.enigma.bookit.security.WebSecurityConfig;
+import com.enigma.bookit.security.jwt.AuthEntryPointJwt;
+import com.enigma.bookit.security.jwt.JwtUtils;
+import com.enigma.bookit.security.services.UserDetailsServiceImpl;
 import com.enigma.bookit.service.FeedbackService;
 import com.enigma.bookit.service.RefundService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,6 +25,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
@@ -47,6 +52,17 @@ class RefundControllerTest {
     @Autowired
     MockMvc mockMvc;
 
+    @MockBean
+    AuthEntryPointJwt authEntryPointJwt;
+
+    @MockBean
+    JwtUtils jwtUtils;
+
+    @MockBean
+    UserDetailsServiceImpl userDetailsService;
+
+    @Autowired
+    WebSecurityConfig webSecurityConfig;
 
     private Refund refund;
     private ModelMapper modelMapper = new ModelMapper();
@@ -72,6 +88,7 @@ class RefundControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "fadiel123456", password = "mengontol", roles = "ROLE_CUSTOMER")
     void applyRefund() throws Exception {
         when(refundService.applyRefund(any(Refund.class)))
                 .thenReturn(modelMapper.map(refund, RefundDTO.class));
@@ -96,6 +113,7 @@ class RefundControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "fadiel123456", password = "mengontol", roles = "ROLE_CUSTOMER")
     void searchRefundPerPage() throws Exception {
         refund = new Refund();
         refund.setId("R01");

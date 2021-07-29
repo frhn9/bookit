@@ -5,6 +5,10 @@ import com.enigma.bookit.entity.Book;
 import com.enigma.bookit.entity.Files;
 import com.enigma.bookit.repository.CategoryRepository;
 import com.enigma.bookit.repository.FilesRepository;
+import com.enigma.bookit.security.WebSecurityConfig;
+import com.enigma.bookit.security.jwt.AuthEntryPointJwt;
+import com.enigma.bookit.security.jwt.JwtUtils;
+import com.enigma.bookit.security.services.UserDetailsServiceImpl;
 import com.enigma.bookit.service.CategoryService;
 import com.enigma.bookit.service.FilesService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,6 +19,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -51,6 +56,18 @@ class FilesControllerTest {
     @MockBean
     FilesRepository repository;
 
+    @MockBean
+    AuthEntryPointJwt authEntryPointJwt;
+
+    @MockBean
+    JwtUtils jwtUtils;
+
+    @MockBean
+    UserDetailsServiceImpl userDetailsService;
+
+    @Autowired
+    WebSecurityConfig webSecurityConfig;
+
     public static String asJsonString(final Object obj){
         try {
             return new ObjectMapper().writeValueAsString(obj);
@@ -61,6 +78,7 @@ class FilesControllerTest {
 
 
     @Test
+    @WithMockUser(username = "fadiel123456", password = "mengontol", roles = "ROLE_CUSTOMER")
     void getFile() throws Exception {
         MultipartFile file = new MultipartFile() {
             @Override

@@ -3,9 +3,14 @@ package com.enigma.bookit.controller;
 import com.enigma.bookit.constant.ApiUrlConstant;
 import com.enigma.bookit.entity.Category;
 import com.enigma.bookit.repository.CategoryRepository;
+import com.enigma.bookit.security.WebSecurityConfig;
+import com.enigma.bookit.security.jwt.AuthEntryPointJwt;
+import com.enigma.bookit.security.jwt.JwtUtils;
+import com.enigma.bookit.security.services.UserDetailsServiceImpl;
 import com.enigma.bookit.service.CategoryService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
+
 import static org.hamcrest.Matchers.*;
 
 import org.hamcrest.Matchers;
@@ -16,6 +21,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 
@@ -35,49 +41,64 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class CategoryControllerTest {
 
 
-        @MockBean
-        CategoryService service;
+    @MockBean
+    CategoryService service;
 
-        @Autowired
-        CategoryController controller;
+    @Autowired
+    CategoryController controller;
 
-        @Autowired
-        private MockMvc mockMvc;
+    @Autowired
+    private MockMvc mockMvc;
 
-        @Autowired
-        ObjectMapper objectMapper;
+    @Autowired
+    ObjectMapper objectMapper;
 
-        @MockBean
-        CategoryRepository repository;
+    @MockBean
+    CategoryRepository repository;
 
-        public static String asJsonString(final Object obj){
-            try {
-                return new ObjectMapper().writeValueAsString(obj);
-            } catch (Exception e){
-                throw new RuntimeException(e);
-            }
+    @MockBean
+    AuthEntryPointJwt authEntryPointJwt;
+
+    @MockBean
+    JwtUtils jwtUtils;
+
+    @MockBean
+    UserDetailsServiceImpl userDetailsService;
+
+    @Autowired
+    WebSecurityConfig webSecurityConfig;
+
+    public static String asJsonString(final Object obj) {
+        try {
+            return new ObjectMapper().writeValueAsString(obj);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-        @SneakyThrows
-        @Test
+    }
+
+    @SneakyThrows
+    @Test
+    @WithMockUser(username = "fadiel123456", password = "mengontol", roles = "ROLE_OWNER")
     void createNewCategory() throws Exception {
         Category category = new Category();
         category.setId("c01");
         category.setName("abc");
-            when(service.addCategory(any(Category.class))).thenReturn(category);
+        when(service.addCategory(any(Category.class))).thenReturn(category);
 
-            RequestBuilder request = post("/api/category")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content("{\"id\": " + "\"c01\"" + ", \"name\" : " + "\"abc\"}");
+        RequestBuilder request = post("/api/category")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"id\": " + "\"c01\"" + ", \"name\" : " + "\"abc\"}");
 
-            mockMvc.perform(request).andExpect(status().isCreated())
-                    .andExpect(jsonPath("$.message", Matchers.is("New category's data insert success!")))
-                    .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                    .andExpect(jsonPath("$.data.name", Matchers.is(category.getName())));
+        mockMvc.perform(request).andExpect(status().isCreated())
+                .andExpect(jsonPath("$.message", Matchers.is("New category's data insert success!")))
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.data.name", Matchers.is(category.getName())));
 
 
-        }
+    }
 
     @Test
+    @WithMockUser(username = "fadiel123456", password = "mengontol", roles = "ROLE_CUSTOMER")
     void getCategoryById() throws Exception {
         Category category = new Category();
         category.setId("c01");
@@ -92,9 +113,11 @@ class CategoryControllerTest {
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.data.name", Matchers.is(category.getName())));
     }
+
     @SneakyThrows
     @Test
-    void getAllCategory(){
+    @WithMockUser(username = "fadiel123456", password = "mengontol", roles = "ROLE_ADMIN")
+    void getAllCategory() {
         Category category = new Category();
         category.setId("c01");
         category.setName("abc");
@@ -113,6 +136,7 @@ class CategoryControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "fadiel123456", password = "mengontol", roles = "ROLE_OWNER")
     void updateCategory() throws Exception {
         Category category = new Category();
         category.setId("c01");
@@ -126,22 +150,25 @@ class CategoryControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.name", Matchers.is(category.getName())));
     }
-//
+
+    //
     @Test
+    @WithMockUser(username = "fadiel123456", password = "mengontol", roles = "ROLE_OWNER")
     void deleteCategory() throws Exception {
         Category category = new Category();
         category.setId("delete01");
 
         when(service.deleteCategory(category.getId())).thenReturn(null);
 
-        mockMvc.perform(delete(ApiUrlConstant.CATEGORY+"/id="+category.getId()))
-                .andExpect(jsonPath("$.code",is(HttpStatus.GONE.value())))
+        mockMvc.perform(delete(ApiUrlConstant.CATEGORY + "/id=" + category.getId()))
+                .andExpect(jsonPath("$.code", is(HttpStatus.GONE.value())))
                 .andExpect(jsonPath("$.status", is(HttpStatus.GONE.name())));
     }
 
     @SneakyThrows
     @Test
-    void getCustomerPerPage_shouldReturnFailedMessage(){
+    @WithMockUser(username = "fadiel123456", password = "mengontol", roles = "ROLE_ADMIN")
+    void getCustomerPerPage_shouldReturnFailedMessage() {
         Category category = new Category();
 
         category.setId("c01");
@@ -149,12 +176,12 @@ class CategoryControllerTest {
 
         when(service.getCategoryPerPage(any())).thenThrow(new NoSuchElementException());
 
-        mockMvc.perform(get(ApiUrlConstant.CATEGORY+"/page")
+        mockMvc.perform(get(ApiUrlConstant.CATEGORY + "/page")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(asJsonString(category)).accept(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.code",is(HttpStatus.NOT_FOUND.value())))
-                .andExpect(jsonPath("$.status",is(HttpStatus.NOT_FOUND.name())));
+                .andExpect(jsonPath("$.code", is(HttpStatus.NOT_FOUND.value())))
+                .andExpect(jsonPath("$.status", is(HttpStatus.NOT_FOUND.name())));
     }
 //    @SneakyThrows
 //    @Test

@@ -20,6 +20,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
@@ -50,6 +51,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(controllers = UserController.class)
 @Import(UserController.class)
+@AutoConfigureMockMvc
 class UserControllerTest {
 
     @MockBean
@@ -158,7 +160,7 @@ class UserControllerTest {
 
     @SneakyThrows
     @Test
-    @WithMockUser(username = "admin", password = "12345678", roles = "ROLE_CUSTOMER")
+    @WithMockUser(username = "fadiel123456", password = "mengontol", roles = "ROLE_CUSTOMER")
     void getUserById_shouldSendSuccessResponse() {
         User user = new User();
         user.setId("usersuccess");
@@ -188,7 +190,7 @@ class UserControllerTest {
 
     @SneakyThrows
     @Test
-    @WithMockUser(username = "admin", password = "1234", roles = "ROLE_CUSTOMER")
+    @WithMockUser(username = "admin", password = "12345678", roles = "ROLE_CUSTOMER")
     void getUserById_shouldSendFailedResponse()  {
         when(userService.getById(ArgumentMatchers.any())).thenThrow(new NoSuchElementException());
 
@@ -200,7 +202,7 @@ class UserControllerTest {
 
     @SneakyThrows
     @Test
-    @WithMockUser(username = "admin", password = "1234", roles = "ROLE_ADMIN")
+    @WithMockUser(username = "admin", password = "12345678", roles = "ROLE_ADMIN")
     void getAllUser_shouldSendSuccessResponse() {
         UserDto userDto = new UserDto();
         userDto.setId("usersuccess");
@@ -225,7 +227,7 @@ class UserControllerTest {
 
     @SneakyThrows
     @Test
-    @WithMockUser(username = "admin", password = "1234", roles = "ROLE_ADMIN")
+    @WithMockUser(username = "admin", password = "12345678", roles = "ROLE_ADMIN")
     void getAllUser_shouldSendFailedResponse()  {
         when(userService.getAll()).thenThrow(new NoSuchElementException());
 
@@ -237,7 +239,7 @@ class UserControllerTest {
 
     @SneakyThrows
     @Test
-    @WithMockUser(username = "admin", password = "1234", roles = "ROLE_CUSTOMER")
+    @WithMockUser(username = "admin", password = "12345678", roles = "ROLE_CUSTOMER")
     void updateUserDto_shouldSendSuccessResponse() {
         UserDto userDto = new UserDto();
         userDto.setId("usersuccess");
@@ -260,7 +262,7 @@ class UserControllerTest {
 
     @SneakyThrows
     @Test
-    @WithMockUser(username = "admin", password = "1234", roles = "ROLE_CUSTOMER")
+    @WithMockUser(username = "admin", password = "12345678", roles = "ROLE_CUSTOMER")
     void updateUserDto_shouldSendFailedResponse() {
         UserDto userDto = new UserDto();
         userDto.setId("usersuccess");
@@ -277,7 +279,7 @@ class UserControllerTest {
 
     @SneakyThrows
     @Test
-    @WithMockUser(username = "admin", password = "1234", roles = "ROLE_CUSTOMER")
+    @WithMockUser(username = "admin", password = "12345678", roles = "ROLE_CUSTOMER")
     void changePassword_shouldSendSuccessMessage() {
         User user = new User();
         user.setId("ngehe");
@@ -310,7 +312,7 @@ class UserControllerTest {
 
     @SneakyThrows
     @Test
-    @WithMockUser(username = "admin", password = "1234", roles = "ROLE_CUSTOMER")
+    @WithMockUser(username = "admin", password = "12345678", roles = "ROLE_CUSTOMER")
     void changePassword_shouldSendFailedMessage(){
         User user = new User();
         user.setId("ngehe");
@@ -335,7 +337,7 @@ class UserControllerTest {
 
     @SneakyThrows
     @Test
-    @WithMockUser(username = "admin", password = "1234", roles = "ROLE_OWNER")
+    @WithMockUser(username = "admin", password = "12345678", roles = "ROLE_OWNER")
     void deleteUser(){
         User user = new User();
         user.setId("delete01");
@@ -350,7 +352,7 @@ class UserControllerTest {
 
     @SneakyThrows
     @Test
-    @WithMockUser(username = "admin", password = "1234", roles = "ROLE_ADMIN")
+    @WithMockUser(username = "admin", password = "12345678", roles = "ROLE_ADMIN")
     void getUserPerPage_shouldReturnSuccessMessage(){
         User user = new User();
 
@@ -469,7 +471,7 @@ class UserControllerTest {
 
     @SneakyThrows
     @Test
-    @WithMockUser(username = "admin", password = "1234", roles = "ROLE_ADMIN")
+    @WithMockUser(username = "admin", password = "12345678", roles = "ROLE_ADMIN")
     void getUserPerPage_shouldReturnFailedMessage(){
         User user = new User();
 

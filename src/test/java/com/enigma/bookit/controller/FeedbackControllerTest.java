@@ -5,6 +5,10 @@ import com.enigma.bookit.dto.FeedbackDTO;
 import com.enigma.bookit.dto.FeedbackSearchDTO;
 import com.enigma.bookit.entity.Book;
 import com.enigma.bookit.entity.Feedback;
+import com.enigma.bookit.security.WebSecurityConfig;
+import com.enigma.bookit.security.jwt.AuthEntryPointJwt;
+import com.enigma.bookit.security.jwt.JwtUtils;
+import com.enigma.bookit.security.services.UserDetailsServiceImpl;
 import com.enigma.bookit.service.FeedbackService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;
@@ -19,6 +23,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 
@@ -48,6 +53,17 @@ class FeedbackControllerTest {
     @Autowired
     MockMvc mockMvc;
 
+    @MockBean
+    AuthEntryPointJwt authEntryPointJwt;
+
+    @MockBean
+    JwtUtils jwtUtils;
+
+    @MockBean
+    UserDetailsServiceImpl userDetailsService;
+
+    @Autowired
+    WebSecurityConfig webSecurityConfig;
 
     private ModelMapper modelMapper = new ModelMapper();
     private Feedback feedback;
@@ -72,6 +88,7 @@ class FeedbackControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "fadiel123456", password = "mengontol", roles = "ROLE_CUSTOMER")
     void createFeedback() throws Exception {
         when(feedbackService.save(any(Feedback.class)))
                 .thenReturn(modelMapper.map(feedback, FeedbackDTO.class));
@@ -85,6 +102,7 @@ class FeedbackControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "fadiel123456", password = "mengontol", roles = "ROLE_OWNER")
     void responseFeedback() throws Exception {
         when(feedbackService.respondFeedback(any(String.class) ,any(String.class)))
                 .thenReturn(modelMapper.map(feedback, FeedbackDTO.class));
@@ -97,6 +115,7 @@ class FeedbackControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "fadiel123456", password = "mengontol", roles = "ROLE_OWNER")
     void deleteFeedback() throws Exception {
         String feedbackId = feedback.getId();
         doNothing().when(feedbackService).deleteById(feedbackId);
@@ -106,6 +125,7 @@ class FeedbackControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "fadiel123456", password = "mengontol", roles = "ROLE_CUSTOMER")
     void getAllFeedback_shouldSendOkResponse() throws Exception {
         feedback = new Feedback();
         feedback.setId("f01");

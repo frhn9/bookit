@@ -9,6 +9,10 @@ import com.enigma.bookit.entity.Facility;
 import com.enigma.bookit.entity.PackageChosen;
 import com.enigma.bookit.entity.Payment;
 import com.enigma.bookit.entity.user.User;
+import com.enigma.bookit.security.WebSecurityConfig;
+import com.enigma.bookit.security.jwt.AuthEntryPointJwt;
+import com.enigma.bookit.security.jwt.JwtUtils;
+import com.enigma.bookit.security.services.UserDetailsServiceImpl;
 import com.enigma.bookit.service.PaymentService;
 import com.enigma.bookit.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,6 +22,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
@@ -25,6 +30,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
@@ -40,6 +46,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(PaymentController.class)
+@AutoConfigureMockMvc
 class PaymentControllerTest {
 
     @MockBean
@@ -50,6 +57,18 @@ class PaymentControllerTest {
 
     @Autowired
     MockMvc mockMvc;
+
+    @MockBean
+    AuthEntryPointJwt authEntryPointJwt;
+
+    @MockBean
+    JwtUtils jwtUtils;
+
+    @MockBean
+    UserDetailsServiceImpl userDetailsService;
+
+    @Autowired
+    WebSecurityConfig webSecurityConfig;
 
     private Payment payment;
     private ModelMapper modelMapper = new ModelMapper();
@@ -83,6 +102,7 @@ class PaymentControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "fadiel123456", password = "mengontol", roles = "ROLE_CUSTOMER")
     void createPayment() throws Exception {
 
         UserDto userDto = new UserDto();
@@ -104,6 +124,7 @@ class PaymentControllerTest {
 
 
     @Test
+    @WithMockUser(username = "fadiel123456", password = "mengontol", roles = "ROLE_CUSTOMER")
     void getById() throws Exception {
         when(paymentService.getById(any(String.class))).thenReturn(modelMapper.map(payment, PaymentDTO.class));
 
@@ -121,6 +142,7 @@ class PaymentControllerTest {
 
 
     @Test
+    @WithMockUser(username = "fadiel123456", password = "mengontol", roles = "ROLE_OWNER")
     void searchPaymentPerPage() throws Exception {
         payment = new Payment();
         payment.setId("P01");
@@ -238,6 +260,7 @@ class PaymentControllerTest {
 
     @SneakyThrows
     @Test
+    @WithMockUser(username = "fadiel123456", password = "mengontol", roles = "ROLE_CUSTOMER")
     void extendBook(){
         UserDto userDto = new UserDto();
         userDto.setId("C01");

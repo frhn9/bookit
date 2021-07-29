@@ -6,6 +6,10 @@ import com.enigma.bookit.dto.BookSearchDto;
 import com.enigma.bookit.entity.Book;
 import com.enigma.bookit.entity.Payment;
 import com.enigma.bookit.repository.BookRepository;
+import com.enigma.bookit.security.WebSecurityConfig;
+import com.enigma.bookit.security.jwt.AuthEntryPointJwt;
+import com.enigma.bookit.security.jwt.JwtUtils;
+import com.enigma.bookit.security.services.UserDetailsServiceImpl;
 import com.enigma.bookit.service.BookService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
@@ -20,6 +24,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 
@@ -54,6 +59,18 @@ class BookControllerTest {
     @MockBean
     BookRepository repository;
 
+    @MockBean
+    AuthEntryPointJwt authEntryPointJwt;
+
+    @MockBean
+    JwtUtils jwtUtils;
+
+    @MockBean
+    UserDetailsServiceImpl userDetailsService;
+
+    @Autowired
+    WebSecurityConfig webSecurityConfig;
+
     public static String asJsonString(final Object obj){
         try {
             return new ObjectMapper().writeValueAsString(obj);
@@ -63,6 +80,7 @@ class BookControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "fadiel123456", password = "mengontol", roles = "ROLE_OWNER")
     void createBook() throws Exception {
         Book book = new Book();
         Payment payment =new Payment();
@@ -79,6 +97,7 @@ class BookControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "fadiel123456", password = "mengontol", roles = "ROLE_ADMIN")
     void getBookById() throws Exception {
         Book book = new Book();
         Payment payment =new Payment();
@@ -98,6 +117,7 @@ class BookControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "fadiel123456", password = "mengontol", roles = "ROLE_ADMIN")
     void getAllBook() throws Exception {
         Book book = new Book();
         Payment payment =new Payment();
@@ -116,6 +136,7 @@ class BookControllerTest {
         }
 
     @Test
+    @WithMockUser(username = "fadiel123456", password = "mengontol", roles = "ROLE_OWNER")
     void deleteBook() throws Exception {
         Book book = new Book();
         book.setId("delete01");
@@ -128,6 +149,7 @@ class BookControllerTest {
     }
     @SneakyThrows
     @Test
+    @WithMockUser(username = "fadiel123456", password = "mengontol", roles = "ROLE_ADMIN")
     void getCustomerPerPage() throws Exception {
 
         Book book = new Book();
