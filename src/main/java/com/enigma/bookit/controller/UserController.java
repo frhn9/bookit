@@ -10,6 +10,8 @@ import com.enigma.bookit.service.UserService;
 import com.enigma.bookit.utils.DeleteResponse;
 import com.enigma.bookit.utils.PageResponseWrapper;
 import com.enigma.bookit.utils.Response;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -34,6 +36,9 @@ public class UserController {
     @Autowired
     UserService userService;
 
+    @ApiImplicitParams(
+            {@ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header") })
     @PostMapping
     public ResponseEntity<Response<UserDto>> registerUser(@Valid @RequestBody User user) {
         Response<UserDto> response = new Response<>();
@@ -45,6 +50,9 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).contentType(MediaType.APPLICATION_JSON).body(response);
     }
 
+    @ApiImplicitParams(
+            {@ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header") })
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_CUSTOMER')")
     public ResponseEntity<Response<UserDto>> getUserById(@PathVariable String id) {
@@ -56,7 +64,9 @@ public class UserController {
         response.setData(userService.getById(id));
         return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(response);
     }
-
+    @ApiImplicitParams(
+            {@ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header") })
     @GetMapping
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Response<List<UserDto>>> getAllUser() {
@@ -68,9 +78,11 @@ public class UserController {
         response.setData(userService.getAll());
         return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(response);
     }
-
+    @ApiImplicitParams(
+            {@ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header") })
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ROLE_CUSTOMER')") //Tambahin ROLE_OWNER
+    @PreAuthorize("hasRole('ROLE_CUSTOMER')OR hasRole('ROLL_OWNER')") //Tambahin ROLE_OWNER
     public ResponseEntity<Response<UserDto>> updateUserDto(@PathVariable String id, @RequestBody UserDto userDto) {
         Response<UserDto> response = new Response<>();
         response.setCode(HttpStatus.OK.value());
@@ -80,9 +92,11 @@ public class UserController {
         response.setData(userService.update(id, userDto));
         return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(response);
     }
-
+    @ApiImplicitParams(
+            {@ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header") })
     @PutMapping
-    @PreAuthorize("hasRole('ROLE_CUSTOMER')") //Tambahin ROLE_OWNER
+    @PreAuthorize("hasRole('ROLE_CUSTOMER')OR hasRole('ROLL_OWNER')") //Tambahin ROLE_OWNER
     public ResponseEntity<Response<UserDto>> changePassword(@RequestParam String id, @RequestBody UserPasswordDto userPassword) {
         Response<UserDto> response = new Response<>();
         response.setCode(HttpStatus.OK.value());
@@ -92,9 +106,11 @@ public class UserController {
         response.setData(userService.changePassword(id, userPassword));
         return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(response);
     }
-
+    @ApiImplicitParams(
+            {@ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header") })
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ROLE_CUSTOMER')") //Tambahin ROLE_ADMIN, ROLE_OWNER
+    @PreAuthorize("hasRole('ROLE_CUSTOMER')OR hasRole('ROLE_ADMIN')OR hasRole('ROLE_OWNER')") //Tambahin ROLE_ADMIN, ROLE_OWNER
     public ResponseEntity<DeleteResponse> deleteUser(@PathVariable String id) {
         DeleteResponse deleteResponse = new DeleteResponse();
         userService.deleteById(id);
@@ -105,7 +121,9 @@ public class UserController {
         deleteResponse.setTimestamp(LocalDateTime.now());
         return ResponseEntity.status(HttpStatus.GONE).contentType(MediaType.APPLICATION_JSON).body(deleteResponse);
     }
-
+    @ApiImplicitParams(
+            {@ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header") })
     @GetMapping("/search")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public PageResponseWrapper<UserDto> searchUserPerPage(@RequestBody UserSearchDto userSearchDto,

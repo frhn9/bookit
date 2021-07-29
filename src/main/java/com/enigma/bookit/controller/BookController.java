@@ -32,12 +32,11 @@ public class BookController {
 
     @PreAuthorize("hasRole('ROLE_CUSTOMER')")
     @ApiImplicitParams(
-            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
-                    required = true, dataType = "string", paramType = "header"))
+            {@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
     @PostMapping()
     public ResponseEntity<Response<Book>> createBook(@RequestBody Book book){
         Response<Book> response = new Response<>();
-        String message = "Book is inserted";
+        String message = String.format(SuccessMessageConstant.INSERT_SUCCESS, "book");
         response.setMessage(message);
         response.setData(bookService.addBook(book));
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -46,13 +45,11 @@ public class BookController {
     }
 
     @ApiImplicitParams(
-            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
-                    required = true, dataType = "string", paramType = "header"))
+            {@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
         @GetMapping("/{bookId}")
         public ResponseEntity<Response<Book>>  getBookById(@PathVariable String bookId){
             Response<Book> response = new Response<>();
-            String message = String.format(SuccessMessageConstant.GET_DATA_SUCCESSFUL, "Book");
-            response.setMessage(message);
+            response.setMessage(SuccessMessageConstant.GET_DATA_SUCCESSFUL);
             response.setData(bookService.getBookById(bookId));
             return ResponseEntity.status(HttpStatus.OK)
                     .contentType(MediaType.APPLICATION_JSON)
@@ -60,8 +57,7 @@ public class BookController {
         }
 
     @ApiImplicitParams(
-            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
-                    required = true, dataType = "string", paramType = "header"))
+            {@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
         @GetMapping
         public List<Book> getAllBook(){
             return bookService.getAllBook();
@@ -69,15 +65,13 @@ public class BookController {
 
     @PreAuthorize("hasRole('ROLE_OWNER')")
     @ApiImplicitParams(
-            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
-                    required = true, dataType = "string", paramType = "header"))
+            {@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
         @DeleteMapping("/{bookId}")
         public ResponseEntity <Response> deleteBook(@PathVariable("bookId") String bookId){
             Response<Book> response = new Response<>();
-            String message = String.format(SuccessMessageConstant.DELETE_DATA_SUCCESSFUL,"book");
             response.setCode(HttpStatus.GONE.value());
             response.setStatus(HttpStatus.GONE.name());
-            response.setMessage(message);
+            response.setMessage(SuccessMessageConstant.DELETE_DATA_SUCCESSFUL);
             response.setTimestamp(LocalDateTime.now());
             response.setData(bookService.deleteBook(bookId));
             return ResponseEntity.status(HttpStatus.GONE)
@@ -86,8 +80,7 @@ public class BookController {
         }
 
     @ApiImplicitParams(
-            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
-                    required = true, dataType = "string", paramType = "header"))
+            {@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
     @GetMapping("/page")
         public PageResponseWrapper<Book> getAllBookPerPage( @RequestBody BookSearchDto bookSearchDto,
                                                             @RequestParam(name="page", defaultValue ="0") Integer page,
