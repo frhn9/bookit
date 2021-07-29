@@ -8,6 +8,10 @@ import com.enigma.bookit.dto.UserPasswordDto;
 import com.enigma.bookit.dto.UserSearchDto;
 import com.enigma.bookit.entity.user.User;
 import com.enigma.bookit.repository.UserRepository;
+import com.enigma.bookit.security.WebSecurityConfig;
+import com.enigma.bookit.security.jwt.AuthEntryPointJwt;
+import com.enigma.bookit.security.jwt.JwtUtils;
+import com.enigma.bookit.security.services.UserDetailsServiceImpl;
 import com.enigma.bookit.service.UserService;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,6 +28,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -58,15 +64,35 @@ class UserControllerTest {
     @MockBean
     UserRepository userRepository;
 
-    @Autowired
-    private WebApplicationContext context;
+    @MockBean
+    AuthEntryPointJwt authEntryPointJwt;
+
+    @MockBean
+    JwtUtils jwtUtils;
+
+    @MockBean
+    UserDetailsServiceImpl userDetailsService;
 
     @Autowired
-    private Filter springSecurityFilterChain;
+    WebSecurityConfig webSecurityConfig;
+
+    private User user;
+    private List<User> users;
 
     @BeforeEach
     public void setup(){
-        mockMvc = MockMvcBuilders.webAppContextSetup(context).addFilters(springSecurityFilterChain).build();
+        user = new User();
+        user.setId("usersuccess");
+        user.setUserName("admin");
+        user.setPassword("1234");
+        user.setFullName("fadiel");
+        user.setEmail("fadiel@gmail.com");
+        user.setCreatedAt(LocalDateTime.now());
+        user.setUpdatedAt(LocalDateTime.now());
+
+        users = new ArrayList<>();
+        users.add(user);
+
     }
 
     public static String asJsonString(final Object obj) {
@@ -79,6 +105,7 @@ class UserControllerTest {
 
     @SneakyThrows
     @Test
+    @WithMockUser(username = "admin", password = "12345678", roles = "ROLE_ADMIN")
     void registerUser_shouldSendSuccessResponse() {
         User user = new User();
 
@@ -108,6 +135,7 @@ class UserControllerTest {
 
     @SneakyThrows
     @Test
+    @WithMockUser(username = "admin", password = "12345678", roles = "ROLE_ADMIN")
     void registerUser_shouldSendFailedResponse() {
         User user = new User();
 
@@ -130,6 +158,7 @@ class UserControllerTest {
 
     @SneakyThrows
     @Test
+    @WithMockUser(username = "admin", password = "12345678", roles = "ROLE_CUSTOMER")
     void getUserById_shouldSendSuccessResponse() {
         User user = new User();
         user.setId("usersuccess");
@@ -159,6 +188,7 @@ class UserControllerTest {
 
     @SneakyThrows
     @Test
+    @WithMockUser(username = "admin", password = "1234", roles = "ROLE_CUSTOMER")
     void getUserById_shouldSendFailedResponse()  {
         when(userService.getById(ArgumentMatchers.any())).thenThrow(new NoSuchElementException());
 
@@ -170,6 +200,7 @@ class UserControllerTest {
 
     @SneakyThrows
     @Test
+    @WithMockUser(username = "admin", password = "1234", roles = "ROLE_ADMIN")
     void getAllUser_shouldSendSuccessResponse() {
         UserDto userDto = new UserDto();
         userDto.setId("usersuccess");
@@ -194,6 +225,7 @@ class UserControllerTest {
 
     @SneakyThrows
     @Test
+    @WithMockUser(username = "admin", password = "1234", roles = "ROLE_ADMIN")
     void getAllUser_shouldSendFailedResponse()  {
         when(userService.getAll()).thenThrow(new NoSuchElementException());
 
@@ -205,6 +237,7 @@ class UserControllerTest {
 
     @SneakyThrows
     @Test
+    @WithMockUser(username = "admin", password = "1234", roles = "ROLE_CUSTOMER")
     void updateUserDto_shouldSendSuccessResponse() {
         UserDto userDto = new UserDto();
         userDto.setId("usersuccess");
@@ -227,6 +260,7 @@ class UserControllerTest {
 
     @SneakyThrows
     @Test
+    @WithMockUser(username = "admin", password = "1234", roles = "ROLE_CUSTOMER")
     void updateUserDto_shouldSendFailedResponse() {
         UserDto userDto = new UserDto();
         userDto.setId("usersuccess");
@@ -243,6 +277,7 @@ class UserControllerTest {
 
     @SneakyThrows
     @Test
+    @WithMockUser(username = "admin", password = "1234", roles = "ROLE_CUSTOMER")
     void changePassword_shouldSendSuccessMessage() {
         User user = new User();
         user.setId("ngehe");
@@ -275,6 +310,7 @@ class UserControllerTest {
 
     @SneakyThrows
     @Test
+    @WithMockUser(username = "admin", password = "1234", roles = "ROLE_CUSTOMER")
     void changePassword_shouldSendFailedMessage(){
         User user = new User();
         user.setId("ngehe");
@@ -299,6 +335,7 @@ class UserControllerTest {
 
     @SneakyThrows
     @Test
+    @WithMockUser(username = "admin", password = "1234", roles = "ROLE_OWNER")
     void deleteUser(){
         User user = new User();
         user.setId("delete01");
@@ -313,6 +350,7 @@ class UserControllerTest {
 
     @SneakyThrows
     @Test
+    @WithMockUser(username = "admin", password = "1234", roles = "ROLE_ADMIN")
     void getUserPerPage_shouldReturnSuccessMessage(){
         User user = new User();
 
@@ -431,6 +469,7 @@ class UserControllerTest {
 
     @SneakyThrows
     @Test
+    @WithMockUser(username = "admin", password = "1234", roles = "ROLE_ADMIN")
     void getUserPerPage_shouldReturnFailedMessage(){
         User user = new User();
 
